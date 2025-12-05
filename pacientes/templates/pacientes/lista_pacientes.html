@@ -21,6 +21,9 @@
                            placeholder="Buscar por nombre o DNI..." 
                            value="{{ request.GET.q }}">
                     <button class="btn btn-primary" type="submit">🔍 Buscar</button>
+                    {% if request.GET.q %}
+                    <a href="{% url 'pacientes:lista' %}" class="btn btn-secondary">✖️ Limpiar</a>
+                    {% endif %}
                 </div>
             </form>
 
@@ -40,7 +43,7 @@
                         </thead>
                         <tbody>
                             {% for paciente in pacientes %}
-                            <tr>
+                            <tr style="cursor: pointer;" onclick="window.location='{% url 'pacientes:detalle' paciente.pk %}'">
                                 <td>{{ paciente.nombre_completo }}</td>
                                 <td><code>{{ paciente.dni }}</code></td>
                                 <td>
@@ -60,11 +63,7 @@
                                     {% endif %}
                                 </td>
                                 <td>{{ paciente.telefono|default:"—" }}</td>
-                                <td class="text-end">
-                                    <a href="{% url 'pacientes:detalle' paciente.pk %}" 
-                                    class="btn btn-sm btn-info btn-white-text me-1">
-                                        👁️ Ver
-                                    </a>
+                                <td class="text-end" onclick="event.stopPropagation()">
                                     <a href="{% url 'pacientes:editar' paciente.pk %}" class="btn btn-sm btn-warning me-1">✏️ Editar</a>
                                     <a href="{% url 'pacientes:eliminar' paciente.pk %}" 
                                        class="btn btn-sm btn-danger"

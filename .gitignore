@@ -34,7 +34,9 @@ Thumbs.db
 
 # Backups
 *.bak
+*.backup_*
 backups/
+!backups/README.md
 
 # Environment variables
 .env
