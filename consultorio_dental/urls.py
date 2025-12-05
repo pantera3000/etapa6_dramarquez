@@ -4,15 +4,16 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic import RedirectView
 
 urlpatterns = [
+    path('', RedirectView.as_view(url='/pacientes/', permanent=False)),  # Redirigir raíz a pacientes
     path('admin/', admin.site.urls),
     path('pacientes/', include('pacientes.urls')),
-    path('historias/', include('historias.urls')),  # ← NUEVO
+    path('historias/', include('historias.urls')),
     path('tratamientos/', include('tratamientos.urls')),
     path('notas/', include('notas.urls')),
     path('citas/', include('citas.urls')),
-    # Las demás apps se agregarán después
 ]
 
 # Servir archivos de medios en desarrollo
