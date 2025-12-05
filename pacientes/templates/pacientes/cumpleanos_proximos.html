@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}🎂 Cumpleaños Próximos{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">🎂 Cumpleaños Próximos (próximos 180 días)</h2>
+    <a href="{% url 'pacientes:lista' %}" class="btn btn-secondary btn-sm">← Lista de Pacientes</a>
+</div>
+
+<div class="bg-white p-4 rounded shadow-sm border">
+    {% if pacientes %}
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Paciente</th>
+                        <th>DNI</th>
+                        <th>Edad</th>
+                        <th>Fecha de Cumpleaños</th>
+                        <th>Días</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for paciente in pacientes %}
+                    <tr>
+                        <td>
+                            {% if paciente.dias_hasta_cumple == 0 %}
+                                <span class="badge bg-success">¡HOY!</span>
+                            {% endif %}
+                            {{ paciente.nombre_completo }}
+                        </td>
+                        <td>{{ paciente.dni }}</td>
+                        <td>{{ paciente.edad }} años</td>
+                        <td>{{ paciente.fecha_nacimiento|date:"d \d\e F" }}</td>
+                        <td>
+                            {% if paciente.dias_hasta_cumple == 0 %}
+                                <strong class="text-success">Hoy</strong>
+                            {% else %}
+                                {{ paciente.dias_hasta_cumple }} día{{ paciente.dias_hasta_cumple|pluralize }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'pacientes:detalle' paciente.pk %}" class="btn btn-sm btn-outline-info">👁️ Ver</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="text-muted">No hay cumpleaños en los próximos 180 días.</p>
+    {% endif %}
+</div>
+{% endblock %}

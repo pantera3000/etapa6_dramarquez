@@ -1,0 +1,20 @@
+<!-- historias/templates/historias/eliminar_entrada.html -->
+{% extends 'base.html' %}
+
+{% block title %}Eliminar Entrada{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <div class="card-header bg-danger text-white">
+        <h4>⚠️ Eliminar Entrada Clínica</h4>
+    </div>
+    <div class="card-body">
+        <p>¿Eliminar la entrada del <strong>{{ object.fecha|date:"d/m/Y" }}</strong> del paciente <strong>{{ object.paciente.nombre_completo }}</strong>?</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">🗑️ Sí, eliminar</button>
+            <a href="{% url 'pacientes:detalle' object.paciente.pk %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,177 @@
+<!-- historias/templates/historias/lista_entradas.html -->
+{% extends 'base.html' %}
+
+{% block title %}Historias Clínicas{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center">
+    <div class="col-lg-9">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">🩺 Historias Clínicas</h2>
+            {% if paciente %}
+                <a href="{% url 'historias:crear_entrada' paciente.pk %}" class="btn btn-success btn-sm">➕ Nueva Entrada</a>
+            {% else %}
+                <!-- Botón con fondo verde oscuro -->
+                <a href="{% url 'historias:crear_entrada' 0 %}" 
+                   class="btn btn-success btn-sm"
+                   style="background-color: #157347; border-color: #157347;"
+                   onclick="alert('Selecciona un paciente primero'); return false;">
+                    ➕ Nueva Entrada
+                </a>
+            {% endif %}
+        </div>
+
+        {% if paciente %}
+        <div class="alert alert-info mb-4">
+            <strong>Historias para:</strong> {{ paciente.nombre_completo }} (DNI: {{ paciente.dni }})
+        </div>
+        {% endif %}
+
+        <!-- Filtros -->
+        <div class="bg-white p-3 rounded shadow-sm border mb-4">
+            <form method="get" class="row g-2">
+                <div class="col-md-4">
+                    <input type="text" name="q" class="form-control form-control-sm" 
+                           placeholder="Buscar por motivo, diagnóstico o paciente..." 
+                           value="{{ request.GET.q }}">
+                </div>
+                {% if not paciente %}
+                <div class="col-md-3">
+                    <input type="text" name="paciente" class="form-control form-control-sm" 
+                           placeholder="Filtrar por paciente..." 
+                           value="{{ request.GET.paciente }}">
+                </div>
+                {% endif %}
+                <div class="col-md-2">
+                    <input type="date" name="fecha_inicio" class="form-control form-control-sm" 
+                           value="{{ request.GET.fecha_inicio }}">
+                </div>
+                <div class="col-md-2">
+                    <input type="date" name="fecha_fin" class="form-control form-control-sm" 
+                           value="{{ request.GET.fecha_fin }}">
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary btn-sm w-100">🔍 Filtrar</button>
+                </div>
+            </form>
+
+            {% if request.GET.q or request.GET.paciente or request.GET.fecha_inicio or request.GET.fecha_fin %}
+            <div class="mt-2">
+                <a href="{% if paciente %}{% url 'historias:lista_por_paciente' paciente.pk %}{% else %}{% url 'historias:lista' %}{% endif %}" 
+                   class="btn btn-outline-secondary btn-sm">🗑️ Limpiar filtros</a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Lista de entradas -->
+        <div class="bg-white rounded shadow-sm border">
+            {% if entradas %}
+                <div class="list-group list-group-flush">
+                    {% for entrada in entradas %}
+                    <div class="list-group-item list-group-item-action">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1 me-3">
+                                <div class="d-flex align-items-center mb-1">
+                                    
+                                    <h5 class="mb-0 me-2">
+                                        <a href="{% url 'pacientes:detalle' entrada.paciente.pk %}" 
+                                        class="text-decoration-none text-primary">
+                                            {{ entrada.paciente.nombre_completo }}
+                                        </a>
+                                    </h5>
+                                    <span class="badge bg-light text-dark border">{{ entrada.fecha|date:"d/m/Y" }}</span>
+                                </div>
+                                <p class="text-muted mb-1">
+                                    <small>{{ entrada.fecha|date:"H:i" }} • <strong>Motivo:</strong> {{ entrada.motivo }}</small>
+                                </p>
+                                {% if entrada.diagnostico %}
+                                    <p class="mb-0 text-muted small">Diagnóstico: {{ entrada.diagnostico|truncatewords:20 }}</p>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <a href="{% url 'historias:detalle_entrada' entrada.pk %}" class="btn btn-sm btn-info">👁️ Ver</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Paginación -->
+                {% if is_paginated %}
+                    <div class="p-3 border-top">
+                        <nav aria-label="Paginación">
+                            <ul class="pagination justify-content-center mb-0">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" 
+                                           href="?page=1
+                                               {% if request.GET.q %}&q={{ request.GET.q }}{% endif %}
+                                               {% if not paciente and request.GET.paciente %}&paciente={{ request.GET.paciente }}{% endif %}
+                                               {% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}
+                                               {% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}">
+                                            « Primero
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" 
+                                           href="?page={{ page_obj.previous_page_number }}
+                                               {% if request.GET.q %}&q={{ request.GET.q }}{% endif %}
+                                               {% if not paciente and request.GET.paciente %}&paciente={{ request.GET.paciente }}{% endif %}
+                                               {% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}
+                                               {% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}">
+                                            ‹ Anterior
+                                        </a>
+                                    </li>
+                                {% endif %}
+
+                                <li class="page-item active">
+                                    <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                                </li>
+
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" 
+                                           href="?page={{ page_obj.next_page_number }}
+                                               {% if request.GET.q %}&q={{ request.GET.q }}{% endif %}
+                                               {% if not paciente and request.GET.paciente %}&paciente={{ request.GET.paciente }}{% endif %}
+                                               {% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}
+                                               {% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}">
+                                            Siguiente ›
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" 
+                                           href="?page={{ page_obj.paginator.num_pages }}
+                                               {% if request.GET.q %}&q={{ request.GET.q }}{% endif %}
+                                               {% if not paciente and request.GET.paciente %}&paciente={{ request.GET.paciente }}{% endif %}
+                                               {% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}
+                                               {% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}">
+                                            Último »
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                {% endif %}
+
+            {% else %}
+                <div class="text-center p-5">
+                    <p class="text-muted mb-3">
+                        {% if paciente %}
+                            No hay entradas en la historia clínica de <strong>{{ paciente.nombre_completo }}</strong>.
+                        {% else %}
+                            No hay entradas registradas en el sistema.
+                        {% endif %}
+                    </p>
+                    {% if paciente %}
+                        <a href="{% url 'historias:crear_entrada' paciente.pk %}" class="btn btn-success">➕ Agregar Primera Entrada</a>
+                    {% else %}
+                        <a href="#" class="btn btn-success" onclick="alert('Selecciona un paciente primero'); return false;">➕ Agregar Primera Entrada</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

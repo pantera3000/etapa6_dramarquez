@@ -1,0 +1,22 @@
+<!-- tratamientos/templates/tratamientos/eliminar_tratamiento.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Eliminar Tratamiento{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <div class="card-header bg-danger text-white">
+        <h4>⚠️ Eliminar Tratamiento</h4>
+    </div>
+    <div class="card-body">
+        <p>¿Estás seguro de que deseas eliminar el tratamiento <strong>{{ object.nombre }}</strong> del paciente <strong>{{ object.paciente.nombre_completo }}</strong>?</p>
+        <p class="text-danger"><strong>Advertencia:</strong> Todos los pagos asociados también se eliminarán.</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">🗑️ Sí, eliminar</button>
+            <a href="{% url 'pacientes:detalle' object.paciente.pk %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

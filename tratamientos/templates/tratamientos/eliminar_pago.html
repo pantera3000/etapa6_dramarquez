@@ -1,0 +1,22 @@
+<!-- tratamientos/templates/tratamientos/eliminar_pago.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Eliminar Pago{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <div class="card-header bg-danger text-white">
+        <h4>⚠️ Eliminar Pago</h4>
+    </div>
+    <div class="card-body">
+        <p>¿Eliminar el pago de <strong>S/ {{ object.monto }}</strong> realizado el <strong>{{ object.fecha_pago|date:"d/m/Y" }}</strong> por <strong>{{ object.get_metodo_pago_display }}</strong>?</p>
+        <p>Este pago pertenece al tratamiento: <strong>{{ object.tratamiento.nombre }}</strong>.</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">🗑️ Sí, eliminar</button>
+            <a href="{% url 'tratamientos:detalle' object.tratamiento.pk %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

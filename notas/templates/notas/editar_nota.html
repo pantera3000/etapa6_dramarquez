@@ -1,0 +1,143 @@
+<!-- notas/templates/notas/editar_nota.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Editar Nota - {{ object.titulo }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">✏️ Editar Nota</h2>
+    <a href="{% url 'notas:detalle' object.pk %}" class="btn btn-outline-secondary btn-sm">← Volver</a>
+</div>
+
+<div class="d-flex justify-content-center">
+    <div class="col-lg-8">
+        <form method="post" enctype="multipart/form-data" class="bg-white p-4 p-md-5 rounded shadow-sm border">
+            {% csrf_token %}
+            
+            <!-- Campo paciente (condicional) -->
+            {% if not paciente %}
+                <div class="mb-3">
+                    {{ form.paciente.label_tag }}
+                    {{ form.paciente }}
+                    {% for error in form.paciente.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.paciente }}
+            {% endif %}
+
+            <!-- Título y contenido -->
+            <div class="mb-3">
+                {{ form.titulo.label_tag }}
+                {{ form.titulo }}
+                {% for error in form.titulo.errors %}
+                    <div class="text-danger mt-1">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.contenido.label_tag }}
+                {{ form.contenido }}
+                {% for error in form.contenido.errors %}
+                    <div class="text-danger mt-1">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <!-- Imágenes -->
+            <h5 class="mb-3 pb-2 border-bottom">🖼️ Imágenes Adjuntas</h5>
+            <p class="text-muted small mb-3">Puedes subir imágenes locales o ingresar URLs de Google Drive</p>
+            
+            {{ imagenes_formset.management_form }}
+            <div class="row g-3">
+            {{ imagenes_formset.management_form }}
+            <div class="row g-3">
+                {% for form_img in imagenes_formset %}
+                <div class="col-12">
+                    <div class="border rounded p-3 bg-light">
+                        {% if form_img.instance.pk %}
+                            <!-- Imagen existente -->
+                            {% if form_img.instance.imagen_local %}
+                                <div class="mb-2 text-center">
+                                    <a href="{{ form_img.instance.imagen_local.url }}" target="_blank">
+                                        <img src="{{ form_img.instance.imagen_local.url }}" 
+                                            class="img-thumbnail" 
+                                            style="max-height: 120px; object-fit: cover;">
+                                    </a>
+                                    <div class="mt-2">
+                                        <small class="text-muted">Imagen local existente</small>
+                                    </div>
+                                </div>
+                            {% elif form_img.instance.imagen_url %}
+                                <div class="mb-2 text-center">
+                                    <a href="{{ form_img.instance.imagen_url }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                        🌐 Ver imagen externa
+                                    </a>
+                                    <div class="mt-2">
+                                        <small class="text-muted">Imagen externa existente</small>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <!-- Campo oculto para mantener la relación -->
+                            {{ form_img.id }}
+                        {% endif %}
+
+                        <!-- Campos para nueva imagen -->
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <label class="form-label">Imagen Local</label>
+                                {{ form_img.imagen_local }}
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex flex-column">
+                                    <label class="form-label">URL de Google Drive</label>
+                                    {{ form_img.imagen_url }}
+                                    <a href="https://drive.google.com/" target="_blank" class="btn btn-outline-primary btn-sm mt-1">
+                                        <i class="bi bi-box-arrow-up-right"></i> Abrir Google Drive
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-2">
+                            {{ form_img.descripcion.label_tag }}
+                            {{ form_img.descripcion }}
+                        </div>
+                        
+                        {% if form_img.DELETE %}
+                            <div class="mt-2">
+                                {{ form_img.DELETE }} <span class="text-danger">Eliminar esta imagen</span>
+                            </div>
+                        {% endif %}
+                        
+                        {% for error in form_img.non_field_errors %}
+                            <div class="text-danger mt-1">{{ error }}</div>
+                        {% endfor %}
+                        {% for error in form_img.imagen_local.errors %}
+                            <div class="text-danger mt-1">{{ error }}</div>
+                        {% endfor %}
+                        {% for error in form_img.imagen_url.errors %}
+                            <div class="text-danger mt-1">{{ error }}</div>
+                        {% endfor %}
+                        {% for error in form_img.descripcion.errors %}
+                            <div class="text-danger mt-1">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+
+            <!-- Botones -->
+            <div class="d-flex justify-content-end mt-4 pt-3 border-top">
+                {% if paciente %}
+                    <a href="{% url 'pacientes:detalle' paciente.pk %}" class="btn btn-secondary me-2">Cancelar</a>
+                {% else %}
+                    <a href="{% url 'notas:detalle' object.pk %}" class="btn btn-secondary me-2">Cancelar</a>
+                {% endif %}
+                <button type="submit" class="btn btn-warning">💾 Actualizar Nota</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

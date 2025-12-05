@@ -1,0 +1,47 @@
+# Python
+*.py[cod]
+*$py.class
+*.so
+__pycache__/
+*.egg
+*.egg-info/
+dist/
+build/
+.Python
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+/media
+/staticfiles
+*.pot
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backups
+*.bak
+backups/
+
+# Environment variables
+.env
+.env.local
+
+# Static files (uncomment if you want to ignore collected static files)
+# /static/

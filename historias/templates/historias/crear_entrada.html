@@ -1,0 +1,98 @@
+<!-- historias/templates/historias/crear_entrada.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nueva Entrada - {{ paciente.nombre_completo }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">📝 Nueva Entrada Clínica</h2>
+    <a href="{% url 'pacientes:detalle' paciente.pk %}" class="btn btn-outline-secondary btn-sm">
+        ← Volver a {{ paciente.nombre_completo }}
+    </a>
+</div>
+
+<div class="alert alert-info mb-4">
+    <strong>Paciente:</strong> {{ paciente.nombre_completo }} (DNI: {{ paciente.dni }})
+</div>
+
+<div class="d-flex justify-content-center">
+    <div class="col-lg-8">
+        <form method="post" enctype="multipart/form-data" class="bg-white p-4 p-md-5 rounded shadow-sm border">
+            {% csrf_token %}
+            
+            <!-- Formulario principal: motivo, diagnóstico, etc. -->
+            <div class="row g-3 mb-4">
+                <div class="col-12">
+                    <label class="form-label">{{ form.motivo.label }}</label>
+                    {{ form.motivo }}
+                    {% for error in form.motivo.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">{{ form.diagnostico.label }}</label>
+                    {{ form.diagnostico }}
+                    {% for error in form.diagnostico.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">{{ form.notas.label }}</label>
+                    {{ form.notas }}
+                    {% for error in form.notas.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">{{ form.evolucion.label }}</label>
+                    {{ form.evolucion }}
+                    {% for error in form.evolucion.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Sección de imágenes -->
+            <h5 class="mb-3 pb-2 border-bottom">📁 Adjuntar Imágenes (opcional)</h5>
+            {{ imagenes_formset.management_form }}
+            <div class="row g-3">
+                {% for form in imagenes_formset %}
+                <div class="col-12">
+                    <div class="border rounded p-3 bg-light">
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <label class="form-label">{{ form.imagen.label }}</label>
+                                {{ form.imagen }}
+                                {% if form.imagen.help_text %}
+                                    <small class="form-text text-muted">{{ form.imagen.help_text }}</small>
+                                {% endif %}
+                                {% for error in form.imagen.errors %}
+                                    <div class="text-danger mt-1">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ form.descripcion.label }}</label>
+                                {{ form.descripcion }}
+                                {% for error in form.descripcion.errors %}
+                                    <div class="text-danger mt-1">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Botones -->
+            <div class="d-flex justify-content-end mt-4 pt-3 border-top">
+                <a href="{% url 'pacientes:detalle' paciente.pk %}" class="btn btn-secondary me-2">Cancelar</a>
+                <button type="submit" class="btn btn-success">✅ Guardar Entrada Clínica</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

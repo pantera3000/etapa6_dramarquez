@@ -1,0 +1,316 @@
+<!-- pacientes/templates/pacientes/detalle_paciente.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ paciente.nombre_completo }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center">
+    <div class="col-lg-10">
+        <!-- Encabezado con acciones -->
+        <!-- Encabezado con acciones -->
+        <div class="d-flex justify-content-between align-items-start mb-4">
+            <div>
+                <h2 class="mb-2">👤 {{ paciente.nombre_completo }}</h2>
+                <p class="mb-0">
+                    DNI: {{ paciente.dni }} • 
+                    {{ paciente.edad }} años • 
+                    {% if paciente.dias_hasta_cumple == 0 %}
+                        <span class="badge bg-success fs-6">🎂 ¡Hoy es su cumpleaños!</span>
+                    {% else %}
+                        🎂 Cumple en {{ paciente.dias_hasta_cumple }} día{{ paciente.dias_hasta_cumple|pluralize }}
+                    {% endif %}
+                </p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{% url 'pacientes:editar' paciente.pk %}" class="btn btn-warning btn-sm">✏️ Editar</a>
+                <a href="{% url 'pacientes:lista' %}" class="btn btn-secondary btn-sm">← Lista</a>
+            </div>
+        </div>
+
+        <!-- Tarjeta principal de datos del paciente -->
+        <div class="bg-white p-4 rounded shadow-sm border mb-4">
+            <div class="row">
+                <div class="col-md-6 mb-4 mb-md-0">
+                    <h5 class="mb-3 pb-2 border-bottom">📊 Datos Personales</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><strong>Fecha Nac.:</strong> {{ paciente.fecha_nacimiento|date:"d/m/Y" }}</li>
+                        <li class="mb-2"><strong>Género:</strong> {{ paciente.get_genero_display }}</li>
+                        <li class="mb-2"><strong>Estado Civil:</strong> {{ paciente.get_estado_civil_display }}</li>
+                        <li class="mb-2"><strong>Teléfono:</strong> {{ paciente.telefono|default:"—" }}</li>
+                        <li class="mb-2"><strong>Distrito:</strong> {{ paciente.distrito|default:"—" }}</li>
+                        <li class="mb-2"><strong>Dirección:</strong> {{ paciente.direccion|default:"—" }}</li>
+                        <li class="mb-2"><strong>Email:</strong> {{ paciente.email|default:"—" }}</li>
+                        <li class="mb-2"><strong>Ocupación:</strong> {{ paciente.ocupacion|default:"—" }}</li>
+                        <li class="mb-2"><strong>Tutor:</strong> {{ paciente.nombre_tutor|default:"—" }}</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h5 class="mb-3 pb-2 border-bottom">🩺 Antecedentes Médicos</h5>
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-2"><strong>Enfermedades previas:</strong> {{ paciente.enfermedades_previas|default:"—" }}</li>
+                        <li class="mb-2"><strong>Alergias:</strong> {{ paciente.alergias|default:"—" }}</li>
+                        <li class="mb-2"><strong>Grupo Sanguíneo:</strong> {{ paciente.get_grupo_sanguineo_display|default:"—" }}</li>
+                    </ul>
+                    <h5 class="mb-3 pb-2 border-bottom">🦷 Historia Dental</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><strong>Tratamientos Previos:</strong> {{ paciente.tratamientos_previos|default:"—" }}</li>
+                        <li class="mb-2"><strong>Experiencias dentales:</strong> {{ paciente.experiencias_dentales|default:"—" }}</li>
+                        <li class="mb-2"><strong>Observaciones:</strong> {{ paciente.observaciones|default:"—" }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pestañas de información relacionada -->
+        <div class="bg-white rounded shadow-sm border">
+            <ul class="nav nav-tabs" id="patientTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="historias-tab" data-bs-toggle="tab" data-bs-target="#historias" type="button">
+                        📚 Historias Clínicas ({{ paciente.entradas_historia.count }})
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tratamientos-tab" data-bs-toggle="tab" data-bs-target="#tratamientos" type="button">
+                        💳 Tratamientos ({{ paciente.tratamientos.count }})
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="notas-tab" data-bs-toggle="tab" data-bs-target="#notas" type="button">
+                        📝 Notas ({{ paciente.notas.count }})
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content p-3" id="patientTabsContent">
+                <!-- Historias Clínicas -->
+                <!-- Historias Clínicas -->
+                <div class="tab-pane fade" id="historias" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0">Historias Clínicas</h6>
+                        <a href="{% url 'historias:crear_entrada' paciente.pk %}" class="btn btn-outline-primary btn-sm">➕ Nueva Consulta</a>
+                    </div>
+                    {% if historias_paginadas %}
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Motivo</th>
+                                        <th>Diagnóstico</th>
+                                        <th class="text-end">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for entrada in historias_paginadas %}
+                                    <tr>
+                                        <td>{{ entrada.fecha|date:"d/m/Y H:i" }}</td>
+                                        <td>
+                                            {{ entrada.motivo }}
+                                            {% if entrada.imagenes.exists %}
+                                                <span class="badge bg-info ms-1" title="Tiene imágenes adjuntas">🖼️</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ entrada.diagnostico|truncatewords:8 }}</td>
+                                        <td class="text-end">
+                                            <a href="{% url 'historias:detalle_entrada' entrada.pk %}" class="btn btn-sm btn-info btn-white-text me-1">👁️ Ver</a>
+                                            <a href="{% url 'historias:eliminar_entrada' entrada.pk %}" 
+                                            class="btn btn-sm btn-danger btn-white-text"
+                                            onclick="return confirm('¿Eliminar la entrada del {{ entrada.fecha|date:'d/m/Y' }}?\n⚠️ Esta acción no se puede deshacer.')">
+                                                🗑️ Eliminar
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Paginación -->
+                        {% if historias_paginadas.has_other_pages %}
+                            <nav aria-label="Paginación de historias" class="mt-3">
+                                <ul class="pagination justify-content-center mb-0">
+                                    {% if historias_paginadas.has_previous %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?historias_page={{ historias_paginadas.previous_page_number }}{% if tratamientos_page %}&tratamientos_page={{ tratamientos_page }}{% endif %}{% if notas_page %}&notas_page={{ notas_page }}{% endif %}">‹</a>
+                                        </li>
+                                    {% endif %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ historias_paginadas.number }}</span>
+                                    </li>
+                                    {% if historias_paginadas.has_next %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?historias_page={{ historias_paginadas.next_page_number }}{% if tratamientos_page %}&tratamientos_page={{ tratamientos_page }}{% endif %}{% if notas_page %}&notas_page={{ notas_page }}{% endif %}">›</a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                        {% endif %}
+                    {% else %}
+                        <p class="text-muted">No hay historias clínicas registradas.</p>
+                    {% endif %}
+                </div>
+
+                <!-- Tratamientos -->
+                <div class="tab-pane fade" id="tratamientos" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0">Tratamientos</h6>
+                        <a href="{% url 'tratamientos:crear_tratamiento' paciente.pk %}" class="btn btn-outline-success btn-sm">➕ Nuevo Tratamiento</a>
+                    </div>
+                    {% if tratamientos_paginados %}
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Tratamiento</th>
+                                        <th>Costo</th>
+                                        <th>Pagado</th>
+                                        <th>Deuda</th>
+                                        <th>Estado</th>
+                                        <th class="text-end">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for t in tratamientos_paginados %}
+                                    <tr>
+                                        <td>{{ t.nombre }}</td>
+                                        <td><strong>S/ {{ t.costo_total }}</strong></td>
+                                        <td>S/ {{ t.total_pagado }}</td>
+                                        <td class="{% if t.deuda > 0 %}text-danger{% endif %}">S/ {{ t.deuda }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ t.clase_estado_pago }} mb-1">
+                                                {% if t.estado_pago == 'completado' %}Pagado
+                                                {% elif t.estado_pago == 'parcial' %}Parcial
+                                                {% else %}Sin pago{% endif %}
+                                            </span>
+                                            <br><small>{{ t.get_estado_display }}</small>
+                                        </td>
+                                        <td class="text-end">
+                                            <a href="{% url 'tratamientos:detalle' t.pk %}" class="btn btn-sm btn-info btn-white-text me-1"">👁️ Ver</a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Paginación para tratamientos -->
+                        {% if tratamientos_paginados.has_other_pages %}
+                            <nav aria-label="Paginación de tratamientos" class="mt-3">
+                                <ul class="pagination justify-content-center mb-0">
+                                    {% if tratamientos_paginados.has_previous %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?tratamientos_page={{ tratamientos_paginados.previous_page_number }}{% if historias_page %}&historias_page={{ historias_page }}{% endif %}{% if notas_page %}&notas_page={{ notas_page }}{% endif %}">‹</a>
+                                        </li>
+                                    {% endif %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ tratamientos_paginados.number }}</span>
+                                    </li>
+                                    {% if tratamientos_paginados.has_next %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?tratamientos_page={{ tratamientos_paginados.next_page_number }}{% if historias_page %}&historias_page={{ historias_page }}{% endif %}{% if notas_page %}&notas_page={{ notas_page }}{% endif %}">›</a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                        {% endif %}
+                    {% else %}
+                        <p class="text-muted">No hay tratamientos registrados.</p>
+                    {% endif %}
+                </div>
+
+                <!-- Notas -->
+                <!-- Notas -->
+                <div class="tab-pane fade" id="notas" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0">Notas</h6>
+                        <a href="{% url 'notas:crear_para_paciente' paciente.pk %}" class="btn btn-outline-secondary btn-sm">➕ Nueva Nota</a>
+                        <!-- <a href="{% url 'notas:subir_imagen_drive' paciente.pk %}" class="btn btn-outline-primary btn-sm">🖼️ Subir Imagen a Drive</a> -->
+                    </div>
+                    {% if notas_paginadas %}
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Título</th>
+                                        <th>Contenido</th>
+                                        <th>Fecha</th>
+                                        <th class="text-end">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for nota in notas_paginadas %}
+                                    <tr>
+                                        <td>
+                                            {{ nota.titulo }}
+                                            {% if nota.imagenes.exists %}
+                                                <span class="badge bg-info ms-1" title="Tiene imágenes adjuntas">🖼️</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ nota.contenido|truncatewords:10 }}</td>
+                                        <td>{{ nota.creado_en|date:"d/m/Y H:i" }}</td>
+                                        <td class="text-end">
+                                            <a href="{% url 'notas:detalle' nota.pk %}" class="btn btn-sm btn-info btn-white-text me-1">👁️ Ver</a>
+                                            <a href="{% url 'notas:eliminar' nota.pk %}" 
+                                            class="btn btn-sm btn-danger btn-white-text"
+                                            onclick="return confirm('¿Eliminar la nota \"{{ nota.titulo }}\"?\n⚠️ Esta acción no se puede deshacer.')">
+                                                🗑️ Eliminar
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Paginación -->
+                        {% if notas_paginadas.has_other_pages %}
+                            <nav aria-label="Paginación de notas" class="mt-3">
+                                <ul class="pagination justify-content-center mb-0">
+                                    {% if notas_paginadas.has_previous %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?notas_page={{ notas_paginadas.previous_page_number }}{% if historias_page %}&historias_page={{ historias_page }}{% endif %}{% if tratamientos_page %}&tratamientos_page={{ tratamientos_page }}{% endif %}">‹</a>
+                                        </li>
+                                    {% endif %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ notas_paginadas.number }}</span>
+                                    </li>
+                                    {% if notas_paginadas.has_next %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?notas_page={{ notas_paginadas.next_page_number }}{% if historias_page %}&historias_page={{ historias_page }}{% endif %}{% if tratamientos_page %}&tratamientos_page={{ tratamientos_page }}{% endif %}">›</a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                        {% endif %}
+                    {% else %}
+                        <p class="text-muted">No hay notas registradas.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script para mantener la pestaña activa -->
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    let activeTab = 'historias-tab'; // Por defecto
+
+    if (urlParams.has('tratamientos_page')) {
+        activeTab = 'tratamientos-tab';
+    } else if (urlParams.has('notas_page')) {
+        activeTab = 'notas-tab';
+    } else if (urlParams.has('historias_page')) {
+        activeTab = 'historias-tab';
+    }
+
+    const tabButton = document.querySelector('#' + activeTab);
+    if (tabButton) {
+        const tab = new bootstrap.Tab(tabButton);
+        tab.show();
+    }
+});
+</script>
+{% endblock %}
+{% endblock %}

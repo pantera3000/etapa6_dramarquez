@@ -1,0 +1,73 @@
+<!-- tratamientos/templates/tratamientos/crear_pago.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Registrar Pago - {{ tratamiento.nombre }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">➕ Registrar Pago</h2>
+    <a href="{% url 'tratamientos:detalle' tratamiento.pk %}" class="btn btn-outline-secondary btn-sm">
+        ← Volver al tratamiento
+    </a>
+</div>
+
+<div class="alert alert-info mb-4">
+    <strong>Tratamiento:</strong> {{ tratamiento.nombre }}<br>
+    <strong>Paciente:</strong> {{ tratamiento.paciente.nombre_completo }}<br>
+    <strong>Deuda actual:</strong> <span class="text-danger fw-bold">S/ {{ tratamiento.deuda }}</span>
+</div>
+
+<div class="d-flex justify-content-center">
+    <div class="col-lg-6"> <!-- Más estrecho, ya que son pocos campos -->
+        <form method="post" class="bg-white p-4 p-md-5 rounded shadow-sm border">
+            {% csrf_token %}
+            
+            <div class="row g-3">
+                <!-- Fecha de pago -->
+                <div class="col-12">
+                    <label class="form-label">{{ form.fecha_pago.label }}</label>
+                    {{ form.fecha_pago }}
+                    {% for error in form.fecha_pago.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Monto -->
+                <div class="col-12">
+                    <label class="form-label">{{ form.monto.label }}</label>
+                    {{ form.monto }}
+                    {% for error in form.monto.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Método de pago -->
+                <div class="col-12">
+                    <label class="form-label">{{ form.metodo_pago.label }}</label>
+                    {{ form.metodo_pago }}
+                    {% for error in form.metodo_pago.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Nota -->
+                <div class="col-12">
+                    <label class="form-label">{{ form.nota.label }}</label>
+                    {{ form.nota }}
+                    <small class="form-text text-muted">Opcional. Ej: Referencia de Yape, número de operación, etc.</small>
+                    {% for error in form.nota.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Botones -->
+            <div class="d-flex justify-content-end mt-4 pt-3 border-top">
+                <a href="{% url 'tratamientos:detalle' tratamiento.pk %}" class="btn btn-secondary me-2">Cancelar</a>
+                <button type="submit" class="btn btn-success">✅ Registrar Pago</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

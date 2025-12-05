@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}🧾 Lista de Pagos{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center">
+    <div class="col-lg-10">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">🧾 Lista de Pagos</h2>
+            <!-- Opcional: botón para crear pago (aunque normalmente se crea desde tratamiento) -->
+        </div>
+
+        <!-- Filtros -->
+        <div class="bg-white p-3 rounded shadow-sm border mb-4">
+            <form method="get" class="row g-2">
+                <div class="col-md-3">
+                    <input type="text" name="q" class="form-control form-control-sm" 
+                           placeholder="Buscar por paciente, tratamiento o nota..." 
+                           value="{{ request.GET.q }}">
+                </div>
+                <div class="col-md-2">
+                    <select name="metodo" class="form-select form-select-sm">
+                        <option value="">Todos los métodos</option>
+                        <option value="efectivo" {% if request.GET.metodo == 'efectivo' %}selected{% endif %}>Efectivo</option>
+                        <option value="yape" {% if request.GET.metodo == 'yape' %}selected{% endif %}>Yape</option>
+                        <option value="plin" {% if request.GET.metodo == 'plin' %}selected{% endif %}>Plin</option>
+                        <option value="transferencia" {% if request.GET.metodo == 'transferencia' %}selected{% endif %}>Transferencia</option>
+                        <option value="tarjeta" {% if request.GET.metodo == 'tarjeta' %}selected{% endif %}>Tarjeta</option>
+                        <option value="otro" {% if request.GET.metodo == 'otro' %}selected{% endif %}>Otro</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <input type="date" name="fecha_inicio" class="form-control form-control-sm" 
+                           value="{{ request.GET.fecha_inicio }}">
+                </div>
+                <div class="col-md-2">
+                    <input type="date" name="fecha_fin" class="form-control form-control-sm" 
+                           value="{{ request.GET.fecha_fin }}">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary btn-sm w-100">🔍 Filtrar</button>
+                </div>
+                {% if request.GET.q or request.GET.metodo or request.GET.fecha_inicio or request.GET.fecha_fin %}
+                <div class="col-12 mt-2">
+                    <a href="{% url 'tratamientos:lista_pagos' %}" class="btn btn-outline-secondary btn-sm">🗑️ Limpiar filtros</a>
+                </div>
+                {% endif %}
+            </form>
+        </div>
+
+        <!-- Tabla de pagos -->
+        <div class="bg-white p-4 rounded shadow-sm border">
+            {% if pagos %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Fecha del pago</th>
+                                <th>Registrado en</th>
+                                <th>Monto</th>
+                                <th>Método</th>
+                                <th>Paciente</th>
+                                <th>Tratamiento</th>
+                                <th>Nota</th>
+                                <th class="text-end">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pago in pagos %}
+                            <tr>
+                                <td>{{ pago.fecha_pago|date:"d/m/Y H:i" }}</td>
+                                <td><small class="text-muted">{{ pago.registrado_en|date:"d/m/Y H:i" }}</small></td>
+                                <td><strong>S/ {{ pago.monto }}</strong></td>
+                                <td>{{ pago.get_metodo_pago_display }}</td>
+                                <td>
+                                    <a href="{% url 'pacientes:detalle' pago.tratamiento.paciente.pk %}" class="text-decoration-none">
+                                        <span class="badge bg-primary">{{ pago.tratamiento.paciente.nombre_completo }}</span>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{% url 'tratamientos:detalle' pago.tratamiento.pk %}" class="text-decoration-none">
+                                        {{ pago.tratamiento.nombre }}
+                                    </a>
+                                </td>
+                                <td>{{ pago.nota|default:"—" }}</td>
+                                <td class="text-end">
+                                    <a href="{% url 'tratamientos:eliminar_pago' pago.pk %}" 
+                                       class="btn btn-sm btn-danger"
+                                       onclick="return confirm('¿Eliminar este pago?')">
+                                        🗑️ Eliminar
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Paginación -->
+                {% if is_paginated %}
+                <div class="mt-4 pt-3 border-top">
+                    <nav aria-label="Paginación">
+                        <ul class="pagination justify-content-center mb-0">
+                            <!-- (lógica de paginación con filtros, similar a tratamientos) -->
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.metodo %}&metodo={{ request.GET.metodo }}{% endif %}{% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}{% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}">« Primero</a>
+                                </li>
+                            {% endif %}
+                            <li class="page-item active">
+                                <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                            </li>
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.metodo %}&metodo={{ request.GET.metodo }}{% endif %}{% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}{% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}">Siguiente ›</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
+
+            {% else %}
+                <div class="text-center py-5">
+                    <p class="text-muted">No hay pagos registrados.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

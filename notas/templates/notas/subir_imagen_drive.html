@@ -1,0 +1,83 @@
+<!-- notas/templates/notas/subir_imagen_drive.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Subir Imagen a Google Drive - {{ nota.titulo }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">🖼️ Subir Imagen a Google Drive</h2>
+            {% if nota.paciente %}
+                <a href="{% url 'pacientes:detalle' nota.paciente.pk %}?notas_page=1" class="btn btn-outline-secondary btn-sm">
+                    ← Volver al paciente
+                </a>
+            {% else %}
+                <a href="{% url 'notas:detalle' nota.pk %}" class="btn btn-outline-secondary btn-sm">
+                    ← Volver a nota
+                </a>
+            {% endif %}
+        </div>
+
+        <div class="bg-white p-4 rounded shadow-sm border mb-4">
+            <div class="alert alert-info">
+                <h5 class="mb-3"><i class="bi bi-info-circle"></i> Instrucciones para subir imagen:</h5>
+                <ol>
+                    <li>Abre <a href="https://drive.google.com/" target="_blank" class="text-primary">Google Drive</a> en una nueva pestaña</li>
+                    <li>Sube tu imagen (jpg, png, pdf, etc.)</li>
+                    <li>Haz clic derecho en el archivo → <strong>Obtener enlace</strong></li>
+                    <li>Cambia los permisos a: <strong>"Cualquier persona con el enlace puede ver"</strong></li>
+                    <li>Copia el enlace y pégalo en el formulario de abajo</li>
+                </ol>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="nota_id" value="{{ nota.pk }}">
+                
+                <div class="mb-3">
+                    <label class="form-label">🔗 URL de la imagen en Google Drive</label>
+                    <input type="url" 
+                           name="imagen_url" 
+                           class="form-control form-control-lg" 
+                           placeholder="https://drive.google.com/file/d/.../view?usp=sharing"
+                           required>
+                    <div class="form-text">
+                        Ejemplo: https://drive.google.com/file/d/1AbCdEfGhIjKlmnop/view?usp=sharing
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="form-label">📝 Descripción (opcional)</label>
+                    <input type="text" 
+                           name="descripcion" 
+                           class="form-control" 
+                           placeholder="Ej: Radiografía muela 36, foto clínica, etc.">
+                </div>
+                
+                <div class="d-flex justify-content-end gap-2">
+                    {% if nota.paciente %}
+                        <a href="{% url 'pacientes:detalle' nota.paciente.pk %}?notas_page=1" class="btn btn-secondary">Cancelar</a>
+                    {% else %}
+                        <a href="{% url 'notas:detalle' nota.pk %}" class="btn btn-secondary">Cancelar</a>
+                    {% endif %}
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="bi bi-cloud-arrow-up"></i> Guardar Imagen
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Acceso rápido a Google Drive -->
+        <div class="bg-light p-3 rounded border">
+            <div class="d-flex justify-content-between align-items-center">
+                <h6 class="mb-0"><i class="bi bi-box-arrow-up-right"></i> Acceso directo</h6>
+                <a href="https://drive.google.com/" target="_blank" class="btn btn-primary btn-sm">
+                    Abrir Google Drive
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

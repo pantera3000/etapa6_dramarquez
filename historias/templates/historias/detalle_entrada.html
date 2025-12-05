@@ -1,0 +1,99 @@
+<!-- historias/templates/historias/detalle_entrada.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Historia - {{ entrada.paciente.nombre_completo }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center">
+    <div class="col-lg-9">
+        <!-- Encabezado -->
+        <!-- Encabezado -->
+        <div class="d-flex justify-content-between align-items-start mb-4">
+            <div>
+                <h2 class="mb-2">🩺 Entrada Clínica</h2>
+                <p class="text-muted mb-0">
+                    {{ entrada.fecha|date:"d \d\e F \d\e Y \a \l\a\s H:i" }}
+                </p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{% url 'historias:editar_entrada' entrada.pk %}" class="btn btn-warning btn-sm">✏️ Editar</a>
+                
+                <!-- Botón contextual de regreso -->
+                {% if request.META.HTTP_REFERER and 'historias' in request.META.HTTP_REFERER and 'pacientes' not in request.META.HTTP_REFERER %}
+                    <a href="{% url 'historias:lista' %}" class="btn btn-secondary btn-sm">← Lista de Historias</a>
+                {% else %}
+                    <a href="{% url 'pacientes:detalle' entrada.paciente.pk %}?historias_page=1" class="btn btn-secondary btn-sm">← Paciente</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Información del paciente -->
+        <div class="alert alert-info mb-4">
+            <strong>Paciente:</strong> 
+            <a href="{% url 'pacientes:detalle' entrada.paciente.pk %}" 
+            class="text-decoration-none">
+                <span class="badge bg-primary fs-6 px-3 py-2">
+                    {{ entrada.paciente.nombre_completo }} 
+                    <small class="text-light"> (DNI: {{ entrada.paciente.dni }})</small>
+                </span>
+            </a>
+        </div>
+
+        <!-- Contenido clínico -->
+        <div class="bg-white p-4 rounded shadow-sm border mb-4">
+            <div class="row">
+                <div class="col-md-6 mb-4 mb-md-0">
+                    <h5 class="mb-3 pb-2 border-bottom">📋 Motivo y Diagnóstico</h5>
+                    <p><strong>Motivo:</strong></p>
+                    <p class="text-muted mb-3">{{ entrada.motivo }}</p>
+                    
+                    <p><strong>Diagnóstico:</strong></p>
+                    <p class="text-muted">{{ entrada.diagnostico }}</p>
+                </div>
+                <div class="col-md-6">
+                    <h5 class="mb-3 pb-2 border-bottom">📝 Notas y Evolución</h5>
+                    {% if entrada.notas %}
+                        <p><strong>Notas:</strong></p>
+                        <p class="text-muted mb-3">{{ entrada.notas }}</p>
+                    {% endif %}
+                    
+                    {% if entrada.evolucion %}
+                        <p><strong>Evolución / Plan:</strong></p>
+                        <p class="text-muted">{{ entrada.evolucion }}</p>
+                    {% endif %}
+                    
+                    {% if not entrada.notas and not entrada.evolucion %}
+                        <p class="text-muted">No hay notas ni evolución registradas.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Imágenes adjuntas -->
+        {% if entrada.imagenes.exists %}
+        <h5 class="mb-3">🖼️ Imágenes Adjuntas</h5>
+        <div class="bg-white p-3 rounded shadow-sm border">
+            <div class="row g-3">
+                {% for img in entrada.imagenes.all %}
+                <div class="col-md-4 col-sm-6">
+                    <div class="card h-100 border">
+                        <a href="{{ img.imagen.url }}" target="_blank" class="d-block" style="height: 180px;">
+                            <img src="{{ img.imagen.url }}" 
+                                 class="card-img-top object-fit-cover w-100 h-100" 
+                                 alt="Imagen clínica">
+                        </a>
+                        <div class="card-body p-2">
+                            <p class="card-text small mb-0 text-center">
+                                {{ img.descripcion|default:"Sin descripción" }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

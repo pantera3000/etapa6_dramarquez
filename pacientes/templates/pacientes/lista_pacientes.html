@@ -1,0 +1,123 @@
+<!-- pacientes/templates/pacientes/lista_pacientes.html -->
+{% extends 'base.html' %}
+
+{% block title %}Lista de Pacientes{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center">
+    <div class="col-lg-9">
+        <!-- Encabezado -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">📋 Lista de Pacientes</h2>
+            <a href="{% url 'pacientes:crear' %}" class="btn btn-success btn-sm">➕ Nuevo Paciente</a>
+        </div>
+
+        <!-- Tarjeta principal -->
+        <div class="bg-white p-4 rounded shadow-sm border">
+            <!-- Barra de búsqueda -->
+            <form method="get" class="mb-4">
+                <div class="input-group">
+                    <input type="text" name="q" class="form-control" 
+                           placeholder="Buscar por nombre o DNI..." 
+                           value="{{ request.GET.q }}">
+                    <button class="btn btn-primary" type="submit">🔍 Buscar</button>
+                </div>
+            </form>
+
+            <!-- Tabla de pacientes -->
+            {% if pacientes %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nombre</th>
+                                <th>DNI</th>
+                                <th>Edad</th>
+                                <th>Cumpleaños</th>
+                                <th>Teléfono</th>
+                                <th class="text-end">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for paciente in pacientes %}
+                            <tr>
+                                <td>{{ paciente.nombre_completo }}</td>
+                                <td><code>{{ paciente.dni }}</code></td>
+                                <td>
+                                    {{ paciente.edad }} años
+                                    {% if paciente.dias_hasta_cumple == 0 %}
+                                        <br><span class="badge bg-success">🎂 ¡Hoy!</span>
+                                    {% elif paciente.dias_hasta_cumple <= 30 %}
+                                        <br><span class="badge bg-warning text-dark">🎂 en {{ paciente.dias_hasta_cumple }} días</span>
+                                    {% endif %}
+                                </td>
+                                
+                                <td>
+                                    {% if paciente.dias_hasta_cumple == 0 %}
+                                        <span class="badge bg-success">¡Hoy!</span>
+                                    {% else %}
+                                        {{ paciente.dias_hasta_cumple }} día{{ paciente.dias_hasta_cumple|pluralize }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ paciente.telefono|default:"—" }}</td>
+                                <td class="text-end">
+                                    <a href="{% url 'pacientes:detalle' paciente.pk %}" 
+                                    class="btn btn-sm btn-info btn-white-text me-1">
+                                        👁️ Ver
+                                    </a>
+                                    <a href="{% url 'pacientes:editar' paciente.pk %}" class="btn btn-sm btn-warning me-1">✏️ Editar</a>
+                                    <a href="{% url 'pacientes:eliminar' paciente.pk %}" 
+                                       class="btn btn-sm btn-danger"
+                                       onclick="return confirm('¿Eliminar al paciente {{ paciente.nombre_completo }}?\n⚠️ Esta acción eliminará también sus historias, tratamientos y pagos asociados.')">
+                                        🗑️ Eliminar
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Paginación -->
+                {% if is_paginated %}
+                    <div class="mt-4 pt-3 border-top">
+                        <nav aria-label="Paginación">
+                            <ul class="pagination justify-content-center mb-0">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">« Primero</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">‹ Anterior</a>
+                                    </li>
+                                {% endif %}
+
+                                <li class="page-item active">
+                                    <span class="page-link">
+                                        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                                    </span>
+                                </li>
+
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Siguiente ›</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Último »</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                {% endif %}
+
+            {% else %}
+                <div class="text-center py-5">
+                    <p class="text-muted mb-3">No hay pacientes registrados.</p>
+                    <a href="{% url 'pacientes:crear' %}" class="btn btn-success">➕ Registrar Primer Paciente</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,243 @@
+<!-- tratamientos/templates/tratamientos/lista_tratamientos.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Tratamientos{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center">
+    <div class="col-lg-9">
+        <!-- Encabezado -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">🦷 Lista de Tratamientos</h2>
+            {% if paciente %}
+                <a href="{% url 'tratamientos:crear_tratamiento' paciente.pk %}" class="btn btn-success btn-sm">
+                    ➕ Nuevo Tratamiento
+                </a>
+            {% endif %}
+        </div>
+
+        <!-- Información del paciente (si aplica) -->
+        {% if paciente %}
+        <div class="alert alert-info mb-4">
+            <strong>Paciente:</strong> {{ paciente.nombre_completo }} (DNI: {{ paciente.dni }})
+        </div>
+        {% endif %}
+
+        <!-- Filtros y búsqueda -->
+        <div class="bg-white p-3 rounded shadow-sm border mb-4">
+            <form method="get" class="row g-2">
+                <!-- Búsqueda -->
+                <div class="col-md-4">
+                    <input type="text" name="q" class="form-control form-control-sm" 
+                           placeholder="Buscar tratamiento o paciente..." 
+                           value="{{ request.GET.q }}">
+                </div>
+
+                <!-- Filtro por estado -->
+                <div class="col-md-3">
+                    <select name="estado" class="form-select form-select-sm">
+                        <option value="">Todos los estados</option>
+                        <option value="pendiente" {% if request.GET.estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+                        <option value="en_progreso" {% if request.GET.estado == 'en_progreso' %}selected{% endif %}>En progreso</option>
+                        <option value="completado" {% if request.GET.estado == 'completado' %}selected{% endif %}>Completado</option>
+                    </select>
+                </div>
+
+                <!-- Filtro por rango de fechas -->
+                <div class="col-md-2">
+                    <input type="date" name="fecha_inicio" class="form-control form-control-sm" 
+                           value="{{ request.GET.fecha_inicio }}">
+                </div>
+                <div class="col-md-2">
+                    <input type="date" name="fecha_fin" class="form-control form-control-sm" 
+                           value="{{ request.GET.fecha_fin }}">
+                </div>
+
+                <!-- Botones -->
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary btn-sm w-100">🔍 Filtrar</button>
+                </div>
+            </form>
+
+
+            <!-- Filtros rápidos -->
+            <!-- Filtros rápidos -->
+            <div class="col-12 mt-2">
+                <div class="btn-group btn-group-sm" role="group">
+                    <a href="?fecha_inicio={{ this_month_start }}&fecha_fin={{ this_month_end }}" 
+                    class="btn btn-outline-primary {% if request.GET.fecha_inicio == this_month_start and request.GET.fecha_fin == this_month_end %}active{% endif %}">
+                        Este mes
+                    </a>
+                    <a href="?fecha_inicio={{ last_month_start }}&fecha_fin={{ last_month_end }}" 
+                    class="btn btn-outline-primary {% if request.GET.fecha_inicio == last_month_start and request.GET.fecha_fin == last_month_end %}active{% endif %}">
+                        Mes pasado
+                    </a>
+                    <a href="?fecha_inicio={{ this_year_start }}&fecha_fin=" 
+                    class="btn btn-outline-primary {% if request.GET.fecha_inicio == this_year_start and not request.GET.fecha_fin %}active{% endif %}">
+                        Este año
+                    </a>
+                    <a href="?fecha_inicio={{ last_year_start }}&fecha_fin={{ last_year_end }}" 
+                    class="btn btn-outline-primary {% if request.GET.fecha_inicio == last_year_start and request.GET.fecha_fin == last_year_end %}active{% endif %}">
+                        Año pasado
+                    </a>
+                </div>
+            </div>
+
+
+
+
+            <!-- Botón limpiar (solo si hay filtros activos) -->
+            {% if request.GET.q or request.GET.estado or request.GET.fecha_inicio or request.GET.fecha_fin %}
+            <div class="mt-2">
+                <a href="{% if paciente %}{% url 'tratamientos:lista_por_paciente' paciente.pk %}{% else %}{% url 'tratamientos:lista' %}{% endif %}" 
+                   class="btn btn-outline-secondary btn-sm">🗑️ Limpiar filtros</a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Tarjeta de tabla -->
+        <div class="bg-white p-4 rounded shadow-sm border">
+            {% if tratamientos %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Tratamiento</th>
+                                {% if not paciente %}<th>Paciente</th>{% endif %}
+                                <th>Costo</th>
+                                <th>Pagado</th>
+                                <th>Deuda</th>
+                                <th>Estado</th>
+                                <th class="text-end">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for t in tratamientos %}
+                            <tr>
+                                <td>
+                                    <strong>{{ t.nombre }}</strong>
+                                    <br>
+                                    <small class="text-muted">
+                                        Inicio: {{ t.fecha_inicio|date:"d/m/Y" }}
+                                        {% if t.fecha_fin %} • Fin: {{ t.fecha_fin|date:"d/m/Y" }}{% endif %}
+                                    </small>
+                                </td>
+                                {% if not paciente %}
+                                <td>
+                                    <a href="{% url 'pacientes:detalle' t.paciente.pk %}" class="text-decoration-none text-primary">
+                                        {{ t.paciente.nombre_completo }}
+                                    </a>
+                                </td>
+                                {% endif %}
+                                <td><strong>S/ {{ t.costo_total }}</strong></td>
+                                <td>S/ {{ t.total_pagado }}</td>
+                                <td class="{% if t.deuda > 0 %}text-danger fw-bold{% endif %}">S/ {{ t.deuda }}</td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <span class="badge bg-{{ t.clase_estado_pago }} mb-1">
+                                            {% if t.estado_pago == 'completado' %}Pagado
+                                            {% elif t.estado_pago == 'parcial' %}Parcial
+                                            {% else %}Sin pago{% endif %}
+                                        </span>
+                                        <small class="text-muted">{{ t.get_estado_display }}</small>
+                                    </div>
+                                </td>
+                                <td class="text-end">
+                                    <a href="{% url 'tratamientos:detalle' t.pk %}" class="btn btn-sm btn-info me-1">👁️ Ver</a>
+                                    <a href="{% url 'tratamientos:editar' t.pk %}" class="btn btn-sm btn-warning me-1">✏️ Editar</a>
+                                    {% if t.pagos.count == 0 %}
+                                        <a href="{% url 'tratamientos:eliminar_tratamiento' t.pk %}" 
+                                        class="btn btn-sm btn-danger"
+                                        onclick="return confirm('¿Eliminar el tratamiento \"{{ t.nombre }}\"?')">
+                                            🗑️ Eliminar
+                                        </a>
+                                    {% else %}
+                                        <button class="btn btn-sm btn-outline-secondary" disabled>⏹️ Con pagos</button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Paginación -->
+                {% if is_paginated %}
+                <div class="mt-4 pt-3 border-top">
+                    <nav aria-label="Paginación">
+                        <ul class="pagination justify-content-center mb-0">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" 
+                                       href="?page=1
+                                           {% if request.GET.q %}&q={{ request.GET.q }}{% endif %}
+                                           {% if request.GET.estado %}&estado={{ request.GET.estado }}{% endif %}
+                                           {% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}
+                                           {% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}">
+                                        « Primero
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" 
+                                       href="?page={{ page_obj.previous_page_number }}
+                                           {% if request.GET.q %}&q={{ request.GET.q }}{% endif %}
+                                           {% if request.GET.estado %}&estado={{ request.GET.estado }}{% endif %}
+                                           {% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}
+                                           {% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}">
+                                        ‹ Anterior
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            <li class="page-item active">
+                                <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                            </li>
+
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" 
+                                       href="?page={{ page_obj.next_page_number }}
+                                           {% if request.GET.q %}&q={{ request.GET.q }}{% endif %}
+                                           {% if request.GET.estado %}&estado={{ request.GET.estado }}{% endif %}
+                                           {% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}
+                                           {% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}">
+                                        Siguiente ›
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" 
+                                       href="?page={{ page_obj.paginator.num_pages }}
+                                           {% if request.GET.q %}&q={{ request.GET.q }}{% endif %}
+                                           {% if request.GET.estado %}&estado={{ request.GET.estado }}{% endif %}
+                                           {% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}
+                                           {% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}">
+                                        Último »
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
+
+            {% else %}
+                <div class="text-center py-5">
+                    <p class="text-muted mb-3">
+                        {% if paciente %}
+                            No hay tratamientos registrados para <strong>{{ paciente.nombre_completo }}</strong>.
+                        {% else %}
+                            No hay tratamientos registrados en el sistema.
+                        {% endif %}
+                    </p>
+                    {% if paciente %}
+                        <a href="{% url 'tratamientos:crear_tratamiento' paciente.pk %}" class="btn btn-success">
+                            ➕ Crear Primer Tratamiento
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,107 @@
+<!-- historias/templates/historias/editar_entrada.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Editar Entrada - {{ object.paciente.nombre_completo }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">✏️ Editar Entrada Clínica</h2>
+    <a href="{% url 'historias:detalle_entrada' object.pk %}" class="btn btn-outline-secondary btn-sm">
+        ← Volver
+    </a>
+</div>
+
+<div class="alert alert-info mb-4">
+    <strong>Paciente:</strong> {{ object.paciente.nombre_completo }} (DNI: {{ object.paciente.dni }})
+</div>
+
+<div class="d-flex justify-content-center">
+    <div class="col-lg-8">
+        <form method="post" enctype="multipart/form-data" class="bg-white p-4 p-md-5 rounded shadow-sm border">
+            {% csrf_token %}
+            
+            <!-- Formulario principal -->
+            <div class="row g-3 mb-4">
+                <div class="col-12">
+                    <label class="form-label">{{ form.motivo.label }}</label>
+                    {{ form.motivo }}
+                    {% for error in form.motivo.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">{{ form.diagnostico.label }}</label>
+                    {{ form.diagnostico }}
+                    {% for error in form.diagnostico.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">{{ form.notas.label }}</label>
+                    {{ form.notas }}
+                    {% for error in form.notas.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">{{ form.evolucion.label }}</label>
+                    {{ form.evolucion }}
+                    {% for error in form.evolucion.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Sección de imágenes -->
+            <!-- Imágenes existentes (solo lectura + eliminar) -->
+            <h5 class="mb-3 pb-2 border-bottom">📁 Imágenes Adjuntas</h5>
+            {{ imagenes_formset.management_form }}
+            <div class="row g-3">
+                {% for form in imagenes_formset %}
+                <div class="col-12">
+                    <div class="border rounded p-3 bg-light">
+                        {% if form.instance.pk %}
+                            <!-- Imagen existente: no mostrar input de archivo -->
+                            <div class="mb-2 text-center">
+                                <a href="{{ form.instance.imagen.url }}" target="_blank" class="d-inline-block">
+                                    <img src="{{ form.instance.imagen.url }}" 
+                                        class="img-thumbnail" 
+                                        style="max-height: 120px; object-fit: cover;">
+                                </a>
+                                <div class="mt-2">
+                                    <strong>Descripción:</strong> {{ form.instance.descripcion|default:"—" }}
+                                </div>
+                                <!-- Checkbox para eliminar -->
+                                <div class="form-check mt-2">
+                                    {{ form.DELETE }}
+                                    <label class="form-check-label text-danger">Eliminar esta imagen</label>
+                                </div>
+                            </div>
+                            <!-- Campo oculto para mantener la relación -->
+                            {{ form.id }}
+                        {% else %}
+                            <!-- Formulario para NUEVA imagen -->
+                            <div class="mb-2">
+                                <strong>Agregar nueva imagen:</strong>
+                                {{ form.imagen.label_tag }} {{ form.imagen }}
+                                {{ form.descripcion.label_tag }} {{ form.descripcion }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Botones -->
+            <div class="d-flex justify-content-end mt-4 pt-3 border-top">
+                <a href="{% url 'historias:detalle_entrada' object.pk %}" class="btn btn-secondary me-2">Cancelar</a>
+                <button type="submit" class="btn btn-warning">💾 Actualizar Entrada Clínica</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

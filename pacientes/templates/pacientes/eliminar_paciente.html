@@ -1,0 +1,21 @@
+<!-- pacientes/templates/pacientes/eliminar_paciente.html -->
+{% extends 'base.html' %}
+
+{% block title %}Eliminar Paciente{% endblock %}
+
+{% block content %}
+<div class="card text-center" style="max-width: 600px; margin: 0 auto;">
+    <div class="card-header bg-danger text-white">
+        <h4>⚠️ Confirmar Eliminación</h4>
+    </div>
+    <div class="card-body">
+        <p>¿Estás seguro de que deseas eliminar al paciente <strong>{{ object.nombre_completo }}</strong>?</p>
+        <p class="text-danger">Esta acción no se puede deshacer.</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">🗑️ Sí, eliminar</button>
+            <a href="{% url 'pacientes:detalle' object.pk %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

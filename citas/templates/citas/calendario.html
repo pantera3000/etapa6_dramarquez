@@ -1,0 +1,63 @@
+<!-- citas/templates/citas/calendario.html -->
+{% extends 'base.html' %}
+
+{% block title %}📅 Citas{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center">
+    <div class="col-lg-10">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">📅 Calendario de Citas</h2>
+            <!-- Botón para crear cita (opcional, enlace a Google Calendar) -->
+            <a href="https://calendar.google.com/calendar/u/0/r/eventedit" 
+               target="_blank" 
+               class="btn btn-success btn-sm">
+                ➕ Nueva Cita
+            </a>
+        </div>
+
+        <div class="bg-white p-3 rounded shadow-sm border">
+            <!-- PEGA AQUÍ EL IFRAME DE GOOGLE CALENDAR -->
+             <!-- <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FLima&showPrint=0&mode=WEEK&src=anVhbmNhcmxvc2NuQGdtYWlsLmNvbQ&color=%23d50000" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no"></iframe> -->
+            <iframe 
+                src="https://calendar.google.com/calendar/embed?src=juancarloscn%40gmail.com&ctz=America%2FLima"
+                style="border: 0; width: 100%; height: 1200px;"
+                frameborder="0"
+                scrolling="no">
+            </iframe>
+
+            <iframe 
+                src="https://calendar.google.com/calendar/embed?height=600&wkst=2&ctz=America%2FLima&showPrint=0&mode=WEEK&src=anVhbmNhcmxvc2NuQGdtYWlsLmNvbQ&color=%23d50000"
+                style="border: 0; width: 100%; height: 1500px;"
+                frameborder="0"
+                scrolling="no">
+            </iframe>
+            
+            <iframe 
+                src="https://calendar.google.com/calendar/embed?height=600&wkst=2&ctz=America%2FLima&showPrint=0&mode=MONTH&src=YW5hbWFycXVlejE5ODdAZ21haWwuY29t&src=ZjRkYTAxOTNhNDlmYWUzMTgwZmFjZWQ2ZTIwODNiNzNhYzEwNDJhN2M0N2IyNzkyNTFiMmZmNGIwNzYzNzZlNUBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&src=ZmFtaWx5MDMwMzc3MjAyNzYxMjg3NjgxNTZAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&src=ZXMucGUjaG9saWRheUBncm91cC52LmNhbGVuZGFyLmdvb2dsZS5jb20&color=%234285f4&color=%23b39ddb&color=%237cb342&color=%230b8043"
+                style="border: 0; width: 100%; height: 1900px;"
+                frameborder="0"
+                scrolling="no">
+            </iframe>
+            <iframe 
+                src="https://calendar.google.com/calendar/embed?height=600&wkst=2&ctz=America%2FLima&showPrint=0&mode=WEEK&src=YW5hbWFycXVlejE5ODdAZ21haWwuY29t&src=ZjRkYTAxOTNhNDlmYWUzMTgwZmFjZWQ2ZTIwODNiNzNhYzEwNDJhN2M0N2IyNzkyNTFiMmZmNGIwNzYzNzZlNUBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&src=ZmFtaWx5MDMwMzc3MjAyNzYxMjg3NjgxNTZAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&src=ZXMucGUjaG9saWRheUBncm91cC52LmNhbGVuZGFyLmdvb2dsZS5jb20&color=%234285f4&color=%23b39ddb&color=%237cb342&color=%230b8043"
+                style="border: 0; width: 100%; height: 1500px;"
+                frameborder="0"
+                scrolling="no">
+            </iframe>
+
+
+
+
+
+        </div>
+
+        <div class="alert alert-info mt-3">
+            <strong>ℹ️ Nota:</strong> Este calendario está integrado con Google Calendar. 
+            Para crear, editar o eliminar citas, usa el botón "Nueva Cita" o accede directamente a Google Calendar.
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

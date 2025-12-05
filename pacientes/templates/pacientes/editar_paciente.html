@@ -1,0 +1,193 @@
+<!-- pacientes/templates/pacientes/editar_paciente.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Editar Paciente - {{ paciente.nombre_completo }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">✏️ Editar Paciente</h2>
+    <a href="{% url 'pacientes:detalle' paciente.pk %}" class="btn btn-outline-secondary btn-sm">← Volver al paciente</a>
+</div>
+
+<div class="alert alert-info mb-4">
+    <strong>Paciente:</strong> {{ paciente.nombre_completo }} (DNI: {{ paciente.dni }})
+</div>
+
+<!-- Contenedor centrado con ancho máximo -->
+<div class="d-flex justify-content-center">
+    <div class="col-lg-8">
+        <form method="post" class="bg-white p-4 p-md-5 rounded shadow-sm border">
+            {% csrf_token %}
+            
+            <div class="row g-3">
+                <!-- Nombre completo -->
+                <div class="col-12">
+                    <label class="form-label">{{ form.nombre_completo.label }}</label>
+                    {{ form.nombre_completo }}
+                    {% if form.nombre_completo.help_text %}
+                        <small class="form-text text-muted">{{ form.nombre_completo.help_text }}</small>
+                    {% endif %}
+                    {% for error in form.nombre_completo.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- DNI -->
+                <div class="col-md-6">
+                    <label class="form-label">{{ form.dni.label }}</label>
+                    {{ form.dni }}
+                    {% if form.dni.help_text %}
+                        <small class="form-text text-muted">{{ form.dni.help_text }}</small>
+                    {% endif %}
+                    {% for error in form.dni.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Fecha de nacimiento -->
+                <div class="col-md-6">
+                    <label class="form-label">{{ form.fecha_nacimiento.label }}</label>
+                    {{ form.fecha_nacimiento }}
+                    {% for error in form.fecha_nacimiento.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Género -->
+                <div class="col-md-6">
+                    <label class="form-label">{{ form.genero.label }}</label>
+                    {{ form.genero }}
+                    {% for error in form.genero.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Estado civil -->
+                <div class="col-md-6">
+                    <label class="form-label">{{ form.estado_civil.label }}</label>
+                    {{ form.estado_civil }}
+                    {% for error in form.estado_civil.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Teléfono -->
+                <div class="col-md-6">
+                    <label class="form-label">{{ form.telefono.label }}</label>
+                    {{ form.telefono }}
+                    {% for error in form.telefono.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Distrito -->
+                <div class="col-md-6">
+                    <label class="form-label">{{ form.distrito.label }}</label>
+                    {{ form.distrito }}
+                    {% for error in form.distrito.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Dirección -->
+                <div class="col-12">
+                    <label class="form-label">{{ form.direccion.label }}</label>
+                    {{ form.direccion }}
+                    {% for error in form.direccion.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Email -->
+                <div class="col-md-6">
+                    <label class="form-label">{{ form.email.label }}</label>
+                    {{ form.email }}
+                    {% for error in form.email.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Ocupación -->
+                <div class="col-md-6">
+                    <label class="form-label">{{ form.ocupacion.label }}</label>
+                    {{ form.ocupacion }}
+                    {% for error in form.ocupacion.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Nombre del tutor -->
+                <div class="col-12">
+                    <label class="form-label">{{ form.nombre_tutor.label }}</label>
+                    {{ form.nombre_tutor }}
+                    <small class="form-text text-muted">Solo si el paciente es menor de edad</small>
+                    {% for error in form.nombre_tutor.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Enfermedades previas -->
+                <div class="col-12">
+                    <label class="form-label">{{ form.enfermedades_previas.label }}</label>
+                    {{ form.enfermedades_previas }}
+                    {% for error in form.enfermedades_previas.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Alergias -->
+                <div class="col-12">
+                    <label class="form-label">{{ form.alergias.label }}</label>
+                    {{ form.alergias }}
+                    {% for error in form.alergias.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Grupo sanguíneo -->
+                <div class="col-md-6">
+                    <label class="form-label">{{ form.grupo_sanguineo.label }}</label>
+                    {{ form.grupo_sanguineo }}
+                    {% for error in form.grupo_sanguineo.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Tratamientos previos -->
+                <div class="col-12">
+                    <label class="form-label">{{ form.tratamientos_previos.label }}</label>
+                    {{ form.tratamientos_previos }}
+                    {% for error in form.tratamientos_previos.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Experiencias dentales -->
+                <div class="col-12">
+                    <label class="form-label">{{ form.experiencias_dentales.label }}</label>
+                    {{ form.experiencias_dentales }}
+                    {% for error in form.experiencias_dentales.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Observaciones -->
+                <div class="col-12">
+                    <label class="form-label">{{ form.observaciones.label }}</label>
+                    {{ form.observaciones }}
+                    {% for error in form.observaciones.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Botones -->
+            <div class="d-flex justify-content-end mt-4 pt-3 border-top">
+                <a href="{% url 'pacientes:detalle' paciente.pk %}" class="btn btn-secondary me-2">Cancelar</a>
+                <button type="submit" class="btn btn-warning">💾 Actualizar Paciente</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

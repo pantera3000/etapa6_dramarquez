@@ -1,0 +1,92 @@
+<!-- tratamientos/templates/tratamientos/editar_tratamiento.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Editar Tratamiento - {{ object.nombre }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">✏️ Editar Tratamiento</h2>
+    <a href="{% url 'tratamientos:detalle' object.pk %}" class="btn btn-outline-secondary btn-sm">
+        ← Volver al tratamiento
+    </a>
+</div>
+
+<div class="alert alert-info mb-4">
+    <strong>Paciente:</strong> {{ object.paciente.nombre_completo }} (DNI: {{ object.paciente.dni }})
+</div>
+
+<div class="d-flex justify-content-center">
+    <div class="col-lg-8">
+        <form method="post" class="bg-white p-4 p-md-5 rounded shadow-sm border">
+            {% csrf_token %}
+            
+            <div class="row g-3">
+                <!-- Nombre -->
+                <div class="col-12">
+                    <label class="form-label">{{ form.nombre.label }}</label>
+                    {{ form.nombre }}
+                    {% if form.nombre.help_text %}
+                        <small class="form-text text-muted">{{ form.nombre.help_text }}</small>
+                    {% endif %}
+                    {% for error in form.nombre.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Descripción -->
+                <div class="col-12">
+                    <label class="form-label">{{ form.descripcion.label }}</label>
+                    {{ form.descripcion }}
+                    {% for error in form.descripcion.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Costo total -->
+                <div class="col-md-6">
+                    <label class="form-label">{{ form.costo_total.label }}</label>
+                    {{ form.costo_total }}
+                    {% for error in form.costo_total.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Fecha de inicio -->
+                <div class="col-md-6">
+                    <label class="form-label">{{ form.fecha_inicio.label }}</label>
+                    {{ form.fecha_inicio }}
+                    {% for error in form.fecha_inicio.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Fecha de finalización -->
+                <div class="col-md-6">
+                    <label class="form-label">{{ form.fecha_fin.label }}</label>
+                    {{ form.fecha_fin }}
+                    <small class="form-text text-muted">Opcional</small>
+                    {% for error in form.fecha_fin.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Estado -->
+                <div class="col-md-6">
+                    <label class="form-label">{{ form.estado.label }}</label>
+                    {{ form.estado }}
+                    {% for error in form.estado.errors %}
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Botones -->
+            <div class="d-flex justify-content-end mt-4 pt-3 border-top">
+                <a href="{% url 'tratamientos:detalle' object.pk %}" class="btn btn-secondary me-2">Cancelar</a>
+                <button type="submit" class="btn btn-warning">💾 Actualizar Tratamiento</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
