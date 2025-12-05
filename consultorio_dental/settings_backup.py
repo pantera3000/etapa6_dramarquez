@@ -1,16 +1,15 @@
-# consultorio_dental/settings.py
+﻿# consultorio_dental/settings.py
 
 from pathlib import Path
 import os
-from decouple import config, Csv
 
 # Ruta base del proyecto
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Seguridad: Configuración con variables de entorno
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-tu-clave-secreta-aqui')
-DEBUG = config('DEBUG', default=True, cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
+# Seguridad: ¡No subas este archivo a GitHub con DEBUG=True en producción!
+SECRET_KEY = 'django-insecure-tu-clave-secreta-aqui'  # Cambia esto en producción
+DEBUG = True
+ALLOWED_HOSTS = []
 
 # Aplicaciones instaladas
 INSTALLED_APPS = [
