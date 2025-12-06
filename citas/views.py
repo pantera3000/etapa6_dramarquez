@@ -12,7 +12,7 @@ def calendario_view(request):
     return render(request, 'citas/calendario.html')
 
 def eventos_ics_view(request):
-    ics_url = "https://calendar.google.com/calendar/ical/juancarloscn%40gmail.com/private-7c3dfb4a8b649579159a76228916d6cf/basic.ics"
+    ics_url = "https://calendar.google.com/calendar/ical/anamarquez1987%40gmail.com/private-7bdd1e3e17e30fbae0c751f9429c4cbe/basic.ics"
     
     try:
         response = requests.get(ics_url, timeout=10)
