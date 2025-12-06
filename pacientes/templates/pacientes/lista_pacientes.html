@@ -34,10 +34,10 @@
                         <thead class="table-light">
                             <tr>
                                 <th>Nombre</th>
-                                <th>DNI</th>
+                                <th class="d-none d-md-table-cell">DNI</th>
                                 <th>Edad</th>
-                                <th>Cumpleaños</th>
-                                <th>Teléfono</th>
+                                <th class="d-none d-lg-table-cell">Cumpleaños</th>
+                                <th class="d-none d-md-table-cell">Teléfono</th>
                                 <th class="text-end">Acciones</th>
                             </tr>
                         </thead>
@@ -45,7 +45,7 @@
                             {% for paciente in pacientes %}
                             <tr style="cursor: pointer;" onclick="window.location='{% url 'pacientes:detalle' paciente.pk %}'">
                                 <td>{{ paciente.nombre_completo }}</td>
-                                <td><code>{{ paciente.dni }}</code></td>
+                                <td class="d-none d-md-table-cell"><code>{{ paciente.dni }}</code></td>
                                 <td>
                                     {{ paciente.edad }} años
                                     {% if paciente.dias_hasta_cumple == 0 %}
@@ -55,14 +55,14 @@
                                     {% endif %}
                                 </td>
                                 
-                                <td>
+                                <td class="d-none d-lg-table-cell">
                                     {% if paciente.dias_hasta_cumple == 0 %}
                                         <span class="badge bg-success">¡Hoy!</span>
                                     {% else %}
                                         {{ paciente.dias_hasta_cumple }} día{{ paciente.dias_hasta_cumple|pluralize }}
                                     {% endif %}
                                 </td>
-                                <td>{{ paciente.telefono|default:"—" }}</td>
+                                <td class="d-none d-md-table-cell">{{ paciente.telefono|default:"—" }}</td>
                                 <td class="text-end" onclick="event.stopPropagation()">
                                     <a href="{% url 'pacientes:editar' paciente.pk %}" class="btn btn-sm btn-warning me-1">✏️ Editar</a>
                                     <a href="{% url 'pacientes:eliminar' paciente.pk %}" 
