@@ -14,6 +14,7 @@ urlpatterns = [
     path('tratamientos/', include('tratamientos.urls')),
     path('notas/', include('notas.urls')),
     path('citas/', include('citas.urls')),
+    path('usuarios/', include('usuarios.urls')),
 ]
 
 # Servir archivos de medios en desarrollo

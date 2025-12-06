@@ -1,0 +1,151 @@
+<!-- usuarios/templates/usuarios/lista_usuarios.html -->
+{% extends 'base.html' %}
+
+{% block title %}Gestión de Usuarios{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center">
+    <div class="col-lg-10">
+        <!-- Encabezado -->
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <h2 class="mb-0">👥 Gestión de Usuarios</h2>
+            <a href="{% url 'usuarios:crear' %}" class="btn btn-success">➕ Nuevo Usuario</a>
+        </div>
+
+        <!-- Tarjeta principal -->
+        <div class="bg-white p-3 p-md-4 rounded shadow-sm border">
+            {% if usuarios %}
+                <!-- VISTA DE TABLA (Desktop >= 768px) -->
+                <div class="d-none d-md-block">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Usuario</th>
+                                    <th>Nombre Completo</th>
+                                    <th>Email</th>
+                                    <th>Rol</th>
+                                    <th>Estado</th>
+                                    <th class="text-end">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for usuario in usuarios %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ usuario.username }}</strong>
+                                        {% if usuario.is_superuser %}
+                                            <span class="badge bg-danger ms-1">Super</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ usuario.get_full_name|default:"—" }}</td>
+                                    <td>{{ usuario.email|default:"—" }}</td>
+                                    <td>
+                                        {% for grupo in usuario.groups.all %}
+                                            {% if grupo.name == 'Administrador' %}
+                                                <span class="badge bg-danger">{{ grupo.name }}</span>
+                                            {% elif grupo.name == 'Doctor' %}
+                                                <span class="badge bg-primary">{{ grupo.name }}</span>
+                                            {% elif grupo.name == 'Asistente' %}
+                                                <span class="badge bg-info">{{ grupo.name }}</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ grupo.name }}</span>
+                                            {% endif %}
+                                        {% empty %}
+                                            <span class="text-muted">Sin rol</span>
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        {% if usuario.is_active %}
+                                            <span class="badge bg-success">Activo</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Inactivo</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{% url 'usuarios:editar' usuario.pk %}" class="btn btn-warning" title="Editar">✏️</a>
+                                            <a href="{% url 'usuarios:cambiar_password' usuario.pk %}" class="btn btn-info" title="Cambiar contraseña">🔑</a>
+                                            {% if usuario != request.user %}
+                                                <a href="{% url 'usuarios:eliminar' usuario.pk %}" class="btn btn-danger" title="Eliminar">🗑️</a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- VISTA DE TARJETAS (Móvil < 768px) -->
+                <div class="d-md-none">
+                    {% for usuario in usuarios %}
+                    <div class="card mb-3 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title fw-bold mb-0">
+                                    {{ usuario.username }}
+                                    {% if usuario.is_superuser %}
+                                        <span class="badge bg-danger">Super</span>
+                                    {% endif %}
+                                </h5>
+                                {% if usuario.is_active %}
+                                    <span class="badge bg-success">Activo</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Inactivo</span>
+                                {% endif %}
+                            </div>
+                            
+                            {% if usuario.get_full_name %}
+                            <p class="mb-2">
+                                <strong>Nombre:</strong> {{ usuario.get_full_name }}
+                            </p>
+                            {% endif %}
+                            
+                            {% if usuario.email %}
+                            <p class="mb-2">
+                                <strong>Email:</strong> {{ usuario.email }}
+                            </p>
+                            {% endif %}
+                            
+                            <p class="mb-3">
+                                <strong>Rol:</strong>
+                                {% for grupo in usuario.groups.all %}
+                                    {% if grupo.name == 'Administrador' %}
+                                        <span class="badge bg-danger">{{ grupo.name }}</span>
+                                    {% elif grupo.name == 'Doctor' %}
+                                        <span class="badge bg-primary">{{ grupo.name }}</span>
+                                    {% elif grupo.name == 'Asistente' %}
+                                        <span class="badge bg-info">{{ grupo.name }}</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ grupo.name }}</span>
+                                    {% endif %}
+                                {% empty %}
+                                    <span class="text-muted">Sin rol</span>
+                                {% endfor %}
+                            </p>
+                            
+                            <div class="d-grid gap-2">
+                                <a href="{% url 'usuarios:editar' usuario.pk %}" class="btn btn-sm btn-warning">✏️ Editar</a>
+                                <div class="btn-group">
+                                    <a href="{% url 'usuarios:cambiar_password' usuario.pk %}" class="btn btn-sm btn-info">🔑 Cambiar Contraseña</a>
+                                    {% if usuario != request.user %}
+                                        <a href="{% url 'usuarios:eliminar' usuario.pk %}" class="btn btn-sm btn-danger">🗑️ Eliminar</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <p class="text-muted mb-3">No hay usuarios registrados.</p>
+                    <a href="{% url 'usuarios:crear' %}" class="btn btn-success">➕ Crear Primer Usuario</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
