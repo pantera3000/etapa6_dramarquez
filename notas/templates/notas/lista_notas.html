@@ -58,75 +58,115 @@
             {% endif %}
         </div>
 
-        <!-- Tabla de notas -->
-        <div class="bg-white p-4 rounded shadow-sm border">
+        <!-- Lista de notas - Responsive -->
+        <div class="bg-white rounded shadow-sm border">
             {% if notas %}
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Título</th>
-                                <th class="d-none d-md-table-cell">Contenido</th>
-                                {% if not paciente %}<th>Paciente</th>{% endif %}
-                                <th>Fecha</th>
-                                <th class="text-end">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for nota in notas %}
-                            <tr>
-                                <td><strong>{{ nota.titulo }}</strong></td>
-                                <td class="d-none d-md-table-cell">{{ nota.contenido|truncatewords:10 }}</td>
-                                {% if not paciente %}
-                                <td>
-                                    {% if nota.paciente %}
-                                        <a href="{% url 'pacientes:detalle' nota.paciente.pk %}" class="text-decoration-none">
-                                            <span class="badge bg-primary">{{ nota.paciente.nombre_completo }}</span>
-                                        </a>
-                                    {% else %}
-                                        <span class="badge bg-secondary">Nota general</span>
+                
+                <!-- VISTA DE TABLA (Desktop >= 768px) -->
+                <div class="d-none d-md-block">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Título</th>
+                                    <th>Contenido</th>
+                                    {% if not paciente %}<th>Paciente</th>{% endif %}
+                                    <th>Fecha</th>
+                                    <th class="text-end">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for nota in notas %}
+                                <tr>
+                                    <td><strong>{{ nota.titulo }}</strong></td>
+                                    <td>{{ nota.contenido|truncatewords:10 }}</td>
+                                    {% if not paciente %}
+                                    <td>
+                                        {% if nota.paciente %}
+                                            <a href="{% url 'pacientes:detalle' nota.paciente.pk %}" class="text-decoration-none">
+                                                <span class="badge bg-primary">{{ nota.paciente.nombre_completo }}</span>
+                                            </a>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Nota general</span>
+                                        {% endif %}
+                                    </td>
                                     {% endif %}
-                                </td>
+                                    <td>{{ nota.creado_en|date:"d/m/Y H:i" }}</td>
+                                    <td class="text-end">
+                                        <a href="{% url 'notas:detalle' nota.pk %}" class="btn btn-sm btn-info btn-white-text me-1">👁️ Ver</a>
+                                        <a href="{% url 'notas:editar' nota.pk %}" class="btn btn-sm btn-warning me-1">✏️ Editar</a>
+                                        <a href="{% url 'notas:eliminar' nota.pk %}" 
+                                           class="btn btn-sm btn-danger"
+                                           onclick="return confirm('¿Eliminar esta nota?')">
+                                            🗑️ Eliminar
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- VISTA DE TARJETAS (Móvil < 768px) -->
+                <div class="d-md-none p-3">
+                    {% for nota in notas %}
+                    <div class="card mb-3 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold mb-2">{{ nota.titulo }}</h5>
+                            
+                            <p class="mb-2">
+                                {{ nota.contenido|truncatewords:15 }}
+                            </p>
+                            
+                            {% if not paciente %}
+                            <p class="mb-2">
+                                {% if nota.paciente %}
+                                    <strong>Paciente:</strong><br>
+                                    <a href="{% url 'pacientes:detalle' nota.paciente.pk %}" class="text-decoration-none">
+                                        <span class="badge bg-primary">{{ nota.paciente.nombre_completo }}</span>
+                                    </a>
+                                {% else %}
+                                    <span class="badge bg-secondary">Nota general</span>
                                 {% endif %}
-                                <td>{{ nota.creado_en|date:"d/m/Y H:i" }}</td>
-                                <td class="text-end">
-                                    <a href="{% url 'notas:detalle' nota.pk %}" class="btn btn-sm btn-info btn-white-text me-1">👁️ Ver</a>
-                                    <a href="{% url 'notas:editar' nota.pk %}" class="btn btn-sm btn-warning me-1">✏️ Editar</a>
+                            </p>
+                            {% endif %}
+                            
+                            <p class="mb-3">
+                                <small class="text-muted">📅 {{ nota.creado_en|date:"d/m/Y H:i" }}</small>
+                            </p>
+                            
+                            <div class="d-grid gap-2">
+                                <a href="{% url 'notas:detalle' nota.pk %}" class="btn btn-sm btn-info">👁️ Ver Detalle</a>
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'notas:editar' nota.pk %}" class="btn btn-sm btn-warning">✏️ Editar</a>
                                     <a href="{% url 'notas:eliminar' nota.pk %}" 
                                        class="btn btn-sm btn-danger"
                                        onclick="return confirm('¿Eliminar esta nota?')">
                                         🗑️ Eliminar
                                     </a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
 
                 <!-- Paginación -->
                 {% if is_paginated %}
-                <div class="mt-4 pt-3 border-top">
+                <div class="p-3 border-top">
                     <nav aria-label="Paginación">
                         <ul class="pagination justify-content-center mb-0">
                             {% if page_obj.has_previous %}
                                 <li class="page-item">
                                     <a class="page-link" 
-                                       href="?page=1
-                                           {% if request.GET.q %}&q={{ request.GET.q }}{% endif %}
-                                           {% if not paciente and request.GET.paciente %}&paciente={{ request.GET.paciente }}{% endif %}
-                                           {% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}
-                                           {% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}">
+                                       href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if not paciente and request.GET.paciente %}&paciente={{ request.GET.paciente }}{% endif %}{% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}{% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}">
                                         « Primero
                                     </a>
                                 </li>
                                 <li class="page-item">
                                     <a class="page-link" 
-                                       href="?page={{ page_obj.previous_page_number }}
-                                           {% if request.GET.q %}&q={{ request.GET.q }}{% endif %}
-                                           {% if not paciente and request.GET.paciente %}&paciente={{ request.GET.paciente }}{% endif %}
-                                           {% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}
-                                           {% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}">
+                                       href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if not paciente and request.GET.paciente %}&paciente={{ request.GET.paciente }}{% endif %}{% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}{% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}">
                                         ‹ Anterior
                                     </a>
                                 </li>
@@ -139,21 +179,13 @@
                             {% if page_obj.has_next %}
                                 <li class="page-item">
                                     <a class="page-link" 
-                                       href="?page={{ page_obj.next_page_number }}
-                                           {% if request.GET.q %}&q={{ request.GET.q }}{% endif %}
-                                           {% if not paciente and request.GET.paciente %}&paciente={{ request.GET.paciente }}{% endif %}
-                                           {% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}
-                                           {% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}">
+                                       href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if not paciente and request.GET.paciente %}&paciente={{ request.GET.paciente }}{% endif %}{% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}{% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}">
                                         Siguiente ›
                                     </a>
                                 </li>
                                 <li class="page-item">
                                     <a class="page-link" 
-                                       href="?page={{ page_obj.paginator.num_pages }}
-                                           {% if request.GET.q %}&q={{ request.GET.q }}{% endif %}
-                                           {% if not paciente and request.GET.paciente %}&paciente={{ request.GET.paciente }}{% endif %}
-                                           {% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}
-                                           {% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}">
+                                       href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if not paciente and request.GET.paciente %}&paciente={{ request.GET.paciente }}{% endif %}{% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}{% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}">
                                         Último »
                                     </a>
                                 </li>
