@@ -226,6 +226,39 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 {% endif %}
 
+<!-- Toast de citas de hoy (solo si hay citas hoy) -->
+{% if citas_hoy_count > 0 %}
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="citasToast" class="toast align-items-center text-bg-info border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="50000">
+        <div class="d-flex">
+            <div class="toast-body">
+                <strong>📅 Citas de Hoy</strong><br>
+                Tienes {{ citas_hoy_count }} cita{{ citas_hoy_count|pluralize }} programada{{ citas_hoy_count|pluralize }}:
+                <ul class="mb-0 mt-2" style="font-size: 0.9em;">
+                    {% for cita in citas_hoy_sidebar %}
+                    <li>
+                        <strong>{{ cita.inicio|date:"H:i" }}</strong> - {{ cita.titulo|truncatewords:5 }}
+                    </li>
+                    {% endfor %}
+                </ul>
+                <a href="{% url 'citas:eventos_ics' %}" class="btn btn-sm btn-light mt-2">Ver todas</a>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toastEl = document.getElementById('citasToast');
+    if (toastEl) {
+        const toast = new bootstrap.Toast(toastEl);
+        toast.show();
+    }
+});
+</script>
+{% endif %}
+
 
 
 </body>
