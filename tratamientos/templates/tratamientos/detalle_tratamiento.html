@@ -6,45 +6,54 @@
 
 {% block content %}
 <div class="d-flex justify-content-center">
-    <div class="col-lg-8">
-        <!-- Encabezado -->
-        <!-- Encabezado -->
-        <div class="d-flex justify-content-between align-items-start mb-4">
-            <div>
-                <h2 class="mb-2">🦷 {{ tratamiento.nombre }}</h2>
-                <div>
-                    <span class="badge bg-{{ tratamiento.clase_estado_pago }} me-2">
-                        {% if tratamiento.estado_pago == 'completado' %}Pagado
-                        {% elif tratamiento.estado_pago == 'parcial' %}Pago parcial
-                        {% else %}Sin pago{% endif %}
-                    </span>
-                    <span class="badge bg-{{ tratamiento.clase_estado }}">
-                        {{ tratamiento.get_estado_display }}
-                    </span>
+    <div class="col-lg-9">
+        <!-- Encabezado RESPONSIVE -->
+        <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+                <div class="flex-grow-1">
+                    <h2 class="mb-2">🦷 {{ tratamiento.nombre }}</h2>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="badge bg-{{ tratamiento.clase_estado_pago }}">
+                            {% if tratamiento.estado_pago == 'completado' %}Pagado
+                            {% elif tratamiento.estado_pago == 'parcial' %}Pago parcial
+                            {% else %}Sin pago{% endif %}
+                        </span>
+                        <span class="badge bg-{{ tratamiento.clase_estado }}">
+                            {{ tratamiento.get_estado_display }}
+                        </span>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <a href="{% url 'tratamientos:editar' tratamiento.pk %}}" class="btn btn-warning btn-sm">✏️ Editar</a>
+                    
+                    {% if request.META.HTTP_REFERER and 'tratamientos' in request.META.HTTP_REFERER and 'pacientes' not in request.META.HTTP_REFERER %}
+                        <a href="{% url 'tratamientos:lista' %}" class="btn btn-secondary btn-sm">← Lista</a>
+                    {% else %}
+                        <a href="{% url 'pacientes:detalle' tratamiento.paciente.pk %}?tratamientos_page=1" class="btn btn-secondary btn-sm">← Paciente</a>
+                    {% endif %}
                 </div>
             </div>
-            <div class="d-flex gap-2">
-                <a href="{% url 'tratamientos:editar' tratamiento.pk %}" class="btn btn-warning btn-sm">✏️ Editar</a>
-                
-                <!-- Botón: volver a lista de tratamientos -->
-                {% if request.META.HTTP_REFERER and 'tratamientos' in request.META.HTTP_REFERER and 'pacientes' not in request.META.HTTP_REFERER %}
-                    <a href="{% url 'tratamientos:lista' %}" class="btn btn-secondary btn-sm">← Lista de Tratamientos</a>
-                {% else %}
-                    <!-- Botón: volver al paciente -->
-                    <a href="{% url 'pacientes:detalle' tratamiento.paciente.pk %}?tratamientos_page=1" class="btn btn-secondary btn-sm">← Paciente</a>
-                {% endif %}
+            
+            <!-- Información del paciente - MEJORADO Y CLICKEABLE -->
+            <div class="alert alert-primary mb-0">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div>
+                        <strong>Paciente:</strong>
+                        <a href="{% url 'pacientes:detalle' tratamiento.paciente.pk %}" class="text-decoration-none">
+                            <span class="fs-5 fw-bold text-primary ms-2">
+                                {{ tratamiento.paciente.nombre_completo }}
+                            </span>
+                        </a>
+                    </div>
+                    <span class="badge bg-light text-dark">DNI: {{ tratamiento.paciente.dni }}</span>
+                </div>
             </div>
         </div>
 
-        <!-- Información del paciente -->
-        <div class="alert alert-info mb-4">
-            <strong>Paciente:</strong> {{ tratamiento.paciente.nombre_completo }} (DNI: {{ tratamiento.paciente.dni }})
-        </div>
-
-        <!-- Tarjeta principal -->
-        <div class="bg-white p-4 rounded shadow-sm border mb-4">
+        <!-- Tarjeta principal - RESPONSIVE -->
+        <div class="bg-white p-3 p-md-4 rounded shadow-sm border mb-4">
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-6 mb-4 mb-md-0">
                     <h5 class="mb-3">📊 Resumen Financiero</h5>
                     <p><strong>💰 Costo Total:</strong> <span class="fw-bold">S/ {{ tratamiento.costo_total }}</span></p>
                     <p><strong>✅ Total Pagado:</strong> <span class="fw-bold">S/ {{ tratamiento.total_pagado }}</span></p>
@@ -81,44 +90,86 @@
             <a href="{% url 'tratamientos:crear_pago' tratamiento.pk %}" class="btn btn-success">➕ Registrar Pago</a>
         </div>
 
-        <!-- Historial de pagos -->
-        <!-- Historial de pagos -->
+        <!-- Historial de pagos - RESPONSIVE -->
         <h4 class="mb-3">🧾 Historial de Pagos</h4>
         {% if tratamiento.pagos.exists %}
-            <div class="bg-white p-3 rounded shadow-sm border">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Fecha del pago</th>
-                                <th>Registrado en</th>
-                                <th>Monto</th>
-                                <th>Método</th>
-                                <th>Nota</th>
-                                <th class="text-end">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for pago in tratamiento.pagos.all %}
-                            <tr>
-                                <td>{{ pago.fecha_pago|date:"d/m/Y H:i" }}</td>
-                                <td>
-                                    <small class="text-muted">{{ pago.registrado_en|date:"d/m/Y H:i" }}</small>
-                                </td>
-                                <td><strong>S/ {{ pago.monto }}</strong></td>
-                                <td>{{ pago.get_metodo_pago_display }}</td>
-                                <td>{{ pago.nota|default:"—" }}</td>
-                                <td class="text-end">
-                                    <a href="{% url 'tratamientos:eliminar_pago' pago.pk %}" 
-                                    class="btn btn-sm btn-outline-danger" 
-                                    onclick="return confirm('¿Eliminar este pago?')">
-                                        🗑️
-                                    </a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+            <div class="bg-white rounded shadow-sm border">
+                <!-- VISTA DE TABLA (Desktop >= 768px) -->
+                <div class="d-none d-md-block">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Fecha del pago</th>
+                                    <th>Registrado en</th>
+                                    <th>Monto</th>
+                                    <th>Método</th>
+                                    <th>Nota</th>
+                                    <th class="text-end">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for pago in tratamiento.pagos.all %}
+                                <tr>
+                                    <td>{{ pago.fecha_pago|date:"d/m/Y H:i" }}</td>
+                                    <td>
+                                        <small class="text-muted">{{ pago.registrado_en|date:"d/m/Y H:i" }}</small>
+                                    </td>
+                                    <td><strong>S/ {{ pago.monto }}</strong></td>
+                                    <td>{{ pago.get_metodo_pago_display }}</td>
+                                    <td>{{ pago.nota|default:"—" }}</td>
+                                    <td class="text-end">
+                                        <a href="{% url 'tratamientos:eliminar_pago' pago.pk %}" 
+                                        class="btn btn-sm btn-outline-danger" 
+                                        onclick="return confirm('¿Eliminar este pago?')">
+                                            🗑️
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- VISTA DE TARJETAS (Móvil < 768px) -->
+                <div class="d-md-none p-3">
+                    {% for pago in tratamiento.pagos.all %}
+                    <div class="card mb-3 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title fw-bold mb-0">S/ {{ pago.monto }}</h5>
+                                <span class="badge bg-info">{{ pago.get_metodo_pago_display }}</span>
+                            </div>
+                            
+                            <p class="mb-2">
+                                <strong>Fecha de pago:</strong><br>
+                                {{ pago.fecha_pago|date:"d/m/Y H:i" }}
+                            </p>
+                            
+                            <p class="mb-2">
+                                <small class="text-muted">
+                                    Registrado: {{ pago.registrado_en|date:"d/m/Y H:i" }}
+                                </small>
+                            </p>
+                            
+                            {% if pago.nota %}
+                            <p class="mb-3">
+                                <strong>Nota:</strong><br>
+                                <small>{{ pago.nota }}</small>
+                            </p>
+                            {% endif %}
+                            
+                            <div class="d-grid">
+                                <a href="{% url 'tratamientos:eliminar_pago' pago.pk %}" 
+                                   class="btn btn-sm btn-danger"
+                                   onclick="return confirm('¿Eliminar este pago?')">
+                                    🗑️ Eliminar Pago
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
         {% else %}
