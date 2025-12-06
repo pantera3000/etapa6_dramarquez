@@ -262,81 +262,21 @@
 
 
 <!-- Toast de cumpleaños (solo si hay cumpleaños hoy) -->
-<!-- Toast de cumpleaños (solo si hay cumpleaños hoy) -->
-{% if cumpleaneros_hoy_count > 0 %}
-<!-- Badge flotante para móvil (arriba, lado izquierdo) -->
-<div id="birthdayBadge" class="d-md-none position-fixed start-0 m-3" style="bottom: 120px; z-index: 1050;">
-    <button class="btn btn-success rounded-circle shadow position-relative" onclick="document.getElementById('birthdayToastMobile').classList.toggle('d-none')" style="width: 50px; height: 50px;">
-        🎂
-        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.7rem;">
-            {{ cumpleaneros_hoy_count }}
-        </span>
-        <button onclick="event.stopPropagation(); document.getElementById('birthdayBadge').style.display='none'; document.getElementById('birthdayToastMobile').classList.add('d-none');" class="position-absolute top-0 end-0 btn-close btn-close-white" style="font-size: 0.5rem; padding: 0.2rem; opacity: 0.8;"></button>
-    </button>
-</div>
-
-<!-- Toast expandible móvil (oculto por defecto) -->
-<div id="birthdayToastMobile" class="d-none d-md-none position-fixed start-0 m-3" style="bottom: 180px; max-width: 280px; z-index: 1049;">
-    <div class="toast show align-items-center text-bg-success border-0" role="alert" style="font-size: 0.85rem;">
-        <div class="d-flex">
-            <div class="toast-body" style="padding: 0.6rem;">
-                <strong style="font-size: 0.9em;">🎂 ¡Feliz Cumpleaños!</strong><br>
-                Hoy cumplen años:
-                <ul class="mb-0 mt-2" style="font-size: 0.75em; padding-left: 1rem; margin-bottom: 0.5rem;">
-                    {% for paciente in cumpleaneros_hoy %}
-                    <li>{{ paciente.nombre_completo }} ({{ paciente.edad }} años)</li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="document.getElementById('birthdayToastMobile').classList.add('d-none')" aria-label="Cerrar"></button>
-        </div>
-    </div>
-</div>
-
-<!-- Toast normal para desktop -->
-<div class="d-none d-md-block toast-container position-fixed bottom-0 start-0 p-2" style="max-width: 90%; width: 280px;">
-    <div id="birthdayToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="50000" style="font-size: 0.85rem;">
-        <div class="d-flex">
-            <div class="toast-body" style="padding: 0.6rem;">
-                <strong style="font-size: 0.9em;">🎂 ¡Feliz Cumpleaños!</strong><br>
-                Hoy cumplen años:
-                <ul class="mb-0 mt-2" style="font-size: 0.75em; padding-left: 1rem; margin-bottom: 0.5rem;">
-                    {% for paciente in cumpleaneros_hoy %}
-                    <li>{{ paciente.nombre_completo }} ({{ paciente.edad }} años)</li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
-        </div>
-    </div>
-</div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const toastEl = document.getElementById('birthdayToast');
-    if (toastEl) {
-        const toast = new bootstrap.Toast(toastEl);
-        toast.show();
-    }
-});
-</script>
-{% endif %}
-
 <!-- Toast de citas de hoy (solo si hay citas hoy) -->
 {% if citas_hoy_count > 0 %}
-<!-- Badge flotante para móvil (abajo, lado izquierdo) -->
-<div id="citasBadge" class="d-md-none position-fixed start-0 m-3" style="bottom: 60px; z-index: 1050;">
-    <button class="btn btn-info rounded-circle shadow position-relative" onclick="document.getElementById('citasToastMobile').classList.toggle('d-none')" style="width: 50px; height: 50px;">
-        📅
-        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.7rem;">
+<!-- Badge flotante para móvil (arriba, lado izquierdo) -->
+<div id="citasBadge" class="d-md-none position-fixed start-0" style="bottom: 120px; left: 5px; z-index: 1050;">
+    <button class="btn btn-info rounded-circle shadow position-relative" onclick="document.getElementById('citasToastMobile').classList.toggle('d-none')" style="width: 42px; height: 42px; padding: 0;">
+        <span style="font-size: 1.2rem;">📅</span>
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem; padding: 0.2rem 0.35rem;">
             {{ citas_hoy_count }}
         </span>
-        <button onclick="event.stopPropagation(); document.getElementById('citasBadge').style.display='none'; document.getElementById('citasToastMobile').classList.add('d-none');" class="position-absolute top-0 end-0 btn-close btn-close-white" style="font-size: 0.5rem; padding: 0.2rem; opacity: 0.8;"></button>
+        <button onclick="event.stopPropagation(); document.getElementById('citasBadge').style.display='none'; document.getElementById('citasToastMobile').classList.add('d-none');" class="position-absolute bottom-0 start-0 btn-close" style="font-size: 0.4rem; padding: 0.15rem; opacity: 1; margin: 2px; background-color: #dc3545; border-radius: 50%;"></button>
     </button>
 </div>
 
 <!-- Toast expandible móvil (oculto por defecto) -->
-<div id="citasToastMobile" class="d-none d-md-none position-fixed start-0 m-3" style="bottom: 120px; max-width: 280px; z-index: 1049;">
+<div id="citasToastMobile" class="d-none d-md-none position-fixed start-0" style="bottom: 170px; left: 5px; max-width: 280px; z-index: 1049;">
     <div class="toast show align-items-center text-bg-info border-0" role="alert" style="font-size: 0.85rem;">
         <div class="d-flex">
             <div class="toast-body" style="padding: 0.6rem;">
@@ -380,6 +320,72 @@ document.addEventListener('DOMContentLoaded', function() {
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const toastEl = document.getElementById('citasToast');
+    if (toastEl) {
+        const toast = new bootstrap.Toast(toastEl);
+        toast.show();
+    }
+});
+</script>
+{% endif %}
+
+
+
+
+
+
+<!-- Toast de citas de hoy (solo si hay citas hoy) -->
+<!-- Toast de cumpleaños (solo si hay cumpleaños hoy) -->
+{% if cumpleaneros_hoy_count > 0 %}
+<!-- Badge flotante para móvil (abajo, lado izquierdo) -->
+<div id="birthdayBadge" class="d-md-none position-fixed start-0" style="bottom: 60px; left: 5px; z-index: 1050;">
+    <button class="btn btn-success rounded-circle shadow position-relative" onclick="document.getElementById('birthdayToastMobile').classList.toggle('d-none')" style="width: 42px; height: 42px; padding: 0;">
+        <span style="font-size: 1.2rem;">🎂</span>
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem; padding: 0.2rem 0.35rem;">
+            {{ cumpleaneros_hoy_count }}
+        </span>
+        <button onclick="event.stopPropagation(); document.getElementById('birthdayBadge').style.display='none'; document.getElementById('birthdayToastMobile').classList.add('d-none');" class="position-absolute bottom-0 start-0 btn-close" style="font-size: 0.4rem; padding: 0.15rem; opacity: 1; margin: 2px; background-color: #dc3545; border-radius: 50%;"></button>
+    </button>
+</div>
+
+<!-- Toast expandible móvil (oculto por defecto) -->
+<div id="birthdayToastMobile" class="d-none d-md-none position-fixed" style="bottom: 110px; left: 60px; max-width: 280px; z-index: 1049;">
+    <div class="toast show align-items-center text-bg-success border-0" role="alert" style="font-size: 0.85rem;">
+        <div class="d-flex">
+            <div class="toast-body" style="padding: 0.6rem;">
+                <strong style="font-size: 0.9em;">🎂 ¡Feliz Cumpleaños!</strong><br>
+                Hoy cumplen años:
+                <ul class="mb-0 mt-2" style="font-size: 0.75em; padding-left: 1rem; margin-bottom: 0.5rem;">
+                    {% for paciente in cumpleaneros_hoy %}
+                    <li>{{ paciente.nombre_completo }} ({{ paciente.edad }} años)</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="document.getElementById('birthdayToastMobile').classList.add('d-none')" aria-label="Cerrar"></button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast normal para desktop -->
+<div class="d-none d-md-block toast-container position-fixed bottom-0 start-0 p-2" style="max-width: 90%; width: 280px;">
+    <div id="birthdayToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="50000" style="font-size: 0.85rem;">
+        <div class="d-flex">
+            <div class="toast-body" style="padding: 0.6rem;">
+                <strong style="font-size: 0.9em;">🎂 ¡Feliz Cumpleaños!</strong><br>
+                Hoy cumplen años:
+                <ul class="mb-0 mt-2" style="font-size: 0.75em; padding-left: 1rem; margin-bottom: 0.5rem;">
+                    {% for paciente in cumpleaneros_hoy %}
+                    <li>{{ paciente.nombre_completo }} ({{ paciente.edad }} años)</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toastEl = document.getElementById('birthdayToast');
     if (toastEl) {
         const toast = new bootstrap.Toast(toastEl);
         toast.show();
