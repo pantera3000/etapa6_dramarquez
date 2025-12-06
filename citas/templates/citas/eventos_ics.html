@@ -1,5 +1,4 @@
 <!-- citas/templates/citas/eventos_ics.html -->
-<!-- citas/templates/citas/eventos_ics.html -->
 {% extends 'base.html' %}
 
 {% block title %}📋 Citas del Calendario{% endblock %}
@@ -14,66 +13,117 @@
             </a>
         </div>
 
-        <!-- Citas de Hoy destacadas -->
-        <!-- Citas de Hoy destacadas - Diseño mejorado -->
+        <!-- Citas de Hoy - MEJORADO Y RESPONSIVE -->
         {% if citas_hoy %}
-        <div class="bg-gradient-dark p-4 rounded-3 shadow-lg mb-4 border-0">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4 class="text-success mb-0">
+        <div class="bg-white p-3 p-md-4 rounded shadow-sm border mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <h4 class="text-primary mb-0">
                     <i class="bi bi-calendar-check-fill me-2"></i>
-                    📅 Citas de Hoy <small class="text-danger">({{ citas_hoy|length }})</small>
+                    📅 Citas de Hoy
                 </h4>
                 <span class="badge bg-danger px-3 py-2">
-                    <i class="bi bi-exclamation-triangle me-1"></i> Prioridad Alta
+                    {{ citas_hoy|length }} cita{{ citas_hoy|length|pluralize }}
                 </span>
             </div>
             
-            <div class="row g-3">
-                {% for cita in citas_hoy %}
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="card border-0 rounded-3 shadow-sm h-100">
-                        <div class="card-body p-3">
-                            <!-- Hora destacada -->
-                            <div class="text-center mb-2">
-                                <div class="badge bg-primary rounded-pill px-3 py-2 mb-2">
-                                    <i class="bi bi-clock me-1"></i>
-                                    <strong class="fs-5">{{ cita.inicio|date:"H:i" }}</strong>
-                                    {% if cita.fin %}
-                                        <span class="ms-2">→ {{ cita.fin|date:"H:i" }}</span>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            
-                            <!-- Tipo de cita con icono grande -->
-                            <div class="text-center mb-2">
-                                {% if "urgente" in cita.titulo|lower or "emergencia" in cita.titulo|lower %}
-                                    <div class="text-danger mb-1">
-                                        <i class="bi bi-exclamation-circle fs-2"></i>
-                                    </div>
-                                    <div class="badge bg-danger mb-2">❗ Urgente</div>
-                                {% elif "cita" in cita.titulo|lower or "consulta" in cita.titulo|lower or "dental" in cita.titulo|lower %}
-                                    <div class="text-primary mb-1">
-                                        <i class="bi bi-tooth fs-2"></i>
-                                    </div>
-                                    <div class="badge bg-primary mb-2">🦷 Cita</div>
-                                {% elif "recordatorio" in cita.titulo|lower or "follow" in cita.titulo|lower %}
-                                    <div class="text-success mb-1">
-                                        <i class="bi bi-clipboard-check fs-2"></i>
-                                    </div>
-                                    <div class="badge bg-success mb-2">📋 Recordatorio</div>
+            <!-- VISTA DE TABLA (Desktop >= 768px) -->
+            <div class="d-none d-md-block">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Hora</th>
+                                <th>Tipo</th>
+                                <th>Título</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cita in citas_hoy %}
+                            {% now "Y-m-d H:i" as ahora %}
+                            {% if cita.fin %}
+                                {% if cita.fin|date:"Y-m-d H:i" < ahora %}
+                                    <tr class="text-decoration-line-through text-muted">
                                 {% else %}
-                                    <div class="text-info mb-1">
-                                        <i class="bi bi-calendar-event fs-2"></i>
-                                    </div>
-                                    <div class="badge bg-info mb-2">📅 Evento</div>
+                                    <tr>
+                                {% endif %}
+                            {% else %}
+                                <tr>
+                            {% endif %}
+                                <td>
+                                    <strong>{{ cita.inicio|date:"H:i" }}</strong>
+                                    {% if cita.fin %}
+                                        <span class="text-muted ms-2">→ {{ cita.fin|date:"H:i" }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if "urgente" in cita.titulo|lower or "emergencia" in cita.titulo|lower %}
+                                        <span class="badge bg-danger">❗ Urgente</span>
+                                    {% elif "cita" in cita.titulo|lower or "consulta" in cita.titulo|lower or "dental" in cita.titulo|lower %}
+                                        <span class="badge bg-primary">🦷 Cita</span>
+                                    {% elif "recordatorio" in cita.titulo|lower or "follow" in cita.titulo|lower %}
+                                        <span class="badge bg-success">📋 Recordatorio</span>
+                                    {% else %}
+                                        <span class="badge bg-info">📅 Evento</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ cita.titulo }}</td>
+                                <td>
+                                    {% if cita.fin and cita.fin|date:"Y-m-d H:i" < ahora %}
+                                        <span class="badge bg-secondary">✓ Completada</span>
+                                    {% else %}
+                                        <span class="badge bg-success">⏰ Pendiente</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VISTA DE TARJETAS (Móvil < 768px) -->
+            <div class="d-md-none">
+                {% for cita in citas_hoy %}
+                {% now "Y-m-d H:i" as ahora %}
+                {% if cita.fin and cita.fin|date:"Y-m-d H:i" < ahora %}
+                    <div class="card mb-3 shadow-sm border-secondary" style="opacity: 0.6;">
+                {% else %}
+                    <div class="card mb-3 shadow-sm">
+                {% endif %}
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="badge bg-primary px-3 py-2">
+                                <i class="bi bi-clock me-1"></i>
+                                <strong>{{ cita.inicio|date:"H:i" }}</strong>
+                                {% if cita.fin %}
+                                    <span class="ms-2">→ {{ cita.fin|date:"H:i" }}</span>
                                 {% endif %}
                             </div>
-                            
-                            <!-- Título -->
-                            <h6 class="text-center mb-0">
-                                {{ cita.titulo|truncatewords:6 }}
-                            </h6>
+                            {% if cita.fin and cita.fin|date:"Y-m-d H:i" < ahora %}
+                                <span class="badge bg-secondary">✓ Completada</span>
+                            {% else %}
+                                <span class="badge bg-success">⏰ Pendiente</span>
+                            {% endif %}
                         </div>
+                        
+                        <div class="mb-2">
+                            {% if "urgente" in cita.titulo|lower or "emergencia" in cita.titulo|lower %}
+                                <span class="badge bg-danger me-1">❗ Urgente</span>
+                            {% elif "cita" in cita.titulo|lower or "consulta" in cita.titulo|lower or "dental" in cita.titulo|lower %}
+                                <span class="badge bg-primary me-1">🦷 Cita</span>
+                            {% elif "recordatorio" in cita.titulo|lower or "follow" in cita.titulo|lower %}
+                                <span class="badge bg-success me-1">📋 Recordatorio</span>
+                            {% else %}
+                                <span class="badge bg-info me-1">📅 Evento</span>
+                            {% endif %}
+                        </div>
+                        
+                        {% if cita.fin and cita.fin|date:"Y-m-d H:i" < ahora %}
+                            <h6 class="card-title text-decoration-line-through text-muted">{{ cita.titulo }}</h6>
+                        {% else %}
+                            <h6 class="card-title fw-bold">{{ cita.titulo }}</h6>
+                        {% endif %}
                     </div>
                 </div>
                 {% endfor %}
@@ -81,41 +131,32 @@
         </div>
         {% endif %}
 
-
-
-
-
-
         {% if error %}
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <strong>⚠️ Error:</strong> {{ error }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         {% else %}
-            <!-- Controles de rango -->
+            <!-- Controles de rango - RESPONSIVE -->
             <div class="bg-white p-3 rounded shadow-sm border mb-4">
-                <h6 class="mb-2"><i class="bi bi-funnel"></i> Filtrar eventos:</h6>
-                <div class="btn-group flex-wrap gap-1" role="group">
-                    <!-- <a href="?filtro=hoy" class="btn btn-sm {% if filtro_activo == 'hoy' %}btn-primary active{% else %}btn-outline-primary{% endif %}">
-                        <i class="bi bi-brightness-high"></i> Hoy
-                    </a> -->
-                    <a href="?filtro=semana" class="btn btn-sm {% if filtro_activo == 'semana' %}btn-primary active{% else %}btn-outline-primary{% endif %}">
+                <h6 class="mb-3"><i class="bi bi-funnel"></i> Filtrar eventos:</h6>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="?filtro=semana" class="btn btn-sm {% if filtro_activo == 'semana' %}btn-primary{% else %}btn-outline-primary{% endif %}">
                         <i class="bi bi-calendar-week"></i> Esta semana
                     </a>
-                    <a href="?filtro=mes" class="btn btn-sm {% if filtro_activo == 'mes' %}btn-primary active{% else %}btn-outline-primary{% endif %}">
+                    <a href="?filtro=mes" class="btn btn-sm {% if filtro_activo == 'mes' %}btn-primary{% else %}btn-outline-primary{% endif %}">
                         <i class="bi bi-calendar-month"></i> Mes actual
                     </a>
-                    <a href="?filtro=proximo_mes" class="btn btn-sm {% if filtro_activo == 'proximo_mes' %}btn-primary active{% else %}btn-outline-primary{% endif %}">
+                    <a href="?filtro=proximo_mes" class="btn btn-sm {% if filtro_activo == 'proximo_mes' %}btn-primary{% else %}btn-outline-primary{% endif %}">
                         <i class="bi bi-calendar-plus"></i> Próximo mes
                     </a>
-                    <a href="?filtro=rango&dias=90&pasado=30" class="btn btn-sm {% if filtro_activo == 'rango' %}btn-primary active{% else %}btn-outline-primary{% endif %}">
+                    <a href="?filtro=rango&dias=90&pasado=30" class="btn btn-sm {% if filtro_activo == 'rango' %}btn-primary{% else %}btn-outline-primary{% endif %}">
                         <i class="bi bi-calendar3"></i> Próximos 3 meses
                     </a>
                 </div>
             </div>
 
             {% if eventos %}
-                <!-- Agrupar eventos por fecha -->
                 <!-- Agrupar eventos por fecha -->
                 {% regroup eventos by inicio.date as eventos_por_fecha %}
 
