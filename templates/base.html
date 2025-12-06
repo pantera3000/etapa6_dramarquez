@@ -59,6 +59,57 @@
 
 
 
+
+    <!-- Agregar en el <head> de base.html -->
+    <style>
+    /* Mejoras para toasts en móvil */
+    @media (max-width: 768px) {
+        .toast-container {
+            width: 95% !important;
+            max-width: 320px;
+            left: 50% !important;
+            transform: translateX(-50%);
+        }
+        
+        .toast-container.bottom-0.start-0 {
+            left: 2.5% !important;
+            transform: none;
+        }
+        
+        .toast-container.bottom-0.end-0 {
+            right: 2.5% !important;
+            left: auto !important;
+            transform: none;
+        }
+        
+        .toast {
+            font-size: 0.85rem;
+            max-width: 100%;
+        }
+        
+        .toast-body {
+            padding: 0.6rem !important;
+        }
+        
+        .toast-body ul {
+            font-size: 0.75em !important;
+            padding-left: 1rem;
+            margin-bottom: 0.5rem !important;
+        }
+        
+        .toast-body strong {
+            font-size: 0.9em;
+        }
+    }
+    </style>
+
+
+
+
+
+
+
+
     <!-- CSS personalizado -->
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
     {% block extra_css %}{% endblock %}
@@ -211,14 +262,45 @@
 
 
 <!-- Toast de cumpleaños (solo si hay cumpleaños hoy) -->
+<!-- Toast de cumpleaños (solo si hay cumpleaños hoy) -->
 {% if cumpleaneros_hoy_count > 0 %}
-<div class="toast-container position-fixed bottom-0 start-0 p-3">
-    <div id="birthdayToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="50000">
+<!-- Badge flotante para móvil (arriba, lado izquierdo) -->
+<div id="birthdayBadge" class="d-md-none position-fixed start-0 m-3" style="bottom: 120px; z-index: 1050;">
+    <button class="btn btn-success rounded-circle shadow position-relative" onclick="document.getElementById('birthdayToastMobile').classList.toggle('d-none')" style="width: 50px; height: 50px;">
+        🎂
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.7rem;">
+            {{ cumpleaneros_hoy_count }}
+        </span>
+        <button onclick="event.stopPropagation(); document.getElementById('birthdayBadge').style.display='none'; document.getElementById('birthdayToastMobile').classList.add('d-none');" class="position-absolute top-0 end-0 btn-close btn-close-white" style="font-size: 0.5rem; padding: 0.2rem; opacity: 0.8;"></button>
+    </button>
+</div>
+
+<!-- Toast expandible móvil (oculto por defecto) -->
+<div id="birthdayToastMobile" class="d-none d-md-none position-fixed start-0 m-3" style="bottom: 180px; max-width: 280px; z-index: 1049;">
+    <div class="toast show align-items-center text-bg-success border-0" role="alert" style="font-size: 0.85rem;">
         <div class="d-flex">
-            <div class="toast-body">
-                <strong>🎂 ¡Feliz Cumpleaños!</strong><br>
+            <div class="toast-body" style="padding: 0.6rem;">
+                <strong style="font-size: 0.9em;">🎂 ¡Feliz Cumpleaños!</strong><br>
                 Hoy cumplen años:
-                <ul class="mb-0 mt-2" style="font-size: 0.9em;">
+                <ul class="mb-0 mt-2" style="font-size: 0.75em; padding-left: 1rem; margin-bottom: 0.5rem;">
+                    {% for paciente in cumpleaneros_hoy %}
+                    <li>{{ paciente.nombre_completo }} ({{ paciente.edad }} años)</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="document.getElementById('birthdayToastMobile').classList.add('d-none')" aria-label="Cerrar"></button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast normal para desktop -->
+<div class="d-none d-md-block toast-container position-fixed bottom-0 start-0 p-2" style="max-width: 90%; width: 280px;">
+    <div id="birthdayToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="50000" style="font-size: 0.85rem;">
+        <div class="d-flex">
+            <div class="toast-body" style="padding: 0.6rem;">
+                <strong style="font-size: 0.9em;">🎂 ¡Feliz Cumpleaños!</strong><br>
+                Hoy cumplen años:
+                <ul class="mb-0 mt-2" style="font-size: 0.75em; padding-left: 1rem; margin-bottom: 0.5rem;">
                     {% for paciente in cumpleaneros_hoy %}
                     <li>{{ paciente.nombre_completo }} ({{ paciente.edad }} años)</li>
                     {% endfor %}
@@ -242,20 +324,53 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <!-- Toast de citas de hoy (solo si hay citas hoy) -->
 {% if citas_hoy_count > 0 %}
-<div class="toast-container position-fixed bottom-0 end-0 p-3">
-    <div id="citasToast" class="toast align-items-center text-bg-info border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="50000">
+<!-- Badge flotante para móvil (abajo, lado izquierdo) -->
+<div id="citasBadge" class="d-md-none position-fixed start-0 m-3" style="bottom: 60px; z-index: 1050;">
+    <button class="btn btn-info rounded-circle shadow position-relative" onclick="document.getElementById('citasToastMobile').classList.toggle('d-none')" style="width: 50px; height: 50px;">
+        📅
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.7rem;">
+            {{ citas_hoy_count }}
+        </span>
+        <button onclick="event.stopPropagation(); document.getElementById('citasBadge').style.display='none'; document.getElementById('citasToastMobile').classList.add('d-none');" class="position-absolute top-0 end-0 btn-close btn-close-white" style="font-size: 0.5rem; padding: 0.2rem; opacity: 0.8;"></button>
+    </button>
+</div>
+
+<!-- Toast expandible móvil (oculto por defecto) -->
+<div id="citasToastMobile" class="d-none d-md-none position-fixed start-0 m-3" style="bottom: 120px; max-width: 280px; z-index: 1049;">
+    <div class="toast show align-items-center text-bg-info border-0" role="alert" style="font-size: 0.85rem;">
         <div class="d-flex">
-            <div class="toast-body">
-                <strong>📅 Citas de Hoy</strong><br>
+            <div class="toast-body" style="padding: 0.6rem;">
+                <strong style="font-size: 0.9em;">📅 Citas de Hoy</strong><br>
                 Tienes {{ citas_hoy_count }} cita{{ citas_hoy_count|pluralize }} programada{{ citas_hoy_count|pluralize }}:
-                <ul class="mb-0 mt-2" style="font-size: 0.9em;">
+                <ul class="mb-0 mt-2" style="font-size: 0.75em; padding-left: 1rem; margin-bottom: 0.5rem;">
                     {% for cita in citas_hoy_sidebar %}
                     <li>
                         <strong>{{ cita.inicio|date:"H:i" }}</strong> - {{ cita.titulo|truncatewords:5 }}
                     </li>
                     {% endfor %}
                 </ul>
-                <a href="{% url 'citas:eventos_ics' %}" class="btn btn-sm btn-light mt-2">Ver todas</a>
+                <a href="{% url 'citas:eventos_ics' %}" class="btn btn-sm btn-light mt-2" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">Ver todas</a>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="document.getElementById('citasToastMobile').classList.add('d-none')" aria-label="Cerrar"></button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast normal para desktop -->
+<div class="d-none d-md-block toast-container position-fixed bottom-0 end-0 p-2" style="max-width: 90%; width: 280px;">
+    <div id="citasToast" class="toast align-items-center text-bg-info border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="50000" style="font-size: 0.85rem;">
+        <div class="d-flex">
+            <div class="toast-body" style="padding: 0.6rem;">
+                <strong style="font-size: 0.9em;">📅 Citas de Hoy</strong><br>
+                Tienes {{ citas_hoy_count }} cita{{ citas_hoy_count|pluralize }} programada{{ citas_hoy_count|pluralize }}:
+                <ul class="mb-0 mt-2" style="font-size: 0.75em; padding-left: 1rem; margin-bottom: 0.5rem;">
+                    {% for cita in citas_hoy_sidebar %}
+                    <li>
+                        <strong>{{ cita.inicio|date:"H:i" }}</strong> - {{ cita.titulo|truncatewords:5 }}
+                    </li>
+                    {% endfor %}
+                </ul>
+                <a href="{% url 'citas:eventos_ics' %}" class="btn btn-sm btn-light mt-2" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">Ver todas</a>
             </div>
             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
         </div>
