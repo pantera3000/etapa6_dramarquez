@@ -66,7 +66,7 @@
                         <thead class="table-light">
                             <tr>
                                 <th>Título</th>
-                                <th>Contenido</th>
+                                <th class="d-none d-md-table-cell">Contenido</th>
                                 {% if not paciente %}<th>Paciente</th>{% endif %}
                                 <th>Fecha</th>
                                 <th class="text-end">Acciones</th>
@@ -76,7 +76,7 @@
                             {% for nota in notas %}
                             <tr>
                                 <td><strong>{{ nota.titulo }}</strong></td>
-                                <td>{{ nota.contenido|truncatewords:10 }}</td>
+                                <td class="d-none d-md-table-cell">{{ nota.contenido|truncatewords:10 }}</td>
                                 {% if not paciente %}
                                 <td>
                                     {% if nota.paciente %}

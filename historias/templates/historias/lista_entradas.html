@@ -71,8 +71,8 @@
                             <tr>
                                 <th>Paciente</th>
                                 <th>Fecha</th>
-                                <th>Motivo</th>
-                                <th>Diagnóstico</th>
+                                <th class="d-none d-md-table-cell">Motivo</th>
+                                <th class="d-none d-lg-table-cell">Diagnóstico</th>
                                 <th class="text-end">Acciones</th>
                             </tr>
                         </thead>
@@ -90,8 +90,8 @@
                                     {{ entrada.fecha|date:"d/m/Y" }}<br>
                                     <small class="text-muted">{{ entrada.fecha|date:"H:i" }}</small>
                                 </td>
-                                <td>{{ entrada.motivo|truncatewords:10 }}</td>
-                                <td>
+                                <td class="d-none d-md-table-cell">{{ entrada.motivo|truncatewords:10 }}</td>
+                                <td class="d-none d-lg-table-cell">
                                     {% if entrada.diagnostico %}
                                         {{ entrada.diagnostico|truncatewords:15 }}
                                     {% else %}

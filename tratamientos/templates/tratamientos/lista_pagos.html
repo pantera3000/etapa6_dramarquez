@@ -56,12 +56,12 @@
                         <thead class="table-light">
                             <tr>
                                 <th>Fecha del pago</th>
-                                <th>Registrado en</th>
+                                <th class="d-none d-lg-table-cell">Registrado en</th>
                                 <th>Monto</th>
-                                <th>Método</th>
+                                <th class="d-none d-md-table-cell">Método</th>
                                 <th>Paciente</th>
                                 <th>Tratamiento</th>
-                                <th>Nota</th>
+                                <th class="d-none d-lg-table-cell">Nota</th>
                                 <th class="text-end">Acciones</th>
                             </tr>
                         </thead>
@@ -69,9 +69,9 @@
                             {% for pago in pagos %}
                             <tr>
                                 <td>{{ pago.fecha_pago|date:"d/m/Y H:i" }}</td>
-                                <td><small class="text-muted">{{ pago.registrado_en|date:"d/m/Y H:i" }}</small></td>
+                                <td class="d-none d-lg-table-cell"><small class="text-muted">{{ pago.registrado_en|date:"d/m/Y H:i" }}</small></td>
                                 <td><strong>S/ {{ pago.monto }}</strong></td>
-                                <td>{{ pago.get_metodo_pago_display }}</td>
+                                <td class="d-none d-md-table-cell">{{ pago.get_metodo_pago_display }}</td>
                                 <td>
                                     <a href="{% url 'pacientes:detalle' pago.tratamiento.paciente.pk %}" class="text-decoration-none">
                                         <span class="badge bg-primary">{{ pago.tratamiento.paciente.nombre_completo }}</span>
@@ -82,7 +82,7 @@
                                         {{ pago.tratamiento.nombre }}
                                     </a>
                                 </td>
-                                <td>{{ pago.nota|default:"—" }}</td>
+                                <td class="d-none d-lg-table-cell">{{ pago.nota|default:"—" }}</td>
                                 <td class="text-end">
                                     <a href="{% url 'tratamientos:eliminar_pago' pago.pk %}" 
                                        class="btn btn-sm btn-danger"

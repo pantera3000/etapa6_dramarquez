@@ -106,8 +106,8 @@
                                 <th>Tratamiento</th>
                                 {% if not paciente %}<th>Paciente</th>{% endif %}
                                 <th>Costo</th>
-                                <th>Pagado</th>
-                                <th>Deuda</th>
+                                <th class="d-none d-md-table-cell">Pagado</th>
+                                <th class="d-none d-lg-table-cell">Deuda</th>
                                 <th>Estado</th>
                                 <th class="text-end">Acciones</th>
                             </tr>
@@ -131,8 +131,8 @@
                                 </td>
                                 {% endif %}
                                 <td><strong>S/ {{ t.costo_total }}</strong></td>
-                                <td>S/ {{ t.total_pagado }}</td>
-                                <td class="{% if t.deuda > 0 %}text-danger fw-bold{% endif %}">S/ {{ t.deuda }}</td>
+                                <td class="d-none d-md-table-cell">S/ {{ t.total_pagado }}</td>
+                                <td class="d-none d-lg-table-cell {% if t.deuda > 0 %}text-danger fw-bold{% endif %}">S/ {{ t.deuda }}</td>
                                 <td>
                                     <div class="d-flex flex-column">
                                         <span class="badge bg-{{ t.clase_estado_pago }} mb-1">
