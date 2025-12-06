@@ -3,7 +3,7 @@ import requests
 from icalendar import Calendar
 from django.utils import timezone
 from datetime import datetime, date, timedelta
-# import pytz  # Necesario para manejo avanzado de timezones
+import pytz  # Para manejo correcto de timezone de Perú
 import logging
 
 logger = logging.getLogger(__name__)
@@ -21,9 +21,11 @@ def eventos_ics_view(request):
         
         eventos = []
         citas_hoy = []
-        ahora = timezone.now()
+        
+        # IMPORTANTE: Usar zona horaria de Perú explícitamente
+        peru_tz = pytz.timezone('America/Lima')
+        ahora = timezone.now().astimezone(peru_tz)
         hoy_peru = ahora.date()
-        # peru_tz = pytz.timezone('America/Lima')
         
         # Obtener el tipo de filtro desde la URL (por defecto: semana)
         filtro = request.GET.get('filtro', 'semana')
@@ -80,20 +82,19 @@ def eventos_ics_view(request):
                     
                     # Caso 1: Fecha simple (evento de todo el día)
                     if isinstance(inicio, date) and not isinstance(inicio, datetime):
-                        # Usar la fecha directamente para eventos de todo el día
+                        # Para eventos de todo el día, usar la fecha directamente
                         inicio_peru_date = inicio
-                        # Crear datetime en la zona horaria de Perú
-                        inicio_peru = timezone.datetime.combine(inicio, timezone.datetime.min.time())
-                        inicio_peru = timezone.make_aware(inicio_peru, timezone.get_current_timezone())
+                        # Crear datetime a medianoche en Perú
+                        inicio_peru = peru_tz.localize(datetime.combine(inicio, datetime.min.time()))
                     else:
-                        # Caso 2: Datetime
+                        # Caso 2: Datetime con hora
                         if timezone.is_naive(inicio):
-                            # Google Calendar ICS envía en UTC, pero asumimos que es Perú
-                            # (solución práctica para evitar pytz)
-                            inicio_peru = timezone.make_aware(inicio, timezone.get_current_timezone())
+                            # Si no tiene timezone, asumimos UTC (Google Calendar)
+                            inicio_utc = pytz.UTC.localize(inicio)
+                            inicio_peru = inicio_utc.astimezone(peru_tz)
                         else:
                             # Ya tiene timezone, convertir a Perú
-                            inicio_peru = inicio.astimezone(timezone.get_current_timezone())
+                            inicio_peru = inicio.astimezone(peru_tz)
                         inicio_peru_date = inicio_peru.date()
                     
                     # Procesar fecha de fin (similar)
@@ -102,13 +103,13 @@ def eventos_ics_view(request):
                         fin = componente.get('dtend').dt
                         if fin:
                             if isinstance(fin, date) and not isinstance(fin, datetime):
-                                fin_peru = timezone.datetime.combine(fin, timezone.datetime.min.time())
-                                fin_peru = timezone.make_aware(fin_peru, timezone.get_current_timezone())
+                                fin_peru = peru_tz.localize(datetime.combine(fin, datetime.min.time()))
                             else:
                                 if timezone.is_naive(fin):
-                                    fin_peru = timezone.make_aware(fin, timezone.get_current_timezone())
+                                    fin_utc = pytz.UTC.localize(fin)
+                                    fin_peru = fin_utc.astimezone(peru_tz)
                                 else:
-                                    fin_peru = fin.astimezone(timezone.get_current_timezone())
+                                    fin_peru = fin.astimezone(peru_tz)
                     
                     # Comparar fechas en Perú
                     if inicio_peru_date == hoy_peru:
@@ -151,7 +152,8 @@ def eventos_ics_view(request):
         
     except Exception as e:
         logger.error(f"Error general: {e}")
-        ahora_error = timezone.now()
+        peru_tz = pytz.timezone('America/Lima')
+        ahora_error = timezone.now().astimezone(peru_tz)
         manana_error = (ahora_error + timedelta(days=1)).date()
         return render(request, 'citas/eventos_ics.html', {
             'eventos': [], 
