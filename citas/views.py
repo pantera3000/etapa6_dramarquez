@@ -3,7 +3,7 @@ import requests
 from icalendar import Calendar
 from django.utils import timezone
 from datetime import datetime, date, timedelta
-import pytz  # Para manejo correcto de timezone de Perú
+from zoneinfo import ZoneInfo  # Incluido en Python 3.9+, no requiere instalación
 import logging
 
 logger = logging.getLogger(__name__)
@@ -22,9 +22,9 @@ def eventos_ics_view(request):
         eventos = []
         citas_hoy = []
         
-        # IMPORTANTE: Usar zona horaria de Perú explícitamente
-        peru_tz = pytz.timezone('America/Lima')
-        ahora = timezone.now().astimezone(peru_tz)
+        # IMPORTANTE: Usar zona horaria de Perú con zoneinfo
+        peru_tz = ZoneInfo('America/Lima')
+        ahora = datetime.now(peru_tz)
         hoy_peru = ahora.date()
         
         # Obtener el tipo de filtro desde la URL (por defecto: semana)
@@ -85,12 +85,12 @@ def eventos_ics_view(request):
                         # Para eventos de todo el día, usar la fecha directamente
                         inicio_peru_date = inicio
                         # Crear datetime a medianoche en Perú
-                        inicio_peru = peru_tz.localize(datetime.combine(inicio, datetime.min.time()))
+                        inicio_peru = datetime.combine(inicio, datetime.min.time(), tzinfo=peru_tz)
                     else:
                         # Caso 2: Datetime con hora
-                        if timezone.is_naive(inicio):
+                        if inicio.tzinfo is None:
                             # Si no tiene timezone, asumimos UTC (Google Calendar)
-                            inicio_utc = pytz.UTC.localize(inicio)
+                            inicio_utc = inicio.replace(tzinfo=ZoneInfo('UTC'))
                             inicio_peru = inicio_utc.astimezone(peru_tz)
                         else:
                             # Ya tiene timezone, convertir a Perú
@@ -103,10 +103,10 @@ def eventos_ics_view(request):
                         fin = componente.get('dtend').dt
                         if fin:
                             if isinstance(fin, date) and not isinstance(fin, datetime):
-                                fin_peru = peru_tz.localize(datetime.combine(fin, datetime.min.time()))
+                                fin_peru = datetime.combine(fin, datetime.min.time(), tzinfo=peru_tz)
                             else:
-                                if timezone.is_naive(fin):
-                                    fin_utc = pytz.UTC.localize(fin)
+                                if fin.tzinfo is None:
+                                    fin_utc = fin.replace(tzinfo=ZoneInfo('UTC'))
                                     fin_peru = fin_utc.astimezone(peru_tz)
                                 else:
                                     fin_peru = fin.astimezone(peru_tz)
@@ -152,8 +152,8 @@ def eventos_ics_view(request):
         
     except Exception as e:
         logger.error(f"Error general: {e}")
-        peru_tz = pytz.timezone('America/Lima')
-        ahora_error = timezone.now().astimezone(peru_tz)
+        peru_tz = ZoneInfo('America/Lima')
+        ahora_error = datetime.now(peru_tz)
         manana_error = (ahora_error + timedelta(days=1)).date()
         return render(request, 'citas/eventos_ics.html', {
             'eventos': [], 
