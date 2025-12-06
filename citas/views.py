@@ -12,7 +12,7 @@ def calendario_view(request):
     return render(request, 'citas/calendario.html')
 
 def eventos_ics_view(request):
-    ics_url = "https://calendar.google.com/calendar/ical/anamarquez1987%40gmail.com/private-7bdd1e3e17e30fbae0c751f9429c4cbe/basic.ics"
+    ics_url = "https://calendar.google.com/calendar/ical/juancarloscn%40gmail.com/private-7c3dfb4a8b649579159a76228916d6cf/basic.ics"
     
     try:
         response = requests.get(ics_url, timeout=10)
@@ -25,10 +25,9 @@ def eventos_ics_view(request):
         hoy_peru = ahora.date()
         # peru_tz = pytz.timezone('America/Lima')
         
-        # Obtener el tipo de filtro desde la URL
-        filtro = request.GET.get('filtro', 'mes')
+        # Obtener el tipo de filtro desde la URL (por defecto: semana)
+        filtro = request.GET.get('filtro', 'semana')
 
-        # Calcular límites según el filtro
         # Calcular límites según el filtro
         if filtro == 'hoy':
             limite_pasado = ahora.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -71,11 +70,7 @@ def eventos_ics_view(request):
             limite_futuro = ahora + timedelta(days=dias_futuro)
             limite_pasado = ahora - timedelta(days=dias_pasado)
         
-        # Procesar todos los eventos del calendario
-        # Procesar todos los eventos del calendario
         # Procesar eventos
-        # Reemplaza la sección de procesamiento de eventos por esta:
-
         for componente in cal.walk():
             if componente.name == "VEVENT":
                 try:
@@ -162,7 +157,7 @@ def eventos_ics_view(request):
             'eventos': [], 
             'citas_hoy': [],
             'error': 'Error al procesar el calendario',
-            'filtro_activo': request.GET.get('filtro', 'mes'),
+            'filtro_activo': request.GET.get('filtro', 'semana'),
             'ahora': ahora_error,
             'manana': manana_error
         })
