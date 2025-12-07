@@ -15,6 +15,7 @@ urlpatterns = [
     path('notas/', include('notas.urls')),
     path('citas/', include('citas.urls')),
     path('usuarios/', include('usuarios.urls')),
+    path('configuracion/', include('configuracion.urls')),  # AGREGAR
 ]
 
 # Servir archivos de medios en desarrollo

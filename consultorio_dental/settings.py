@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'protocolo_ninos',
     'citas',
     'usuarios',
+    'configuracion',  # AGREGAR ESTA LÍNEA
 ]
 
 MIDDLEWARE = [
@@ -58,6 +59,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'pacientes.context_processors.cumpleanos_hoy',
                 'citas.context_processors.citas_hoy',
+                'configuracion.context_processors.configuracion_consultorio',  # AGREGAR
             ],
         },
     },

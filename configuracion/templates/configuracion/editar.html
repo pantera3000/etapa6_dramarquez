@@ -1,0 +1,144 @@
+<!-- configuracion/templates/configuracion/editar.html -->
+{% extends 'base.html' %}
+
+{% block title %}Configuración del Consultorio{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center">
+    <div class="col-lg-8">
+        <div class="mb-4 px-2 px-md-0">
+            <h2 class="mb-3">⚙️ Configuración del Consultorio</h2>
+            <p class="text-muted">Edita la información que se mostrará en toda la aplicación</p>
+        </div>
+
+        <div class="bg-white p-3 p-md-4 rounded shadow-sm border">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <!-- Información General -->
+                <h5 class="mb-3 pb-2 border-bottom">📋 Información General</h5>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.nombre_consultorio.id_for_label }}" class="form-label">
+                            {{ form.nombre_consultorio.label }} <span class="text-danger">*</span>
+                        </label>
+                        {{ form.nombre_consultorio }}
+                        {% if form.nombre_consultorio.errors %}
+                            <div class="text-danger small">{{ form.nombre_consultorio.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.nombre_doctor.id_for_label }}" class="form-label">
+                            {{ form.nombre_doctor.label }}
+                        </label>
+                        {{ form.nombre_doctor }}
+                        {% if form.nombre_doctor.errors %}
+                            <div class="text-danger small">{{ form.nombre_doctor.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Logo -->
+                <div class="mb-4">
+                    <label for="{{ form.logo.id_for_label }}" class="form-label">
+                        {{ form.logo.label }}
+                    </label>
+                    
+                    {% if config.logo %}
+                        <div class="mb-3">
+                            <p class="text-muted small mb-2">Logo actual:</p>
+                            <img src="{{ config.logo.url }}" alt="Logo actual" class="img-thumbnail" style="max-width: 200px;">
+                        </div>
+                    {% endif %}
+                    
+                    {{ form.logo }}
+                    {% if form.logo.errors %}
+                        <div class="text-danger small">{{ form.logo.errors }}</div>
+                    {% endif %}
+                    <div class="form-text">{{ form.logo.help_text }}</div>
+                </div>
+
+                <!-- Información de Contacto -->
+                <h5 class="mb-3 pb-2 border-bottom mt-4">📞 Información de Contacto</h5>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.telefono.id_for_label }}" class="form-label">
+                            {{ form.telefono.label }}
+                        </label>
+                        {{ form.telefono }}
+                        {% if form.telefono.errors %}
+                            <div class="text-danger small">{{ form.telefono.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.email.id_for_label }}" class="form-label">
+                            {{ form.email.label }}
+                        </label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <div class="text-danger small">{{ form.email.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.direccion.id_for_label }}" class="form-label">
+                        {{ form.direccion.label }}
+                    </label>
+                    {{ form.direccion }}
+                    {% if form.direccion.errors %}
+                        <div class="text-danger small">{{ form.direccion.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Web y Redes Sociales -->
+                <h5 class="mb-3 pb-2 border-bottom mt-4">🌐 Web y Redes Sociales</h5>
+                
+                <div class="mb-3">
+                    <label for="{{ form.sitio_web.id_for_label }}" class="form-label">
+                        {{ form.sitio_web.label }}
+                    </label>
+                    {{ form.sitio_web }}
+                    {% if form.sitio_web.errors %}
+                        <div class="text-danger small">{{ form.sitio_web.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.facebook.id_for_label }}" class="form-label">
+                            {{ form.facebook.label }}
+                        </label>
+                        {{ form.facebook }}
+                        {% if form.facebook.errors %}
+                            <div class="text-danger small">{{ form.facebook.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.instagram.id_for_label }}" class="form-label">
+                            {{ form.instagram.label }}
+                        </label>
+                        {{ form.instagram }}
+                        {% if form.instagram.errors %}
+                            <div class="text-danger small">{{ form.instagram.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <button type="submit" class="btn btn-success">💾 Guardar Configuración</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

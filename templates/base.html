@@ -134,7 +134,12 @@
     <div class="container-fluid">
         <!-- Logo / Título -->
         <a class="navbar-brand" href="{% url 'pacientes:lista' %}">
-            🦷 Consultorio Dental
+            {% if config.logo %}
+                <img src="{{ config.logo.url }}" alt="{{ config.nombre_consultorio }}" style="height: 30px; margin-right: 8px;">
+            {% else %}
+                🦷
+            {% endif %}
+            {{ config.nombre_consultorio }}
         </a>
 
         <!-- Botón hamburguesa para móvil -->
@@ -201,6 +206,7 @@
                         ⚙️ Configuración
                     </a>
                     <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'configuracion:editar' %}">⚙️ Configuración General</a></li>
                         <li><a class="dropdown-item" href="{% url 'usuarios:lista' %}">👥 Gestión de Usuarios</a></li>
                     </ul>
                 </li>
