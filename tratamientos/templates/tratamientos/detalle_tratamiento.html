@@ -24,7 +24,7 @@
                     </div>
                 </div>
                 <div class="d-flex gap-2 flex-wrap">
-                    <a href="{% url 'tratamientos:editar' tratamiento.pk %}}" class="btn btn-warning btn-sm">✏️ Editar</a>
+                    <a href="{% url 'tratamientos:editar' tratamiento.pk %}" class="btn btn-warning btn-sm">✏️ Editar</a>
                     
                     {% if request.META.HTTP_REFERER and 'tratamientos' in request.META.HTTP_REFERER and 'pacientes' not in request.META.HTTP_REFERER %}
                         <a href="{% url 'tratamientos:lista' %}" class="btn btn-secondary btn-sm">← Lista</a>

@@ -8,23 +8,28 @@
 <div class="d-flex justify-content-center">
     <div class="col-lg-10">
         <!-- Encabezado con acciones - RESPONSIVE -->
-        <div class="mb-4">
-            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+        <!-- Encabezado con acciones - RESPONSIVE -->
+        <div class="mb-4 px-2 px-md-0">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
                 <div class="flex-grow-1">
                     <h2 class="mb-2">👤 {{ paciente.nombre_completo }}</h2>
-                    <p class="mb-0">
-                        DNI: {{ paciente.dni }} • 
-                        {{ paciente.edad }} años • 
-                        {% if paciente.dias_hasta_cumple == 0 %}
-                            <span class="badge bg-success fs-6">🎂 ¡Hoy es su cumpleaños!</span>
-                        {% else %}
-                            🎂 Cumple en {{ paciente.dias_hasta_cumple }} día{{ paciente.dias_hasta_cumple|pluralize }}
-                        {% endif %}
+                    <p class="mb-0 text-muted" style="line-height: 1.6;">
+                        <span class="d-block d-sm-inline">DNI: {{ paciente.dni }}</span>
+                        <span class="d-none d-sm-inline"> • </span>
+                        <span class="d-block d-sm-inline">{{ paciente.edad }} años</span>
+                        <span class="d-none d-sm-inline"> • </span>
+                        <span class="d-block d-sm-inline mt-1 mt-sm-0">
+                            {% if paciente.dias_hasta_cumple == 0 %}
+                                <span class="badge bg-success">🎂 ¡Hoy es su cumpleaños!</span>
+                            {% else %}
+                                🎂 Cumple en {{ paciente.dias_hasta_cumple }} día{{ paciente.dias_hasta_cumple|pluralize }}
+                            {% endif %}
+                        </span>
                     </p>
                 </div>
-                <div class="d-flex gap-2">
-                    <a href="{% url 'pacientes:editar' paciente.pk %}" class="btn btn-warning btn-sm">✏️ Editar</a>
-                    <a href="{% url 'pacientes:lista' %}" class="btn btn-secondary btn-sm">← Lista</a>
+                <div class="d-flex gap-2 flex-wrap w-100 w-sm-auto">
+                    <a href="{% url 'pacientes:editar' paciente.pk %}" class="btn btn-warning btn-sm flex-fill flex-sm-grow-0">✏️ Editar</a>
+                    <a href="{% url 'pacientes:lista' %}" class="btn btn-secondary btn-sm flex-fill flex-sm-grow-0">← Lista</a>
                 </div>
             </div>
         </div>

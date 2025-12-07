@@ -8,23 +8,25 @@
 <div class="d-flex justify-content-center">
     <div class="col-lg-9">
         <!-- Encabezado -->
-        <!-- Encabezado -->
-        <div class="d-flex justify-content-between align-items-start mb-4">
-            <div>
-                <h2 class="mb-2">🩺 Entrada Clínica</h2>
-                <p class="text-muted mb-0">
-                    {{ entrada.fecha|date:"d \d\e F \d\e Y \a \l\a\s H:i" }}
-                </p>
-            </div>
-            <div class="d-flex gap-2">
-                <a href="{% url 'historias:editar_entrada' entrada.pk %}" class="btn btn-warning btn-sm">✏️ Editar</a>
-                
-                <!-- Botón contextual de regreso -->
-                {% if request.META.HTTP_REFERER and 'historias' in request.META.HTTP_REFERER and 'pacientes' not in request.META.HTTP_REFERER %}
-                    <a href="{% url 'historias:lista' %}" class="btn btn-secondary btn-sm">← Lista de Historias</a>
-                {% else %}
-                    <a href="{% url 'pacientes:detalle' entrada.paciente.pk %}?historias_page=1" class="btn btn-secondary btn-sm">← Paciente</a>
-                {% endif %}
+        <!-- Encabezado - RESPONSIVE -->
+        <div class="mb-4 px-2 px-md-0">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+                <div class="flex-grow-1">
+                    <h2 class="mb-2">🩺 Entrada Clínica</h2>
+                    <p class="text-muted mb-0">
+                        {{ entrada.fecha|date:"d \d\e F \d\e Y \a \l\a\s H:i" }}
+                    </p>
+                </div>
+                <div class="d-flex gap-2 flex-wrap w-100 w-sm-auto">
+                    <a href="{% url 'historias:editar_entrada' entrada.pk %}" class="btn btn-warning btn-sm flex-fill flex-sm-grow-0">✏️ Editar</a>
+                    
+                    <!-- Botón contextual de regreso -->
+                    {% if request.META.HTTP_REFERER and 'historias' in request.META.HTTP_REFERER and 'pacientes' not in request.META.HTTP_REFERER %}
+                        <a href="{% url 'historias:lista' %}" class="btn btn-secondary btn-sm flex-fill flex-sm-grow-0">← Lista de Historias</a>
+                    {% else %}
+                        <a href="{% url 'pacientes:detalle' entrada.paciente.pk %}?historias_page=1" class="btn btn-secondary btn-sm flex-fill flex-sm-grow-0">← Paciente</a>
+                    {% endif %}
+                </div>
             </div>
         </div>
 
