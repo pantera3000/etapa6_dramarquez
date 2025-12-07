@@ -4,6 +4,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from django.forms import inlineformset_factory
 from django.db.models import Q
 from datetime import date
@@ -11,7 +13,7 @@ from django.urls import reverse
 
 from pacientes.models import Paciente
 from .models import Nota, ImagenNota
-from .forms import NotaForm, ImagenNotaForm  # ✅ Importa ambos formularios aquí
+from .forms import NotaForm, ImagenNotaForm
 
 
 
@@ -47,7 +49,7 @@ from .forms import NotaForm, ImagenNotaForm
 
 
 
-class ListaNotasView(ListView):
+class ListaNotasView(LoginRequiredMixin, ListView):
     model = Nota
     template_name = 'notas/lista_notas.html'
     context_object_name = 'notas'
@@ -91,7 +93,7 @@ class ListaNotasView(ListView):
         context['paciente'] = getattr(self, 'paciente', None)
         return context
 
-class DetalleNotaView(DetailView):
+class DetalleNotaView(LoginRequiredMixin, DetailView):
     model = Nota
     template_name = 'notas/detalle_nota.html'
     context_object_name = 'nota'
@@ -101,7 +103,7 @@ class DetalleNotaView(DetailView):
 from django.forms import inlineformset_factory
 from .forms import NotaForm, ImagenNotaForm
 
-class CrearNotaView(CreateView):
+class CrearNotaView(LoginRequiredMixin, CreateView):
     model = Nota
     form_class = NotaForm
     template_name = 'notas/crear_nota.html'
@@ -154,7 +156,7 @@ class CrearNotaView(CreateView):
         return reverse_lazy('notas:lista')
 
 
-class EditarNotaView(UpdateView):
+class EditarNotaView(LoginRequiredMixin, UpdateView):
     model = Nota
     form_class = NotaForm
     template_name = 'notas/editar_nota.html'
@@ -200,7 +202,7 @@ class EditarNotaView(UpdateView):
         return reverse_lazy('notas:detalle', kwargs={'pk': self.object.pk})
 
 
-class EliminarNotaView(DeleteView):
+class EliminarNotaView(LoginRequiredMixin, DeleteView):
     model = Nota
     template_name = 'notas/eliminar_nota.html'
 
@@ -223,6 +225,7 @@ class EliminarNotaView(DeleteView):
 
 
 # ✅ NUEVA VISTA: Subir imagen a Google Drive
+@login_required
 def subir_imagen_drive_view(request, pk):
     """
     Vista para subir imagen a Google Drive (guardando solo el enlace)

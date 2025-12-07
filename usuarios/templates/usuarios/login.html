@@ -1,4 +1,3 @@
-# usuarios/templates/usuarios/login.html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -59,12 +58,6 @@
                 {% endfor %}
             {% endif %}
 
-            {% if form.non_field_errors %}
-                <div class="alert alert-danger">
-                    {{ form.non_field_errors }}
-                </div>
-            {% endif %}
-
             <form method="post">
                 {% csrf_token %}
                 
@@ -72,27 +65,21 @@
                     <label for="id_username" class="form-label">Usuario</label>
                     <input type="text" 
                            name="username" 
-                           class="form-control {% if form.username.errors %}is-invalid{% endif %}" 
+                           class="form-control" 
                            id="id_username" 
                            placeholder="Ingresa tu usuario"
                            required
                            autofocus>
-                    {% if form.username.errors %}
-                        <div class="invalid-feedback">{{ form.username.errors }}</div>
-                    {% endif %}
                 </div>
 
                 <div class="mb-4">
                     <label for="id_password" class="form-label">Contraseña</label>
                     <input type="password" 
                            name="password" 
-                           class="form-control {% if form.password.errors %}is-invalid{% endif %}" 
+                           class="form-control" 
                            id="id_password" 
                            placeholder="Ingresa tu contraseña"
                            required>
-                    {% if form.password.errors %}
-                        <div class="invalid-feedback">{{ form.password.errors }}</div>
-                    {% endif %}
                 </div>
 
                 <div class="d-grid">

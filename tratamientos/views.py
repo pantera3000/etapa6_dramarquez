@@ -5,6 +5,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from pacientes.models import Paciente
 from .models import Tratamiento, Pago
 from .forms import TratamientoForm, PagoForm
@@ -13,7 +14,7 @@ from .forms import TratamientoForm, PagoForm
 
 from django.db.models import Q
 
-class ListaTratamientosView(ListView):
+class ListaTratamientosView(LoginRequiredMixin, ListView):
     model = Tratamiento
     template_name = 'tratamientos/lista_tratamientos.html'
     context_object_name = 'tratamientos'
@@ -90,12 +91,12 @@ class ListaTratamientosView(ListView):
 
 
 
-class DetalleTratamientoView(DetailView):
+class DetalleTratamientoView(LoginRequiredMixin, DetailView):
     model = Tratamiento
     template_name = 'tratamientos/detalle_tratamiento.html'
     context_object_name = 'tratamiento'
 
-class CrearTratamientoView(CreateView):
+class CrearTratamientoView(LoginRequiredMixin, CreateView):
     model = Tratamiento
     form_class = TratamientoForm
     template_name = 'tratamientos/crear_tratamiento.html'
@@ -131,7 +132,7 @@ def form_valid(self, form):
     messages.success(self.request, "Tratamiento actualizado exitosamente.")
     return super().form_valid(form)
 
-class EliminarTratamientoView(DeleteView):
+class EliminarTratamientoView(LoginRequiredMixin, DeleteView):
     model = Tratamiento
     template_name = 'tratamientos/eliminar_tratamiento.html'
 
@@ -156,7 +157,7 @@ class EliminarTratamientoView(DeleteView):
 
 
 
-class EditarTratamientoView(UpdateView):
+class EditarTratamientoView(LoginRequiredMixin, UpdateView):
     model = Tratamiento
     form_class = TratamientoForm
     template_name = 'tratamientos/editar_tratamiento.html'
@@ -188,7 +189,7 @@ class EditarTratamientoView(UpdateView):
 
 # ===== PAGOS =====
 
-class CrearPagoView(CreateView):
+class CrearPagoView(LoginRequiredMixin, CreateView):
     model = Pago
     form_class = PagoForm
     template_name = 'tratamientos/crear_pago.html'
@@ -207,7 +208,7 @@ class CrearPagoView(CreateView):
     def get_success_url(self):
         return reverse('tratamientos:detalle', kwargs={'pk': self.kwargs['tratamiento_id']})
 
-class EliminarPagoView(DeleteView):
+class EliminarPagoView(LoginRequiredMixin, DeleteView):
     model = Pago
     template_name = 'tratamientos/eliminar_pago.html'
 
@@ -222,7 +223,7 @@ class EliminarPagoView(DeleteView):
 
 
 # Añade esta vista en tratamientos/views.py
-class ListaPagosView(ListView):
+class ListaPagosView(LoginRequiredMixin, ListView):
     model = Pago
     template_name = 'tratamientos/lista_pagos.html'
     context_object_name = 'pagos'

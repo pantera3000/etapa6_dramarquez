@@ -4,6 +4,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from django.forms import inlineformset_factory
 from django.http import HttpResponseRedirect
 from pacientes.models import Paciente
@@ -15,7 +17,7 @@ from .forms import EntradaHistoriaForm, ImagenHistoriaForm
 from django.db.models import Q
 from datetime import date
 
-class ListaEntradasView(ListView):
+class ListaEntradasView(LoginRequiredMixin, ListView):
     model = EntradaHistoria
     template_name = 'historias/lista_entradas.html'
     context_object_name = 'entradas'
@@ -60,12 +62,12 @@ class ListaEntradasView(ListView):
         context['paciente'] = getattr(self, 'paciente', None)
         return context
 
-class DetalleEntradaView(DetailView):
+class DetalleEntradaView(LoginRequiredMixin, DetailView):
     model = EntradaHistoria
     template_name = 'historias/detalle_entrada.html'
     context_object_name = 'entrada'
 
-class CrearEntradaView(CreateView):
+class CrearEntradaView(LoginRequiredMixin, CreateView):
     model = EntradaHistoria
     form_class = EntradaHistoriaForm
     template_name = 'historias/crear_entrada.html'
@@ -109,7 +111,7 @@ class CrearEntradaView(CreateView):
             return reverse_lazy('pacientes:detalle', kwargs={'pk': paciente_id}) + '?historias_page=1'
         return reverse_lazy('historias:lista_por_paciente', kwargs={'paciente_id': paciente_id})
 
-class EditarEntradaView(UpdateView):
+class EditarEntradaView(LoginRequiredMixin, UpdateView):
     model = EntradaHistoria
     form_class = EntradaHistoriaForm
     template_name = 'historias/editar_entrada.html'
@@ -150,7 +152,7 @@ class EditarEntradaView(UpdateView):
     def get_success_url(self):
         return reverse('historias:detalle_entrada', kwargs={'pk': self.object.pk})
 
-class EliminarEntradaView(DeleteView):
+class EliminarEntradaView(LoginRequiredMixin, DeleteView):
     model = EntradaHistoria
     template_name = 'historias/eliminar_entrada.html'
 
@@ -163,6 +165,7 @@ class EliminarEntradaView(DeleteView):
 
 # ===== VISTAS PARA IMÁGENES (eliminar individualmente) =====
 
+@login_required
 def eliminar_imagen(request, pk):
     imagen = get_object_or_404(ImagenHistoria, pk=pk)
     entrada_pk = imagen.entrada.pk

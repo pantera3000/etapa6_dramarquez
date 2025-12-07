@@ -100,7 +100,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # Redirecciones tras login/logout
 LOGIN_URL = '/usuarios/login/'
-LOGIN_REDIRECT_URL = '/usuarios/dashboard/'
+LOGIN_REDIRECT_URL = '/pacientes/'
 LOGOUT_REDIRECT_URL = '/usuarios/login/'
 
 # Tipo de campo por defecto para claves primarias

@@ -5,12 +5,15 @@ from django.utils import timezone
 from datetime import datetime, date, timedelta
 from zoneinfo import ZoneInfo  # Incluido en Python 3.9+, no requiere instalación
 import logging
+from django.contrib.auth.decorators import login_required
 
 logger = logging.getLogger(__name__)
 
+@login_required
 def calendario_view(request):
     return render(request, 'citas/calendario.html')
 
+@login_required
 def eventos_ics_view(request):
     ics_url = "https://calendar.google.com/calendar/ical/juancarloscn%40gmail.com/private-7c3dfb4a8b649579159a76228916d6cf/basic.ics"
     

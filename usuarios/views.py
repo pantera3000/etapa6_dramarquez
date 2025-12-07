@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
 from .forms import UserCreateForm, UserEditForm, PasswordChangeFormCustom
 
 
@@ -116,3 +117,35 @@ def cambiar_password(request, pk):
         'form': form,
         'usuario': usuario
     })
+
+
+# ===== AUTENTICACIÓN =====
+
+def login_view(request):
+    """Vista de login"""
+    # Si ya está autenticado, redirigir
+    if request.user.is_authenticated:
+        return redirect('pacientes:lista')
+    
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            login(request, user)
+            # Redirigir a la página solicitada o a pacientes
+            next_url = request.GET.get('next', 'pacientes:lista')
+            return redirect(next_url)
+        else:
+            messages.error(request, 'Usuario o contraseña incorrectos')
+    
+    return render(request, 'usuarios/login.html')
+
+
+def logout_view(request):
+    """Vista de logout"""
+    logout(request)
+    messages.success(request, 'Has cerrado sesión exitosamente')
+    return redirect('login')

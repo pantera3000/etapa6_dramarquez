@@ -4,10 +4,11 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Paciente
 from .forms import PacienteForm
 
-class ListaPacientesView(ListView):
+class ListaPacientesView(LoginRequiredMixin, ListView):
     model = Paciente
     template_name = 'pacientes/lista_pacientes.html'
     context_object_name = 'pacientes'
@@ -26,7 +27,7 @@ class ListaPacientesView(ListView):
 # pacientes/views.py
 from django.core.paginator import Paginator
 
-class DetallePacienteView(DetailView):
+class DetallePacienteView(LoginRequiredMixin, DetailView):
     model = Paciente
     template_name = 'pacientes/detalle_paciente.html'
     context_object_name = 'paciente'
@@ -55,7 +56,7 @@ class DetallePacienteView(DetailView):
 
         return context
 
-class CrearPacienteView(CreateView):
+class CrearPacienteView(LoginRequiredMixin, CreateView):
     model = Paciente
     form_class = PacienteForm
     template_name = 'pacientes/crear_paciente.html'
@@ -65,7 +66,7 @@ class CrearPacienteView(CreateView):
         messages.success(self.request, "Paciente creado exitosamente.")
         return super().form_valid(form)
 
-class EditarPacienteView(UpdateView):
+class EditarPacienteView(LoginRequiredMixin, UpdateView):
     model = Paciente
     form_class = PacienteForm
     template_name = 'pacientes/editar_paciente.html'
@@ -75,7 +76,7 @@ class EditarPacienteView(UpdateView):
         messages.success(self.request, "Paciente actualizado exitosamente.")
         return super().form_valid(form)
 
-class EliminarPacienteView(DeleteView):
+class EliminarPacienteView(LoginRequiredMixin, DeleteView):
     model = Paciente
     template_name = 'pacientes/eliminar_paciente.html'
     success_url = reverse_lazy('pacientes:lista')
@@ -90,7 +91,7 @@ class EliminarPacienteView(DeleteView):
 from datetime import date, timedelta
 from django.db.models import Q
 
-class CumpleanosProximosView(ListView):
+class CumpleanosProximosView(LoginRequiredMixin, ListView):
     model = Paciente
     template_name = 'pacientes/cumpleanos_proximos.html'
     context_object_name = 'pacientes'
