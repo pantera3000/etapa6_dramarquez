@@ -19,7 +19,7 @@
             <div class="row g-3">
                 <!-- Nombre completo -->
                 <div class="col-12">
-                    <label class="form-label">{{ form.nombre_completo.label }}</label>
+                    <label class="form-label">Nombre completo del paciente</label>
                     {{ form.nombre_completo }}
                     {% if form.nombre_completo.help_text %}
                         <small class="form-text text-muted">{{ form.nombre_completo.help_text }}</small>
@@ -113,14 +113,32 @@
                     {% endfor %}
                 </div>
 
-                <!-- Nombre del tutor -->
-                <div class="col-12">
-                    <label class="form-label">{{ form.nombre_tutor.label }}</label>
-                    {{ form.nombre_tutor }}
-                    <small class="form-text text-muted">Solo si el paciente es menor de edad</small>
-                    {% for error in form.nombre_tutor.errors %}
-                        <div class="text-danger mt-1">{{ error }}</div>
-                    {% endfor %}
+                <!-- Campos de tutor (para menores de edad) -->
+                <div id="tutor-section" style="display: none;">
+                    <div class="col-12">
+                        <div class="alert alert-warning">
+                            <strong>⚠️ Menor de Edad Detectado</strong>
+                            <p class="mb-0">Por favor ingresa los datos del padre, madre o apoderado responsable.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Nombre del tutor -->
+                    <div class="col-md-6">
+                        <label class="form-label">{{ form.nombre_tutor.label }}</label>
+                        {{ form.nombre_tutor }}
+                        {% for error in form.nombre_tutor.errors %}
+                            <div class="text-danger mt-1">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Teléfono del tutor -->
+                    <div class="col-md-6">
+                        <label class="form-label">Teléfono del tutor</label>
+                        {{ form.telefono_tutor }}
+                        {% for error in form.telefono_tutor.errors %}
+                            <div class="text-danger mt-1">{{ error }}</div>
+                        {% endfor %}
+                    </div>
                 </div>
 
                 <!-- Enfermedades previas -->
@@ -186,4 +204,40 @@
         </form>
     </div>
 </div>
+
+<script>
+// Detectar si es menor de edad y mostrar campos de tutor
+document.addEventListener('DOMContentLoaded', function() {
+    const fechaNacimiento = document.getElementById('id_fecha_nacimiento');
+    const tutorSection = document.getElementById('tutor-section');
+    
+    function verificarEdad() {
+        const fechaNac = new Date(fechaNacimiento.value);
+        const hoy = new Date();
+        let edad = hoy.getFullYear() - fechaNac.getFullYear();
+        const mes = hoy.getMonth() - fechaNac.getMonth();
+        
+        if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNac.getDate())) {
+            edad--;
+        }
+        
+        // Mostrar sección de tutor si es menor de 18 años
+        if (edad < 18 && !isNaN(edad)) {
+            tutorSection.style.display = 'block';
+        } else {
+            tutorSection.style.display = 'none';
+        }
+    }
+    
+    if (fechaNacimiento) {
+        // Verificar al cargar la página
+        if (fechaNacimiento.value) {
+            verificarEdad();
+        }
+        
+        // Verificar al cambiar la fecha
+        fechaNacimiento.addEventListener('change', verificarEdad);
+    }
+});
+</script>
 {% endblock %}

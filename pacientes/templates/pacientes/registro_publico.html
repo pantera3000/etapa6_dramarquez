@@ -153,7 +153,7 @@
                         <div class="section-title">👤 Datos Personales</div>
                         
                         <div class="mb-3">
-                            <label for="{{ form.nombre_completo.id_for_label }}" class="form-label required-field">Nombre Completo</label>
+                            <label for="{{ form.nombre_completo.id_for_label }}" class="form-label required-field">Nombre Completo del Paciente</label>
                             {{ form.nombre_completo }}
                             {% if form.nombre_completo.errors %}
                                 <div class="text-danger small">{{ form.nombre_completo.errors }}</div>
@@ -189,6 +189,13 @@
                                 {{ form.nombre_tutor }}
                                 {% if form.nombre_tutor.errors %}
                                     <div class="text-danger small">{{ form.nombre_tutor.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                <label for="{{ form.telefono_tutor.id_for_label }}" class="form-label">Teléfono del Padre/Madre o Apoderado</label>
+                                {{ form.telefono_tutor }}
+                                {% if form.telefono_tutor.errors %}
+                                    <div class="text-danger small">{{ form.telefono_tutor.errors }}</div>
                                 {% endif %}
                             </div>
                         </div>
@@ -356,26 +363,36 @@
             const fechaNacimiento = document.getElementById('id_fecha_nacimiento');
             const tutorSection = document.getElementById('tutor-section');
             
+            function verificarEdad() {
+                const fechaNac = new Date(fechaNacimiento.value);
+                const hoy = new Date();
+                let edad = hoy.getFullYear() - fechaNac.getFullYear();
+                const mes = hoy.getMonth() - fechaNac.getMonth();
+                
+                if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNac.getDate())) {
+                    edad--;
+                }
+                
+                // Mostrar sección de tutor si es menor de 18 años
+                if (edad < 18 && !isNaN(edad)) {
+                    tutorSection.style.display = 'block';
+                    document.getElementById('id_nombre_tutor').required = true;
+                    document.getElementById('id_telefono_tutor').required = true;
+                } else {
+                    tutorSection.style.display = 'none';
+                    document.getElementById('id_nombre_tutor').required = false;
+                    document.getElementById('id_telefono_tutor').required = false;
+                }
+            }
+            
             if (fechaNacimiento) {
-                fechaNacimiento.addEventListener('change', function() {
-                    const fechaNac = new Date(this.value);
-                    const hoy = new Date();
-                    let edad = hoy.getFullYear() - fechaNac.getFullYear();
-                    const mes = hoy.getMonth() - fechaNac.getMonth();
-                    
-                    if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNac.getDate())) {
-                        edad--;
-                    }
-                    
-                    // Mostrar sección de tutor si es menor de 18 años
-                    if (edad < 18) {
-                        tutorSection.style.display = 'block';
-                        document.getElementById('id_nombre_tutor').required = true;
-                    } else {
-                        tutorSection.style.display = 'none';
-                        document.getElementById('id_nombre_tutor').required = false;
-                    }
-                });
+                // Verificar al cargar la página (importante para cuando hay errores de validación)
+                if (fechaNacimiento.value) {
+                    verificarEdad();
+                }
+                
+                // Verificar al cambiar la fecha
+                fechaNacimiento.addEventListener('change', verificarEdad);
             }
         });
         

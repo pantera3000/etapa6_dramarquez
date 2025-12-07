@@ -72,6 +72,13 @@ class Paciente(models.Model):
         blank=True,
         verbose_name="Nombre del tutor (si aplica)"
     )
+    telefono_tutor = models.CharField(
+        max_length=15,
+        blank=True,
+        verbose_name="Teléfono del tutor",
+        help_text="Teléfono de contacto del padre/madre o apoderado"
+    )
+
 
     # === ANTECEDENTES MÉDICOS ===
     enfermedades_previas = models.TextField(

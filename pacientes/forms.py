@@ -102,6 +102,7 @@ class RegistroPacientePublicoForm(forms.ModelForm):
             'ocupacion',
             'estado_civil',
             'nombre_tutor',  # Para menores de edad
+            'telefono_tutor',  # Teléfono del tutor
             'grupo_sanguineo',
             'alergias',
             'enfermedades_previas',
@@ -112,7 +113,7 @@ class RegistroPacientePublicoForm(forms.ModelForm):
         widgets = {
             'nombre_completo': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Nombre completo',
+                'placeholder': 'Nombre completo del paciente',
                 'required': True
             }),
             'dni': forms.TextInput(attrs={
@@ -161,6 +162,11 @@ class RegistroPacientePublicoForm(forms.ModelForm):
                 'placeholder': 'Nombre del padre/madre o apoderado',
                 'id': 'id_nombre_tutor'
             }),
+            'telefono_tutor': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Teléfono del padre/madre o apoderado',
+                'id': 'id_telefono_tutor'
+            }),
             'grupo_sanguineo': forms.Select(attrs={
                 'class': 'form-select'
             }),
@@ -189,6 +195,9 @@ class RegistroPacientePublicoForm(forms.ModelForm):
                 'rows': 2,
                 'placeholder': 'Información adicional que desees compartir'
             }),
+        }
+        labels = {
+            'nombre_completo': 'Nombre completo del paciente',
         }
     
     def clean_dni(self):
