@@ -6,6 +6,11 @@ from . import views
 app_name = 'pacientes'
 
 urlpatterns = [
+    # Registro público (sin autenticación)
+    path('registro/', views.registro_publico_view, name='registro_publico'),
+    path('api/validar-dni/', views.validar_dni_ajax, name='validar_dni_ajax'),
+    
+    # Rutas protegidas (requieren login)
     path('', views.ListaPacientesView.as_view(), name='lista'),
     path('nuevo/', views.CrearPacienteView.as_view(), name='crear'),
     path('<int:pk>/', views.DetallePacienteView.as_view(), name='detalle'),

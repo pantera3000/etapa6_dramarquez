@@ -9,7 +9,12 @@
         <!-- Encabezado -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="mb-0">📋 Lista de Pacientes</h2>
-            <a href="{% url 'pacientes:crear' %}" class="btn btn-success btn-sm">➕ Nuevo Paciente</a>
+            <div class="btn-group">
+                <a href="{% url 'pacientes:crear' %}" class="btn btn-success btn-sm">➕ Nuevo Paciente</a>
+                <button type="button" class="btn btn-info btn-sm" onclick="enviarLinkWhatsApp()">
+                    📱 Enviar Link de Registro
+                </button>
+            </div>
         </div>
 
         <!-- Tarjeta principal -->
@@ -165,4 +170,18 @@
         </div>
     </div>
 </div>
+
+<script>
+function enviarLinkWhatsApp() {
+    // Obtener la URL completa del formulario de registro
+    const registroUrl = window.location.origin + "{% url 'pacientes:registro_publico' %}";
+    
+    // Mensaje pre-escrito para WhatsApp
+    const mensaje = `Hola! 👋\n\nPor favor completa tus datos en este formulario de registro:\n\n${registroUrl}\n\nGracias!`;
+    
+    // Abrir WhatsApp con el mensaje
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+    window.open(whatsappUrl, '_blank');
+}
+</script>
 {% endblock %}

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Paciente - Consultorio Dental</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+        .registro-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .registro-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px 15px 0 0;
+            text-align: center;
+        }
+        .registro-body {
+            padding: 2rem;
+        }
+        .section-title {
+            background: #f8f9fa;
+            padding: 0.75rem 1rem;
+            border-left: 4px solid #667eea;
+            margin: 1.5rem 0 1rem 0;
+            font-weight: 600;
+            color: #333;
+        }
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            width: 100%;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        .required-field::after {
+            content: " *";
+            color: #dc3545;
+        }
+        .success-message {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .success-message h4 {
+            margin-bottom: 0.5rem;
+        }
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #0d6efd;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 5px;
+        }
+        .consent-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+        }
+        #tutor-section {
+            display: none;
+            background: #fff8e1;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        .logo-consultorio {
+            max-width: 120px;
+            max-height: 120px;
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            background: white;
+            padding: 0.5rem;
+        }
+        #dni-feedback {
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        .dni-disponible {
+            color: #198754;
+        }
+        .dni-ocupado {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="registro-card">
+            <div class="registro-header">
+                {% if config.logo %}
+                    <img src="{{ config.logo.url }}" alt="Logo" class="logo-consultorio">
+                {% endif %}
+                <h2 class="mb-2">{{ config.nombre_consultorio|default:"🦷 Consultorio Dental" }}</h2>
+                {% if config.nombre_doctor %}
+                    <p class="mb-1"><strong>{{ config.nombre_doctor }}</strong></p>
+                {% endif %}
+                <p class="mb-0">Formulario de Registro de Paciente</p>
+            </div>
+            <div class="registro-body">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% if registro_exitoso %}
+                    <div class="success-message">
+                        <h4>✅ ¡Registro Completado!</h4>
+                        <p class="mb-0">Tus datos han sido guardados exitosamente. Nos pondremos en contacto contigo pronto.</p>
+                    </div>
+                    <div class="text-center">
+                        <a href="{% url 'pacientes:registro_publico' %}" class="btn btn-primary">Registrar Otro Paciente</a>
+                    </div>
+                {% else %}
+                    <div class="info-box">
+                        <strong>📋 Instrucciones:</strong>
+                        <p class="mb-0 mt-2">Por favor completa todos tus datos. Los campos marcados con <span class="text-danger">*</span> son obligatorios. Esta información nos ayudará a brindarte una mejor atención.</p>
+                    </div>
+
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- DATOS PERSONALES -->
+                        <div class="section-title">👤 Datos Personales</div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.nombre_completo.id_for_label }}" class="form-label required-field">Nombre Completo</label>
+                            {{ form.nombre_completo }}
+                            {% if form.nombre_completo.errors %}
+                                <div class="text-danger small">{{ form.nombre_completo.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.dni.id_for_label }}" class="form-label required-field">DNI</label>
+                                {{ form.dni }}
+                                <div id="dni-feedback"></div>
+                                {% if form.dni.errors %}
+                                    <div class="text-danger small">{{ form.dni.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.fecha_nacimiento.id_for_label }}" class="form-label required-field">Fecha de Nacimiento</label>
+                                {{ form.fecha_nacimiento }}
+                                {% if form.fecha_nacimiento.errors %}
+                                    <div class="text-danger small">{{ form.fecha_nacimiento.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Sección de tutor (se muestra si es menor de edad) -->
+                        <div id="tutor-section">
+                            <div class="alert alert-warning">
+                                <strong>⚠️ Menor de Edad Detectado</strong>
+                                <p class="mb-0">Por favor ingresa los datos del padre, madre o apoderado responsable.</p>
+                            </div>
+                            <div class="mb-3">
+                                <label for="{{ form.nombre_tutor.id_for_label }}" class="form-label">Nombre del Padre/Madre o Apoderado</label>
+                                {{ form.nombre_tutor }}
+                                {% if form.nombre_tutor.errors %}
+                                    <div class="text-danger small">{{ form.nombre_tutor.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.genero.id_for_label }}" class="form-label">Género</label>
+                                {{ form.genero }}
+                                {% if form.genero.errors %}
+                                    <div class="text-danger small">{{ form.genero.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.estado_civil.id_for_label }}" class="form-label">Estado Civil</label>
+                                {{ form.estado_civil }}
+                                {% if form.estado_civil.errors %}
+                                    <div class="text-danger small">{{ form.estado_civil.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.ocupacion.id_for_label }}" class="form-label">Ocupación</label>
+                            {{ form.ocupacion }}
+                            {% if form.ocupacion.errors %}
+                                <div class="text-danger small">{{ form.ocupacion.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- DATOS DE CONTACTO -->
+                        <div class="section-title">📞 Datos de Contacto</div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.telefono.id_for_label }}" class="form-label required-field">Teléfono / WhatsApp</label>
+                                {{ form.telefono }}
+                                {% if form.telefono.errors %}
+                                    <div class="text-danger small">{{ form.telefono.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                    <div class="text-danger small">{{ form.email.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.direccion.id_for_label }}" class="form-label">Dirección</label>
+                            {{ form.direccion }}
+                            {% if form.direccion.errors %}
+                                <div class="text-danger small">{{ form.direccion.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.distrito.id_for_label }}" class="form-label">Distrito</label>
+                            {{ form.distrito }}
+                            {% if form.distrito.errors %}
+                                <div class="text-danger small">{{ form.distrito.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- INFORMACIÓN MÉDICA -->
+                        <div class="section-title">🏥 Información Médica</div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.grupo_sanguineo.id_for_label }}" class="form-label">Grupo Sanguíneo</label>
+                            {{ form.grupo_sanguineo }}
+                            {% if form.grupo_sanguineo.errors %}
+                                <div class="text-danger small">{{ form.grupo_sanguineo.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.alergias.id_for_label }}" class="form-label">Alergias</label>
+                            {{ form.alergias }}
+                            <small class="text-muted">Ej: Penicilina, látex, anestesia, etc.</small>
+                            {% if form.alergias.errors %}
+                                <div class="text-danger small">{{ form.alergias.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.enfermedades_previas.id_for_label }}" class="form-label">Enfermedades Previas o Actuales</label>
+                            {{ form.enfermedades_previas }}
+                            <small class="text-muted">Ej: Diabetes, hipertensión, problemas cardíacos, etc.</small>
+                            {% if form.enfermedades_previas.errors %}
+                                <div class="text-danger small">{{ form.enfermedades_previas.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- HISTORIAL DENTAL -->
+                        <div class="section-title">🦷 Historial Dental</div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.tratamientos_previos.id_for_label }}" class="form-label">Tratamientos Dentales Previos</label>
+                            {{ form.tratamientos_previos }}
+                            <small class="text-muted">Ej: Endodoncia, implantes, ortodoncia, etc.</small>
+                            {% if form.tratamientos_previos.errors %}
+                                <div class="text-danger small">{{ form.tratamientos_previos.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.experiencias_dentales.id_for_label }}" class="form-label">Experiencias Dentales</label>
+                            {{ form.experiencias_dentales }}
+                            <small class="text-muted">Ej: Miedo al dentista, ansiedad, experiencias negativas, etc.</small>
+                            {% if form.experiencias_dentales.errors %}
+                                <div class="text-danger small">{{ form.experiencias_dentales.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="{{ form.observaciones.id_for_label }}" class="form-label">Observaciones Adicionales</label>
+                            {{ form.observaciones }}
+                            <small class="text-muted">Cualquier información adicional que desees compartir</small>
+                            {% if form.observaciones.errors %}
+                                <div class="text-danger small">{{ form.observaciones.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- CONSENTIMIENTO -->
+                        <div class="consent-box">
+                            <h6 class="mb-3">📋 Consentimiento y Uso de Datos</h6>
+                            <p class="small mb-3">
+                                Al completar este formulario, confirmas que:
+                            </p>
+                            <ul class="small mb-3">
+                                <li>Los datos proporcionados son verídicos y completos</li>
+                                <li>Autorizas el almacenamiento de tu información médica y personal</li>
+                                <li>Tus datos serán utilizados exclusivamente para tu atención dental</li>
+                                <li>Tus datos están protegidos según la Ley de Protección de Datos Personales</li>
+                                <li>Puedes solicitar la modificación o eliminación de tus datos en cualquier momento</li>
+                            </ul>
+                            
+                            <div class="form-check">
+                                {{ form.acepto_terminos }}
+                                <label class="form-check-label" for="{{ form.acepto_terminos.id_for_label }}">
+                                    <strong>{{ form.acepto_terminos.label }}</strong>
+                                </label>
+                                {% if form.acepto_terminos.errors %}
+                                    <div class="text-danger small">{{ form.acepto_terminos.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-submit">
+                                ✅ Completar Registro
+                            </button>
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Detectar si es menor de edad y mostrar campo de tutor
+        document.addEventListener('DOMContentLoaded', function() {
+            const fechaNacimiento = document.getElementById('id_fecha_nacimiento');
+            const tutorSection = document.getElementById('tutor-section');
+            
+            if (fechaNacimiento) {
+                fechaNacimiento.addEventListener('change', function() {
+                    const fechaNac = new Date(this.value);
+                    const hoy = new Date();
+                    let edad = hoy.getFullYear() - fechaNac.getFullYear();
+                    const mes = hoy.getMonth() - fechaNac.getMonth();
+                    
+                    if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNac.getDate())) {
+                        edad--;
+                    }
+                    
+                    // Mostrar sección de tutor si es menor de 18 años
+                    if (edad < 18) {
+                        tutorSection.style.display = 'block';
+                        document.getElementById('id_nombre_tutor').required = true;
+                    } else {
+                        tutorSection.style.display = 'none';
+                        document.getElementById('id_nombre_tutor').required = false;
+                    }
+                });
+            }
+        });
+        
+        // Validación en tiempo real del DNI
+        document.addEventListener('DOMContentLoaded', function() {
+            const dniInput = document.getElementById('id_dni');
+            const dniFeedback = document.getElementById('dni-feedback');
+            let timeoutId;
+            
+            if (dniInput) {
+                dniInput.addEventListener('input', function() {
+                    const dni = this.value;
+                    
+                    // Limpiar timeout anterior
+                    clearTimeout(timeoutId);
+                    
+                    // Limpiar feedback si el DNI no tiene 8 dígitos
+                    if (dni.length !== 8) {
+                        dniFeedback.innerHTML = '';
+                        return;
+                    }
+                    
+                    // Esperar 500ms después de que el usuario deje de escribir
+                    timeoutId = setTimeout(function() {
+                        // Hacer petición AJAX
+                        fetch(`{% url 'pacientes:validar_dni_ajax' %}?dni=${dni}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.existe) {
+                                    dniFeedback.innerHTML = `<span class="dni-ocupado">⚠️ ${data.mensaje}</span>`;
+                                    dniInput.classList.add('is-invalid');
+                                    dniInput.classList.remove('is-valid');
+                                } else {
+                                    dniFeedback.innerHTML = `<span class="dni-disponible">✓ ${data.mensaje}</span>`;
+                                    dniInput.classList.add('is-valid');
+                                    dniInput.classList.remove('is-invalid');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                dniFeedback.innerHTML = '';
+                            });
+                    }, 500);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

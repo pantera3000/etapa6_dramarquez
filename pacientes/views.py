@@ -112,3 +112,56 @@ class CumpleanosProximosView(LoginRequiredMixin, ListView):
         # Ordenar por días hasta el cumpleaños
         pacientes.sort(key=lambda x: x[1])
         return [p[0] for p in pacientes]
+
+
+# ===== REGISTRO PÚBLICO =====
+
+def registro_publico_view(request):
+    """Vista pública para que pacientes se registren sin login"""
+    from configuracion.models import ConfiguracionConsultorio
+    
+    # Obtener configuración del consultorio
+    config = ConfiguracionConsultorio.get_instance()
+    
+    if request.method == 'POST':
+        from .forms import RegistroPacientePublicoForm
+        form = RegistroPacientePublicoForm(request.POST)
+        if form.is_valid():
+            paciente = form.save()
+            messages.success(request, f'¡Registro exitoso! Gracias {paciente.nombre_completo}, tus datos han sido guardados.')
+            # Limpiar formulario después de registro exitoso
+            form = RegistroPacientePublicoForm()
+            return render(request, 'pacientes/registro_publico.html', {
+                'form': form,
+                'registro_exitoso': True,
+                'config': config
+            })
+    else:
+        from .forms import RegistroPacientePublicoForm
+        form = RegistroPacientePublicoForm()
+    
+    return render(request, 'pacientes/registro_publico.html', {
+        'form': form,
+        'config': config
+    })
+
+
+# API para validar DNI en tiempo real
+from django.http import JsonResponse
+
+def validar_dni_ajax(request):
+    """Endpoint AJAX para validar si un DNI ya está registrado"""
+    dni = request.GET.get('dni', '')
+    
+    if len(dni) == 8 and dni.isdigit():
+        existe = Paciente.objects.filter(dni=dni).exists()
+        return JsonResponse({
+            'existe': existe,
+            'mensaje': 'Este DNI ya está registrado en el sistema' if existe else 'DNI disponible'
+        })
+    
+    return JsonResponse({
+        'existe': False,
+        'mensaje': 'DNI inválido'
+    })
+
