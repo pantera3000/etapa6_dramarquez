@@ -120,28 +120,6 @@
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         max-width: 200px;
     }
-    /* Ajustes específicos para Móvil */
-    @media (max-width: 992px) {
-        .odontograma-scroll-wrapper {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            width: 100%;
-            padding-bottom: 8px;
-        }
-        .odontograma-min-width {
-            min-width: 600px; /* Reducido de 800px para ser más compacto */
-            padding: 0 5px;
-            margin: 0 auto;
-        }
-        /* Reducir tamaño de dientes */
-        .tooth-container {
-            width: 38px; /* Reducido de 55px */
-            margin: 2px;
-        }
-        .tooth-wrapper {
-            /* Asegurar que el wrapper se adapte si tiene estilos inline */
-        }
-    }
 </style>
 
 <div class="container-fluid odontograma-container">
@@ -244,12 +222,8 @@
                 
                 <div class="card-body bg-white text-center p-4" style="overflow-x: auto; min-height: 500px;">
                     
-                <!-- Wrapper Scroll Horizontal + Ajuste Tamaño Móvil -->
-                <div class="odontograma-scroll-wrapper">
-                    <div class="odontograma-min-width">
-
-                        <!-- VISTA ADULTO -->
-                        <div id="view-adult-container">
+                    <!-- VISTA ADULTO -->
+                    <div id="view-adult-container">
                         <!-- Maxilar Superior -->
                         <div class="row justify-content-center mb-4">
                             <div class="col-auto text-end border-end pe-3">
