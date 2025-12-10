@@ -23,6 +23,12 @@ class ProgramaSaludForm(forms.ModelForm):
             'nariz_talla': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: S'}),
 
             # Checkboxes (SSS y Tratamiento)
-            # No es estrictamente necesario definir widget para BooleanField si se usa form-check en template,
-            # pero ayuda a veces. Django usa CheckboxInput por defecto.
+            # No definimos todos uno por uno en widgets, lo haremos dinámicamente o dejamos default
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Asignar clase form-check-input a todos los campos BooleanField
+        for field_name, field in self.fields.items():
+            if isinstance(field.widget, forms.CheckboxInput):
+                field.widget.attrs['class'] = 'form-check-input'

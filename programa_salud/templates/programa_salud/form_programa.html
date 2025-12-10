@@ -3,6 +3,17 @@
 
 {% block title %}{{ titulo }}{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Checkboxes y Radios */
+    .form-check-input { margin-top: 0.3em; cursor: pointer; }
+    .form-check-label { cursor: pointer; line-height: 1.4; margin-left: 0.2rem; }
+    .card-body { padding: 1.25rem; }
+    /* Espaciado general */
+    .mb-2 { margin-bottom: 0.75rem !important; }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-lg-10">
@@ -45,14 +56,28 @@
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Lado predominante al masticar</label>
-                                    <div class="card p-2 bg-light">
-                                        {{ form.lado_predominante }}
+                                    <div class="card p-3 bg-light">
+                                        {% for radio in form.lado_predominante %}
+                                            {% if radio.data.value %}
+                                            <div class="form-check form-check-inline">
+                                                {{ radio.tag }}
+                                                <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                            </div>
+                                            {% endif %}
+                                        {% endfor %}
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Ventana nasal más cerrada</label>
-                                    <div class="card p-2 bg-light">
-                                        {{ form.ventana_nasal }}
+                                    <div class="card p-3 bg-light">
+                                        {% for radio in form.ventana_nasal %}
+                                            {% if radio.data.value %}
+                                            <div class="form-check form-check-inline">
+                                                {{ radio.tag }}
+                                                <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                            </div>
+                                            {% endif %}
+                                        {% endfor %}
                                     </div>
                                 </div>
                             </div>
@@ -159,8 +184,15 @@
                                         </div>
                                     </div>
                                     <label class="form-label mb-0">Uso:</label>
-                                    <div class="bg-light p-2 rounded">
-                                        {{ form.nariz_uso }}
+                                    <div class="bg-light p-3 rounded">
+                                        {% for radio in form.nariz_uso %}
+                                            {% if radio.data.value %}
+                                            <div class="form-check form-check-inline">
+                                                {{ radio.tag }}
+                                                <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                            </div>
+                                            {% endif %}
+                                        {% endfor %}
                                     </div>
                                 </div>
                             </div>
@@ -188,8 +220,15 @@
                                 <div class="card-header py-1 fw-bold">7. Alimentación</div>
                                 <div class="card-body">
                                     <label class="form-label fw-bold">Masticar por lado:</label>
-                                    <div class="bg-light p-2 rounded mb-3">
-                                        {{ form.alimentacion_lado }}
+                                    <div class="bg-light p-3 rounded mb-3">
+                                        {% for radio in form.alimentacion_lado %}
+                                            {% if radio.data.value %}
+                                            <div class="form-check form-check-inline">
+                                                {{ radio.tag }}
+                                                <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                            </div>
+                                            {% endif %}
+                                        {% endfor %}
                                     </div>
                                     
                                     <label class="form-label fw-bold">Hábitos:</label>

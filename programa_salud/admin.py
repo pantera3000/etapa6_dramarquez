@@ -5,7 +5,7 @@ from .models import ProgramaSalud
 class ProgramaSaludAdmin(admin.ModelAdmin):
     list_display = ['paciente', 'fecha', 'lado_predominante', 'ventana_nasal']
     search_fields = ['paciente__nombre', 'paciente__apellido', 'paciente__dni']
-    list_filter = ['fecha', 'habit_fumador']
+    list_filter = ['fecha', 'habito_fumador']
     date_hierarchy = 'fecha'
     
     fieldsets = (
