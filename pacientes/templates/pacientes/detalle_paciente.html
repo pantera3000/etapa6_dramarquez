@@ -81,29 +81,8 @@
         </div>
 
         <!-- Pestañas de información relacionada -->
-        <div class="bg-white rounded shadow-sm border mb-4">
-            <!-- Estilos específicos para tabs scrollables -->
-            <style>
-                /* Ocultar scrollbar pero permitir funcionalidad */
-                .scroll-tabs::-webkit-scrollbar {
-                    height: 4px; /* Scrollbar muy fina */
-                }
-                .scroll-tabs::-webkit-scrollbar-thumb {
-                    background: #ccc; 
-                    border-radius: 4px;
-                }
-                #patientTabs .nav-item {
-                    flex: 0 0 auto;
-                }
-                #patientTabs .nav-link {
-                    white-space: nowrap;
-                    border-radius: 50rem !important; /* Estilo píldora */
-                }
-            </style>
-            
-            <!-- Wrapper para scroll horizontal fluido en móvil -->
-            <div class="overflow-auto px-2 py-2 scroll-tabs">
-                <ul class="nav nav-pills flex-nowrap gap-3" id="patientTabs" role="tablist">
+        <div class="bg-white rounded shadow-sm border">
+            <ul class="nav nav-tabs" id="patientTabs" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="historias-tab" data-bs-toggle="tab" data-bs-target="#historias" type="button">
                         📚 Historias ({{ paciente.entradas_historia.count }})
@@ -135,7 +114,6 @@
                 {% endif %}
 
             </ul>
-            </div>
 
             <div class="tab-content p-3" id="patientTabsContent">
                 <!-- Historias Clínicas - RESPONSIVE -->
