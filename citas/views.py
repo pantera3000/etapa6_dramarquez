@@ -174,7 +174,7 @@ def widget_citas_ajax(request):
     el widget de 'Citas de Hoy' sin bloquear la carga inicial de la página.
     """
     # URL del calendario
-    ics_url = "https://calendar.google.com/calendar/ical/juancarloscn%40gmail.com/private-7c3dfb4a8b649579159a76228916d6cf/basic.ics"
+    ics_url = "https://calendar.google.com/calendar/ical/anamarquez1987%40gmail.com/private-7bdd1e3e17e30fbae0c751f9429c4cbe/basic.ics"
     
     citas_hoy_list = []
     
@@ -231,19 +231,29 @@ def widget_citas_ajax(request):
         
         lista_final = []
         
-        # 2. Si hay pasadas, solo mostrar la ULTIMA (la más reciente que ya pasó)
-        if citas_pasadas:
-            ultima_pasada = citas_pasadas[-1]
-            ultima_pasada['pasada'] = True  # Marcar para tachar en template
-            lista_final.append(ultima_pasada)
+        # LOGICA CONDICIONAL: 
+        # Si NO hay citas futuras (todas ya pasaron), mostrar las últimas 5 pasadas.
+        if not citas_futuras:
+            # Tomar las últimas 5 pasadas
+            lista_final = citas_pasadas[-5:]
+            # Marcar todas como pasadas (para tachado)
+            for c in lista_final:
+                c['pasada'] = True
+        else:
+            # Comportamiento normal: Hay citas futuras
+            # 1. Si hay pasadas, solo mostrar la ULTIMA (para referencia)
+            if citas_pasadas:
+                ultima_pasada = citas_pasadas[-1]
+                ultima_pasada['pasada'] = True
+                lista_final.append(ultima_pasada)
             
-        # 3. Agregar las futuras
-        for c in citas_futuras:
-            c['pasada'] = False
-            lista_final.append(c)
-            
-        # 4. Limitar a 10 citas en total
-        lista_final = lista_final[:10]
+            # 2. Agregar las futuras (sin tachar)
+            for c in citas_futuras:
+                c['pasada'] = False
+                lista_final.append(c)
+                
+            # 3. Limitar a 10 citas en total
+            lista_final = lista_final[:10]
         
     except Exception as e:
         logger.error(f"Error al obtener citas en widget AJAX: {e}")

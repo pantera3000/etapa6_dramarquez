@@ -279,27 +279,30 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Cargar widget de citas asíncronamente
-        fetch("{% url 'citas:widget_data' %}")
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.text();
-            })
-            .then(html => {
-                if (html.trim()) {
-                    document.getElementById('widget-citas-ajax').innerHTML = html;
-                    
-                    // Inicializar toasts si existen en el HTML cargado
-                    const toastEl = document.getElementById('citasToast');
-                    if (toastEl && typeof bootstrap !== 'undefined') {
-                        const toast = new bootstrap.Toast(toastEl);
-                        toast.show();
+        // Retrasar la carga del widget para dar prioridad a la página principal
+        // Puedes cambiar el tiempo aquí (1000 = 1 segundo)
+        setTimeout(function() {
+            fetch("{% url 'citas:widget_data' %}")
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
                     }
-                }
-            })
-            .catch(error => console.log('No hay citas o error cargando widget:', error));
+                    return response.text();
+                })
+                .then(html => {
+                    if (html.trim()) {
+                        document.getElementById('widget-citas-ajax').innerHTML = html;
+                        
+                        // Inicializar toasts si existen en el HTML cargado
+                        const toastEl = document.getElementById('citasToast');
+                        if (toastEl && typeof bootstrap !== 'undefined') {
+                            const toast = new bootstrap.Toast(toastEl);
+                            toast.show();
+                        }
+                    }
+                })
+                .catch(error => console.log('No hay citas o error cargando widget:', error));
+        }, 2000); // <-- TIEMPO DE RETRASO EN MILISEGUNDOS
     });
 </script>
 
