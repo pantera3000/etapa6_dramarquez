@@ -5,45 +5,60 @@
     <title>Protocolo Niño - {{ paciente.nombre_completo }}</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            font-size: 12px;
-            color: #333;
-            line-height: 1.4;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 11px;
+            color: #000;
+            line-height: 1.3;
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
         }
         .header {
-            border-bottom: 2px solid #0056b3;
+            border-bottom: 2px solid #000;
             padding-bottom: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         .logo {
-            max-height: 60px;
+            max-height: 50px;
         }
         h1 {
-            font-size: 18px;
-            color: #0056b3;
+            font-size: 16px;
+            text-transform: uppercase;
             margin: 0;
+            color: #000;
+        }
+        .consultorio-nombre {
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 4px;
         }
         .info-box {
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            padding: 8px 12px;
+            margin-bottom: 15px;
+            background-color: #f9f9f9;
             display: flex;
             justify-content: space-between;
         }
         .section-title {
-            background: #e9ecef;
-            padding: 5px 10px;
+            background-color: #eee;
+            border-bottom: 1px solid #000;
+            padding: 4px 8px;
             font-weight: bold;
-            color: #0056b3;
-            margin: 15px 0 10px 0;
-            border-left: 4px solid #0056b3;
+            font-size: 12px;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        .subtitulo {
+            font-weight: bold;
+            font-size: 11px;
+            margin-top: 8px;
+            margin-bottom: 2px;
+            text-decoration: underline;
         }
         .row {
             display: flex;
@@ -54,51 +69,58 @@
             flex: 1;
             padding: 0 10px;
         }
-        .field {
-            margin-bottom: 5px;
+        .col-4 { width: 33.33%; padding: 0 10px; box-sizing: border-box; float: left; } /* Float fallback for print */
+        
+        .check-row {
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
         }
-        .label {
+        .check-box {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 1px solid #000;
+            margin-right: 6px;
+            text-align: center;
+            line-height: 10px;
+            font-size: 10px;
+        }
+        .check-box.checked::after {
+            content: "✓";
             font-weight: bold;
-            color: #555;
         }
-        .check-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
+        .checked-text {
+            font-weight: bold;
         }
-        .check-item::before {
-            content: "☑ ";
-            color: #0056b3;
-        }
+        
         .footer {
             margin-top: 30px;
-            border-top: 1px solid #ddd;
-            padding-top: 10px;
+            border-top: 1px solid #000;
+            padding-top: 5px;
             text-align: center;
-            font-size: 10px;
-            color: #777;
+            font-size: 9px;
+            color: #555;
         }
         
         @media print {
-            .no-print {
-                display: none;
-            }
-            body {
-                padding: 0;
-            }
+            .no-print { display: none; }
+            body { padding: 0; }
+            .section-title { background-color: #ddd !important; -webkit-print-color-adjust: exact; }
+            .info-box { background-color: #f5f5f5 !important; -webkit-print-color-adjust: exact; }
         }
     </style>
 </head>
 <body onload="window.print()">
     <div class="no-print" style="margin-bottom: 20px; text-align: right;">
-        <button onclick="window.print()" style="padding: 10px 20px; background: #0056b3; color: white; border: none; cursor: pointer;">🖨️ Imprimir / Guardar como PDF</button>
-        <button onclick="window.close()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; cursor: pointer;">Cerrar</button>
+        <button onclick="window.print()" style="padding: 8px 15px; background: #0056b3; color: white; border: none; cursor: pointer; border-radius: 4px;">🖨️ Imprimir PDF</button>
+        <button onclick="window.close()" style="padding: 8px 15px; background: #6c757d; color: white; border: none; cursor: pointer; border-radius: 4px;">Cerrar</button>
     </div>
 
     <div class="header">
         <div>
-            <h1>PROTOCOLO DE SALUD INFANTIL</h1>
-            <div>{{ config.nombre_consultorio|default:"Consultorio Dental" }}</div>
+            <h1>Protocolo de Salud Infantil</h1>
+            <div class="consultorio-nombre">{{ config.nombre_consultorio|default:"Consultorio Dental" }}</div>
         </div>
         {% if config.logo %}
             <img src="{{ config.logo.url }}" class="logo" alt="Logo">
@@ -109,122 +131,279 @@
         <div><strong>Paciente:</strong> {{ paciente.nombre_completo }}</div>
         <div><strong>Edad:</strong> {{ protocolo.edad_protocolo }} años</div>
         <div><strong>Fecha:</strong> {{ protocolo.fecha|date:"d/m/Y" }}</div>
-    </div>
-
-    <!-- EVALUACIÓN FÍSICA -->
-    <div class="section-title">EVALUACIÓN FÍSICA Y RESPIRATORIA</div>
-    <div class="row">
-        <div class="col">
-            <div class="field"><span class="label">Ventana más cerrada:</span> {{ protocolo.get_ventana_mas_cerrada_display|default:"-" }}</div>
-            <div class="field"><span class="label">Respira mejor por:</span> {{ protocolo.get_respira_mejor_display|default:"-" }}</div>
-            <div class="field"><span class="label">Sellado labial reposo:</span> {{ protocolo.sellado_labial_reposo|yesno:"Sí,No" }}</div>
-            <div class="field"><span class="label">Fascies adenoidea:</span> {{ protocolo.fascies_adenoidea|yesno:"Sí,No" }}</div>
-        </div>
-        <div class="col">
-            <div class="field"><span class="label">Patrón crecimiento:</span> {{ protocolo.get_patron_crecimiento_display|default:"-" }}</div>
-            <div class="field"><span class="label">Maloclusión:</span> {{ protocolo.get_maloclusion_display|default:"-" }}</div>
-            <div class="field"><span class="label">Mordida cruzada:</span> {{ protocolo.get_mordida_cruzada_display|default:"-" }}</div>
-            <div class="field"><span class="label">Amígdalas:</span> {{ protocolo.get_amigdalas_grado_display|default:"-" }}</div>
+        <div><strong>Estado:</strong> 
+            {% if protocolo.estado_satisfactorio %}Satisfactorio{% endif %}
+            {% if protocolo.estado_mejorable %}Mejorable{% endif %}
+            {% if protocolo.estado_muy_mejorable %}Muy Mejorable{% endif %}
         </div>
     </div>
 
-    <!-- FUNCIONAL -->
-    <div class="section-title">CAPACIDAD MASTICATORIA Y FUNCIONAL</div>
+    <!-- 1. EVALUACIÓN FÍSICA -->
+    <div class="section-title">1. EVALUACIÓN FÍSICA Y RESPIRATORIA</div>
     <div class="row">
         <div class="col">
-            <div class="field"><span class="label">Masticador:</span> 
-                {% if protocolo.masticador_derecho %}Derecho{% endif %} 
-                {% if protocolo.masticador_izquierdo %}Izquierdo{% endif %}
+            <div class="subtitulo">Ventana nasal más cerrada</div>
+            <div class="check-row">
+                <span class="check-box {% if protocolo.ventana_mas_cerrada == 'D' %}checked{% endif %}"></span> <span class="{% if protocolo.ventana_mas_cerrada == 'D' %}checked-text{% endif %}">Derecha</span>
             </div>
-            <div class="field"><span class="label">Prefiere:</span>
-                {% if protocolo.prefiere_yogurt %}Yogurt, {% endif %}
-                {% if protocolo.prefiere_manzana %}Manzana, {% endif %}
-                {% if protocolo.prefiere_naranja %}Naranja, {% endif %}
-                {% if protocolo.prefiere_zumo %}Zumo{% endif %}
+            <div class="check-row">
+                <span class="check-box {% if protocolo.ventana_mas_cerrada == 'I' %}checked{% endif %}"></span> <span class="{% if protocolo.ventana_mas_cerrada == 'I' %}checked-text{% endif %}">Izquierda</span>
+            </div>
+
+            <div class="subtitulo">Respira mejor</div>
+            <div class="check-row">
+                <span class="check-box {% if protocolo.respira_mejor == 'D' %}checked{% endif %}"></span> <span class="{% if protocolo.respira_mejor == 'D' %}checked-text{% endif %}">Derecha</span>
+            </div>
+            <div class="check-row">
+                <span class="check-box {% if protocolo.respira_mejor == 'I' %}checked{% endif %}"></span> <span class="{% if protocolo.respira_mejor == 'I' %}checked-text{% endif %}">Izquierda</span>
+            </div>
+            
+            <div class="subtitulo">Sellado labial y cara</div>
+            <div class="check-row">
+                <span class="check-box {% if protocolo.sellado_labial_reposo %}checked{% endif %}"></span> <span class="{% if protocolo.sellado_labial_reposo %}checked-text{% endif %}">En reposo</span>
+            </div>
+            <div class="check-row">
+                <span class="check-box {% if protocolo.fascies_adenoidea %}checked{% endif %}"></span> <span class="{% if protocolo.fascies_adenoidea %}checked-text{% endif %}">Fascies adenoidea (ojeras)</span>
+            </div>
+            <div class="check-row">
+                <span class="check-box {% if protocolo.labios_cortados %}checked{% endif %}"></span> <span class="{% if protocolo.labios_cortados %}checked-text{% endif %}">Labios cortados</span>
+            </div>
+            
+            <div class="subtitulo">Mordida</div>
+            <div class="check-row">
+                <span class="check-box {% if protocolo.mordida_abierta %}checked{% endif %}"></span> <span class="{% if protocolo.mordida_abierta %}checked-text{% endif %}">Mordida abierta</span>
+            </div>
+            {% for val, label in form.mordida_cruzada.field.choices %}
+            <div class="check-row">
+                <span class="check-box {% if protocolo.mordida_cruzada == val %}checked{% endif %}"></span> <span class="{% if protocolo.mordida_cruzada == val %}checked-text{% endif %}">Cruzada: {{ label }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="col">
+            <div class="subtitulo">Patrón de crecimiento</div>
+            {% for val, label in form.patron_crecimiento.field.choices %}
+            <div class="check-row">
+                <span class="check-box {% if protocolo.patron_crecimiento == val %}checked{% endif %}"></span> <span class="{% if protocolo.patron_crecimiento == val %}checked-text{% endif %}">{{ label }}</span>
+            </div>
+            {% endfor %}
+
+            <div class="subtitulo">Maloclusión</div>
+            {% for val, label in form.maloclusion.field.choices %}
+            <div class="check-row">
+                <span class="check-box {% if protocolo.maloclusion == val %}checked{% endif %}"></span> <span class="{% if protocolo.maloclusion == val %}checked-text{% endif %}">{{ label }}</span>
+            </div>
+            {% endfor %}
+            
+            <div class="subtitulo">Sobremordida</div>
+            {% for val, label in form.sobremordida.field.choices %}
+            <div class="check-row">
+                <span class="check-box {% if protocolo.sobremordida == val %}checked{% endif %}"></span> <span class="{% if protocolo.sobremordida == val %}checked-text{% endif %}">{{ label }}</span>
+            </div>
+            {% endfor %}
+            
+            <div class="subtitulo">Amígdalas</div>
+            <div style="display: flex;">
+                <div style="flex:1;">
+                    <strong>Grado:</strong><br>
+                    {% for val, label in form.amigdalas_grado.field.choices %}
+                    <div class="check-row">
+                        <span class="check-box {% if protocolo.amigdalas_grado == val %}checked{% endif %}"></span> {{ label }}
+                    </div>
+                    {% endfor %}
+                </div>
+                <div style="flex:1;">
+                    <strong>Inflamada:</strong><br>
+                    {% for val, label in form.amigdalas_inflamada.field.choices %}
+                    <div class="check-row">
+                        <span class="check-box {% if protocolo.amigdalas_inflamada == val %}checked{% endif %}"></span> {{ label }}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. CAPACIDAD MASTICATORIA -->
+    <div class="section-title">2. CAPACIDAD MASTICATORIA</div>
+    <div class="row">
+        <div class="col">
+            <div class="subtitulo">Masticador</div>
+            <div class="check-row">
+                <span class="check-box {% if protocolo.masticador_derecho %}checked{% endif %}"></span> <span class="{% if protocolo.masticador_derecho %}checked-text{% endif %}">Derecho</span>
+            </div>
+            <div class="check-row">
+                <span class="check-box {% if protocolo.masticador_izquierdo %}checked{% endif %}"></span> <span class="{% if protocolo.masticador_izquierdo %}checked-text{% endif %}">Izquierdo</span>
+            </div>
+
+            <div class="subtitulo">Preferencias</div>
+            <div class="row">
+                <div class="col-6">
+                    <div class="check-row">
+                        <span class="check-box {% if protocolo.prefiere_yogurt %}checked{% endif %}"></span> Yogurt
+                    </div>
+                    <div class="check-row">
+                        <span class="check-box {% if protocolo.prefiere_manzana %}checked{% endif %}"></span> Manzana
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="check-row">
+                        <span class="check-box {% if protocolo.prefiere_naranja %}checked{% endif %}"></span> Naranja
+                    </div>
+                    <div class="check-row">
+                        <span class="check-box {% if protocolo.prefiere_zumo %}checked{% endif %}"></span> Zumo
+                    </div>
+                </div>
             </div>
         </div>
         <div class="col">
-            <div class="field"><span class="label">Tiempo comer:</span> {{ protocolo.get_tiempo_comer_display|default:"-" }}</div>
-            <div class="field"><span class="label">Corta bocados:</span> {{ protocolo.corta_bocados|yesno:"Sí,No" }}</div>
-            <div class="field"><span class="label">Respirador oral:</span> {{ protocolo.es_respirador_oral|yesno:"Sí,No" }}</div>
+             <div class="subtitulo">Hábitos y Tiempos</div>
+             <div class="check-row">
+                <span class="check-box {% if protocolo.corta_bocados == True %}checked{% endif %}"></span> ¿Corta a bocados?
+             </div>
+             <div class="check-row">
+                <span class="check-box {% if protocolo.aguanta_5min_sellado == True %}checked{% endif %}"></span> ¿Aguanta 5 min sellado?
+             </div>
+             <div class="check-row">
+                <span class="check-box {% if protocolo.sellado_labial_dia == True %}checked{% endif %}"></span> ¿Mantiene sellado el día?
+             </div>
+             <div class="check-row">
+                <span class="check-box {% if protocolo.sellado_labial_durmiendo == True %}checked{% endif %}"></span> ¿Mantiene sellado durmiendo?
+             </div>
+             <div class="check-row">
+                <span class="check-box {% if protocolo.es_respirador_oral == True %}checked{% endif %}"></span> ¿Es respirador oral?
+             </div>
+             
+             <div style="margin-top: 5px;">
+                <strong>Tiempo comer:</strong> 
+                {% for val, label in form.tiempo_comer.field.choices %}
+                <span class="check-box {% if protocolo.tiempo_comer == val %}checked{% endif %}" style="margin-left: 5px;"></span> {{ label }}
+                {% endfor %}
+             </div>
         </div>
     </div>
 
-    <!-- SUEÑO Y DEGLUCIÓN -->
-    <div class="section-title">SUEÑO, DEGLUCIÓN Y LENGUA</div>
+    <!-- 3. CAPACIDAD RESPIRATORIA Y SUEÑO -->
+    <div class="section-title">3. RESPIRACIÓN, DEGLUCIÓN Y SUEÑO</div>
     <div class="row">
         <div class="col">
-            <div class="field"><span class="label">Respiración nocturna:</span> {{ protocolo.get_respiracion_nocturna_display|default:"-" }}</div>
-            <div class="field"><span class="label">Movilidad dormir:</span> {{ protocolo.get_movilidad_dormir_display|default:"-" }}</div>
-            <div class="field"><span class="label">Bruxismo:</span> {{ protocolo.get_bruxismo_display|default:"-" }}</div>
+            <div class="subtitulo">Deglución</div>
+            <div class="check-row"><span class="check-box {% if protocolo.deglucion_normal %}checked{% endif %}"></span> Normal</div>
+            <div class="check-row"><span class="check-box {% if protocolo.deglucion_dificultad %}checked{% endif %}"></span> Dificultad</div>
+            <div class="check-row"><span class="check-box {% if protocolo.mete_lengua_dientes %}checked{% endif %}"></span> Mete lengua entre dientes</div>
+            <div class="check-row"><span class="check-box {% if protocolo.lengua_marcas_bordes %}checked{% endif %}"></span> Lengua marcas en bordes</div>
+            
+            <div class="subtitulo">Lengua con boca abierta</div>
+            <div class="check-row"><span class="check-box {% if protocolo.lengua_alcanza_nariz %}checked{% endif %}"></span> Alcanza nariz</div>
+            <div class="check-row"><span class="check-box {% if protocolo.lengua_llega_paladar %}checked{% endif %}"></span> Llega al paladar</div>
+            <div class="check-row"><span class="check-box {% if protocolo.lengua_mitad_camino %}checked{% endif %}"></span> Mitad de camino</div>
+            <div class="check-row"><span class="check-box {% if protocolo.lengua_apenas_incisivos %}checked{% endif %}"></span> Apenas incisivos</div>
         </div>
         <div class="col">
-            <div class="field"><span class="label">Deglución:</span>
-                {% if protocolo.deglucion_normal %}Normal{% endif %}
-                {% if protocolo.deglucion_dificultad %}Dificultad{% endif %}
+             <div class="subtitulo">Respiración nocturna</div>
+             {% for val, label in form.respiracion_nocturna.field.choices %}
+             <div class="check-row"><span class="check-box {% if protocolo.respiracion_nocturna == val %}checked{% endif %}"></span> {{ label }}</div>
+             {% endfor %}
+             
+             <div class="subtitulo">Movilidad al dormir</div>
+             {% for val, label in form.movilidad_dormir.field.choices %}
+             <div class="check-row"><span class="check-box {% if protocolo.movilidad_dormir == val %}checked{% endif %}"></span> {{ label }}</div>
+             {% endfor %}
+             
+             <div class="subtitulo">Bruxismo</div>
+             {% for val, label in form.bruxismo.field.choices %}
+             <div class="check-row"><span class="check-box {% if protocolo.bruxismo == val %}checked{% endif %}"></span> {{ label }}</div>
+             {% endfor %}
+        </div>
+    </div>
+
+    <!-- 4. HISTORIAL Y ALERGIAS -->
+    <div class="section-title">4. HISTORIAL DE SALUD</div>
+    <div class="row">
+        <div class="col">
+            <div class="check-row">
+                <span class="check-box {% if protocolo.es_alergico == True %}checked{% endif %}"></span> <strong>Es alérgico / Intolerante</strong>
             </div>
-            <div class="field"><span class="label">Lengua:</span>
-                {% if protocolo.lengua_alcanza_nariz %}Muy suelta{% endif %}
-                {% if protocolo.lengua_apenas_incisivos %}Frenectomía segura{% endif %}
+            {% if protocolo.alergico_a %}
+            <div style="margin-left: 20px; font-style: italic;">A: {{ protocolo.alergico_a }}</div>
+            {% endif %}
+        </div>
+        <div class="col">
+            <div>
+                <strong>Resfríos (año):</strong> {% if protocolo.veces_resfrio %}{{ protocolo.get_veces_resfrio_display }}{% else %}-{% endif %}
+            </div>
+            <div>
+                <strong>Amigdalitis (año):</strong> {% if protocolo.veces_amigdalitis %}{{ protocolo.get_veces_amigdalitis_display }}{% else %}-{% endif %}
+            </div>
+            <div>
+                <strong>Antibióticos (año):</strong> {% if protocolo.veces_antibioticos %}{{ protocolo.get_veces_antibioticos_display }}{% else %}-{% endif %}
             </div>
         </div>
     </div>
 
-    <!-- HISTORIAL -->
-    <div class="section-title">HISTORIAL MÉDICO Y ALERGIAS</div>
+    <!-- 5. EVALUACIÓN DE FUNCIONES -->
+    <div class="section-title">5. EVALUACIÓN DE FUNCIONES GENERALES</div>
     <div class="row">
         <div class="col">
-            <div class="field"><span class="label">Alergias:</span> {{ protocolo.es_alergico|yesno:"Sí,No" }} ({{ protocolo.alergico_a }})</div>
-            <div class="field"><span class="label">Medicamentos:</span> {{ protocolo.medicacion_actual|default:"Ninguno" }}</div>
+             <div class="check-row"><strong>Masticación:</strong> <span style="margin-left:5px">{{ protocolo.get_masticacion_eval_display|default:"-" }}</span></div>
+             <div class="check-row"><strong>Respiración:</strong> <span style="margin-left:5px">{{ protocolo.get_respiracion_eval_display|default:"-" }}</span></div>
+             <div class="check-row"><strong>Deglución:</strong> <span style="margin-left:5px">{{ protocolo.get_deglucion_eval_display|default:"-" }}</span></div>
         </div>
         <div class="col">
-            <div class="field"><span class="label">Resfríos/año:</span> {{ protocolo.get_veces_resfrio_display|default:"-" }}</div>
-            <div class="field"><span class="label">Antibióticos/año:</span> {{ protocolo.get_veces_antibioticos_display|default:"-" }}</div>
+             <div class="check-row"><strong>Fonación:</strong> <span style="margin-left:5px">{{ protocolo.get_fonacion_display|default:"-" }}</span></div>
+             <div class="check-row"><strong>Actividad Física:</strong> <span style="margin-left:5px">{{ protocolo.get_actividad_fisica_display|default:"-" }}</span></div>
+             <div class="check-row"><strong>Hábitos:</strong> <span style="margin-left:5px">{{ protocolo.get_habitos_alimentarios_display|default:"-" }}</span></div>
+             <div class="check-row"><strong>Pantallas:</strong> <span style="margin-left:5px">{{ protocolo.get_horas_pantallas_display|default:"-" }}</span></div>
         </div>
     </div>
 
-    <!-- EVALUACIÓN GENERAL -->
-    <div class="section-title">EVALUACIÓN GENERAL</div>
+    <!-- 6. PLAN DE TRATAMIENTO -->
+    <div class="section-title">6. PLAN DE TRATAMIENTO RECOMENDADO</div>
     <div class="row">
         <div class="col">
-            <div class="field"><span class="label">Masticación:</span> {{ protocolo.get_masticacion_eval_display|default:"-" }}</div>
-            <div class="field"><span class="label">Respiración:</span> {{ protocolo.get_respiracion_eval_display|default:"-" }}</div>
+            <div class="check-row"><span class="check-box {% if protocolo.plan_refuerzo_habitos %}checked{% endif %}"></span> Refuerzo hábitos saludables</div>
+            <div class="check-row"><span class="check-box {% if protocolo.plan_placa_confort %}checked{% endif %}"></span> PlacaConfort</div>
+            <div class="check-row"><span class="check-box {% if protocolo.plan_deglu_confort %}checked{% endif %}"></span> DegluConfort</div>
+            <div class="check-row"><span class="check-box {% if protocolo.plan_nariz_confort %}checked{% endif %}"></span> NarizConfort</div>
+            <div class="check-row"><span class="check-box {% if protocolo.plan_mascalin %}checked{% endif %}"></span> Mascalín</div>
         </div>
         <div class="col">
-            <div class="field"><span class="label">Fonación:</span> {{ protocolo.get_fonacion_display|default:"-" }}</div>
-            <div class="field"><span class="label">Actividad física:</span> {{ protocolo.get_actividad_fisica_display|default:"-" }}</div>
+            <div class="check-row"><span class="check-box {% if protocolo.plan_retirada_lacteos %}checked{% endif %}"></span> Retirada lácteos</div>
+            <div class="check-row"><span class="check-box {% if protocolo.plan_evitar_azucar %}checked{% endif %}"></span> Evitar azúcar/harinas</div>
+            <div class="check-row"><span class="check-box {% if protocolo.plan_alimentos_duros %}checked{% endif %}"></span> Alimentos duros</div>
+            <div class="check-row"><span class="check-box {% if protocolo.plan_comer_sin_cubiertos %}checked{% endif %}"></span> Comer sin cubiertos</div>
+            {% if protocolo.plan_comer_lado %}
+            <div class="check-row"><span class="check-box checked"></span> Comer por lado: {{ protocolo.get_plan_comer_lado_display }}</div>
+            {% endif %}
         </div>
     </div>
 
-    <div class="field" style="margin-top: 10px;">
-        <span class="label">Estado General:</span> 
-        {% if protocolo.estado_satisfactorio %}Satisfactorio{% endif %}
-        {% if protocolo.estado_mejorable %}Mejorable{% endif %}
-        {% if protocolo.estado_muy_mejorable %}Muy Mejorable{% endif %}
+    {% if protocolo.antecedentes_interes or protocolo.enfermedad_actual or protocolo.medicacion_actual %}
+    <div class="section-title">INFORMACIÓN ADICIONAL</div>
+    <div class="row">
+        {% if protocolo.antecedentes_interes %}
+        <div class="col">
+            <div class="subtitulo">Antecedentes</div>
+            <div style="font-size: 10px;">{{ protocolo.antecedentes_interes }}</div>
+        </div>
+        {% endif %}
+        {% if protocolo.enfermedad_actual %}
+        <div class="col">
+            <div class="subtitulo">Enfermedad Actual</div>
+            <div style="font-size: 10px;">{{ protocolo.enfermedad_actual }}</div>
+        </div>
+        {% endif %}
+        {% if protocolo.medicacion_actual %}
+        <div class="col">
+            <div class="subtitulo">Medicación</div>
+            <div style="font-size: 10px;">{{ protocolo.medicacion_actual }}</div>
+        </div>
+        {% endif %}
     </div>
-
-    <!-- PLAN DE TRATAMIENTO -->
-    <div class="section-title">PLAN DE TRATAMIENTO RECOMENDADO</div>
-    <ul class="check-list">
-        {% if protocolo.plan_refuerzo_habitos %}<li class="check-item">Solo refuerzo de hábitos saludables</li>{% endif %}
-        {% if protocolo.plan_placa_confort %}<li class="check-item">Uso de PlacaConfort y recomendaciones</li>{% endif %}
-        {% if protocolo.plan_deglu_confort %}<li class="check-item">Uso de DegluConfort y recomendaciones</li>{% endif %}
-        {% if protocolo.plan_nariz_confort %}<li class="check-item">Uso de NarizConfort y recomendaciones</li>{% endif %}
-        {% if protocolo.plan_mascalin %}<li class="check-item">Uso de Mascalín (>5 años)</li>{% endif %}
-        {% if protocolo.plan_retirada_lacteos %}<li class="check-item">Retirada de lácteos (1 mes)</li>{% endif %}
-        {% if protocolo.plan_evitar_azucar %}<li class="check-item">Evitar azúcar y harinas refinadas</li>{% endif %}
-        {% if protocolo.plan_alimentos_duros %}<li class="check-item">Aumentar ingesta de alimentos duros/correosos</li>{% endif %}
-        {% if protocolo.plan_comer_sin_cubiertos %}<li class="check-item">Comer sin cubiertos para estimular tacto</li>{% endif %}
-        {% if protocolo.plan_comer_lado %}<li class="check-item">Comer preferentemente por lado: {{ protocolo.get_plan_comer_lado_display }}</li>{% endif %}
-    </ul>
-
-    {% if protocolo.observaciones or protocolo.antecedentes_interes %}
-    <div class="section-title">OBSERVACIONES ADICIONALES</div>
-    <p>{{ protocolo.antecedentes_interes }}</p>
     {% endif %}
 
     <div class="footer">
-        Documento generado el {% now "d/m/Y H:i" %} - {{ config.nombre_consultorio }}
+        Documento generado el {% now "d/m/Y H:i" %}
     </div>
 </body>
 </html>
