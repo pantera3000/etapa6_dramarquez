@@ -19,7 +19,7 @@
                 Tienes {{ citas_hoy_count }} cita{{ citas_hoy_count|pluralize }} programada{{ citas_hoy_count|pluralize }}:
                 <ul class="mb-0 mt-2" style="font-size: 0.75em; padding-left: 1rem; margin-bottom: 0.5rem;">
                     {% for cita in citas_hoy_sidebar %}
-                    <li>
+                    <li class="{% if cita.pasada %}text-decoration-line-through text-muted fst-italic{% endif %}">
                         <strong>{{ cita.inicio|date:"H:i" }}</strong> - {{ cita.titulo|truncatewords:5 }}
                     </li>
                     {% endfor %}
@@ -40,7 +40,7 @@
                 Tienes {{ citas_hoy_count }} cita{{ citas_hoy_count|pluralize }} programada{{ citas_hoy_count|pluralize }}:
                 <ul class="mb-0 mt-2" style="font-size: 0.75em; padding-left: 1rem; margin-bottom: 0.5rem;">
                     {% for cita in citas_hoy_sidebar %}
-                    <li>
+                    <li class="{% if cita.pasada %}text-decoration-line-through text-muted fst-italic{% endif %}">
                         <strong>{{ cita.inicio|date:"H:i" }}</strong> - {{ cita.titulo|truncatewords:5 }}
                     </li>
                     {% endfor %}
