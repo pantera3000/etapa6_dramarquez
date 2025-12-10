@@ -394,7 +394,9 @@
                 e.preventDefault();
                 selectedToothId = toothId;
                 updateSelectionPanel();
-                document.getElementById('tooth-comment').focus();
+                // Intentar enfocar el primer input si existe
+                const firstInput = document.querySelector('.comment-input');
+                if(firstInput) firstInput.focus();
             });
 
             // Interaction: Tooltip Hover
