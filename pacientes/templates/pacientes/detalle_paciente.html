@@ -82,7 +82,9 @@
 
         <!-- Pestañas de información relacionada -->
         <div class="bg-white rounded shadow-sm border">
-            <ul class="nav nav-tabs" id="patientTabs" role="tablist">
+            <!-- Wrapper para scroll horizontal fluido en móvil -->
+            <div class="overflow-auto px-2 pt-2">
+                <ul class="nav nav-tabs flex-nowrap" id="patientTabs" role="tablist" style="min-width: max-content;">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="historias-tab" data-bs-toggle="tab" data-bs-target="#historias" type="button">
                         📚 Historias ({{ paciente.entradas_historia.count }})
@@ -114,6 +116,7 @@
                 {% endif %}
 
             </ul>
+            </div>
 
             <div class="tab-content p-3" id="patientTabsContent">
                 <!-- Historias Clínicas - RESPONSIVE -->
