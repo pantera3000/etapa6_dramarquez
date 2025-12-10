@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Detalle Protocolo Niño{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="mb-0">Protocolo Niño</h2>
+                <h5 class="text-muted">{{ paciente.nombre_completo }} - {{ protocolo.fecha|date:"d/m/Y" }}</h5>
+            </div>
+            <div class="btn-group">
+                <a href="{% url 'pacientes:detalle' paciente.id %}" class="btn btn-outline-secondary">← Volver</a>
+                <a href="{% url 'protocolos:editar' protocolo.id %}" class="btn btn-warning">✏️ Editar</a>
+                <a href="{% url 'protocolos:pdf' protocolo.id %}" target="_blank" class="btn btn-danger">📄 Exportar PDF</a>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <!-- DATOS BÁSICOS -->
+                    <div class="col-md-12 mb-4 p-3 bg-light rounded">
+                        <div class="row">
+                            <div class="col-md-4"><strong>Fecha:</strong> {{ protocolo.fecha|date:"d/m/Y" }}</div>
+                            <div class="col-md-4"><strong>Edad:</strong> {{ protocolo.edad_protocolo }} años</div>
+                            <div class="col-md-4">
+                                <strong>Estado:</strong>
+                                {% if protocolo.estado_satisfactorio %}Satisfactorio
+                                {% elif protocolo.estado_mejorable %}Mejorable
+                                {% elif protocolo.estado_muy_mejorable %}Muy Mejorable
+                                {% else %}-{% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FÍSICA -->
+                    <div class="col-md-6 mb-4">
+                        <h5 class="text-primary border-bottom pb-2">Evaluación Física</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Ventana más cerrada:</span>
+                                <strong>{{ protocolo.get_ventana_mas_cerrada_display|default:"-" }}</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Respira mejor por:</span>
+                                <strong>{{ protocolo.get_respira_mejor_display|default:"-" }}</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Sellado labial reposo:</span>
+                                <strong>{{ protocolo.sellado_labial_reposo|yesno:"Sí,No" }}</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Fascies adenoidea:</span>
+                                <strong>{{ protocolo.fascies_adenoidea|yesno:"Sí,No" }}</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Labios cortados:</span>
+                                <strong>{{ protocolo.labios_cortados|yesno:"Sí,No" }}</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Patrón:</span>
+                                <strong>{{ protocolo.get_patron_crecimiento_display|default:"-" }}</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Maloclusión:</span>
+                                <strong>{{ protocolo.get_maloclusion_display|default:"-" }}</strong>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- FUNCIONAL -->
+                    <div class="col-md-6 mb-4">
+                        <h5 class="text-primary border-bottom pb-2">Evaluación Funcional</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <strong>Masticador:</strong> 
+                                {% if protocolo.masticador_derecho %}Derecho{% endif %}
+                                {% if protocolo.masticador_izquierdo %}Izquierdo{% endif %}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Tiempo comer:</strong> {{ protocolo.get_tiempo_comer_display|default:"-" }}
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Corta bocados:</span>
+                                <strong>{{ protocolo.corta_bocados|yesno:"Sí,No" }}</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Aguanta 5 min sellado:</span>
+                                <strong>{{ protocolo.aguanta_5min_sellado|yesno:"Sí,No" }}</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Respirador oral:</span>
+                                <strong>{{ protocolo.es_respirador_oral|yesno:"Sí,No" }}</strong>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- HISTORIAL -->
+                    <div class="col-md-12 mb-4">
+                        <h5 class="text-primary border-bottom pb-2">Historial Médico</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Alergias:</strong> {{ protocolo.es_alergico|yesno:"Sí,No" }} <br>
+                                   <small class="text-muted">{{ protocolo.alergico_a }}</small></p>
+                                <p><strong>Resfríos (año):</strong> {{ protocolo.get_veces_resfrio_display|default:"-" }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Amigdalitis/Otitis:</strong> {{ protocolo.get_veces_amigdalitis_display|default:"-" }}</p>
+                                <p><strong>Antibióticos:</strong> {{ protocolo.get_veces_antibioticos_display|default:"-" }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PLAN -->
+                    <div class="col-md-12 mb-4">
+                        <h5 class="text-primary border-bottom pb-2">Plan de Tratamiento</h5>
+                        <ul class="list-group">
+                            {% if protocolo.plan_refuerzo_habitos %}<li class="list-group-item">Refuerzo hábitos saludables</li>{% endif %}
+                            {% if protocolo.plan_placa_confort %}<li class="list-group-item">PlacaConfort</li>{% endif %}
+                            {% if protocolo.plan_deglu_confort %}<li class="list-group-item">DegluConfort</li>{% endif %}
+                            {% if protocolo.plan_nariz_confort %}<li class="list-group-item">NarizConfort</li>{% endif %}
+                            {% if protocolo.plan_mascalin %}<li class="list-group-item">Mascalín</li>{% endif %}
+                            {% if protocolo.plan_retirada_lacteos %}<li class="list-group-item">Retirada lácteos</li>{% endif %}
+                            {% if protocolo.plan_evitar_azucar %}<li class="list-group-item">Evitar azúcar</li>{% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -86,6 +86,11 @@
                         📝 Notas ({{ paciente.notas.count }})
                     </button>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="protocolos-tab" data-bs-toggle="tab" data-bs-target="#protocolos" type="button">
+                        📋 Protocolo Niños ({{ protocolos.count }})
+                    </button>
+                </li>
             </ul>
 
             <div class="tab-content p-3" id="patientTabsContent">
@@ -399,6 +404,11 @@
                     {% else %}
                         <p class="text-muted">No hay notas registradas.</p>
                     {% endif %}
+                </div>
+
+                <!-- Protocolo Niños -->
+                <div class="tab-pane fade" id="protocolos" role="tabpanel">
+                    {% include 'protocolos/lista_protocolos.html' %}
                 </div>
             </div>
         </div>

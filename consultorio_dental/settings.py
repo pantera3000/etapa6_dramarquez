@@ -27,7 +27,7 @@ INSTALLED_APPS = [
     'tratamientos',
     'notas',
     'programa_salud',
-    'protocolo_ninos',
+    'protocolos',
     'citas',
     'usuarios',
     'configuracion',  # AGREGAR ESTA LÍNEA

@@ -16,6 +16,7 @@ urlpatterns = [
     path('citas/', include('citas.urls')),
     path('usuarios/', include('usuarios.urls')),
     path('configuracion/', include('configuracion.urls')),  # AGREGAR
+    path('protocolos/', include('protocolos.urls')),
 ]
 
 # Servir archivos de medios en desarrollo

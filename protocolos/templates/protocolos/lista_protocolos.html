@@ -1,0 +1,64 @@
+{% load static %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h5 class="mb-0">📋 Protocolos de Niños</h5>
+    <a href="{% url 'protocolos:crear' paciente.id %}" class="btn btn-primary btn-sm">
+        ➕ Nuevo Protocolo
+    </a>
+</div>
+
+{% if protocolos %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Fecha</th>
+                    <th>Edad</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for protocolo in protocolos %}
+                    <tr>
+                        <td>{{ protocolo.fecha|date:"d/m/Y" }}</td>
+                        <td>{{ protocolo.edad_protocolo }} años</td>
+                        <td>
+                            {% if protocolo.estado_satisfactorio %}
+                                <span class="badge bg-success">Satisfactorio</span>
+                            {% elif protocolo.estado_mejorable %}
+                                <span class="badge bg-warning text-dark">Mejorable</span>
+                            {% elif protocolo.estado_muy_mejorable %}
+                                <span class="badge bg-danger">Muy Mejorable</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Sin evaluar</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{% url 'protocolos:detalle' protocolo.id %}" class="btn btn-outline-primary" title="Ver detalle">
+                                    👁️
+                                </a>
+                                <a href="{% url 'protocolos:editar' protocolo.id %}" class="btn btn-outline-warning" title="Editar">
+                                    ✏️
+                                </a>
+                                <a href="{% url 'protocolos:pdf' protocolo.id %}" target="_blank" class="btn btn-outline-danger" title="PDF">
+                                    📄
+                                </a>
+                                <a href="{% url 'protocolos:eliminar' protocolo.id %}" class="btn btn-outline-danger" title="Eliminar">
+                                    🗑️
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="alert alert-info text-center">
+        No hay protocolos registrados para este paciente.
+        <br>
+        <a href="{% url 'protocolos:crear' paciente.id %}" class="alert-link mt-2 d-inline-block">Crear el primer protocolo</a>
+    </div>
+{% endif %}

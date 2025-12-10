@@ -54,6 +54,9 @@ class DetallePacienteView(LoginRequiredMixin, DetailView):
         notas_page = self.request.GET.get('notas_page')
         context['notas_paginadas'] = notas_paginator.get_page(notas_page)
 
+        # Protocolos de Niños
+        context['protocolos'] = paciente.protocolos_ninos.all().order_by('-fecha')
+
         return context
 
 class CrearPacienteView(LoginRequiredMixin, CreateView):

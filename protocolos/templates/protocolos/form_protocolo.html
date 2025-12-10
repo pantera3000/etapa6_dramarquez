@@ -1,0 +1,496 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>{{ titulo }}</h2>
+            <a href="{% url 'pacientes:detalle' paciente.id %}" class="btn btn-outline-secondary">
+                ← Volver al Paciente
+            </a>
+        </div>
+
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Paciente: {{ paciente.nombre_completo }}</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            <h6>Por favor corrige los siguientes errores:</h6>
+                            {{ form.errors }}
+                        </div>
+                    {% endif %}
+
+                    <!-- Datos Básicos -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Fecha del Protocolo</label>
+                            {{ form.fecha }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Edad (años)</label>
+                            {{ form.edad_protocolo }}
+                        </div>
+                    </div>
+
+                    <!-- Pestañas de Navegación -->
+                    <ul class="nav nav-tabs mb-4" id="protocoloTabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="fisica-tab" data-bs-toggle="tab" href="#fisica" role="tab">Evaluación Física</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="funcional-tab" data-bs-toggle="tab" href="#funcional" role="tab">Funcional</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="historial-tab" data-bs-toggle="tab" href="#historial" role="tab">Historial</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="evaluacion-tab" data-bs-toggle="tab" href="#evaluacion" role="tab">Evaluación General</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="tratamiento-tab" data-bs-toggle="tab" href="#tratamiento" role="tab">Tratamiento</a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="protocoloTabsContent">
+                        
+                        <!-- TAB 1: Evaluación Física -->
+                        <div class="tab-pane fade show active" id="fisica" role="tabpanel">
+                            <h5 class="mb-3 text-primary">Ventana Nasal</h5>
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Más cerrada:</label>
+                                    <div class="d-flex gap-3">
+                                        {% for radio in form.ventana_mas_cerrada %}
+                                            <div class="form-check">
+                                                {{ radio.tag }}
+                                                <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Respira mejor:</label>
+                                    <div class="d-flex gap-3">
+                                        {% for radio in form.respira_mejor %}
+                                            <div class="form-check">
+                                                {{ radio.tag }}
+                                                <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h5 class="mb-3 text-primary">Sellado Labial y Cara</h5>
+                            <div class="row mb-4">
+                                <div class="col-md-4">
+                                    <div class="form-check form-switch">
+                                        {{ form.sellado_labial_reposo }}
+                                        <label class="form-check-label" for="{{ form.sellado_labial_reposo.id_for_label }}">Sellado labial en reposo</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check form-switch">
+                                        {{ form.fascies_adenoidea }}
+                                        <label class="form-check-label" for="{{ form.fascies_adenoidea.id_for_label }}">Fascies adenoidea (ojeras)</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check form-switch">
+                                        {{ form.labios_cortados }}
+                                        <label class="form-check-label" for="{{ form.labios_cortados.id_for_label }}">Labios cortados</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h5 class="mb-3 text-primary">Patrón, Maloclusión y Mordida</h5>
+                            <div class="row mb-4">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label fw-bold">Patrón Crecimiento:</label>
+                                    {% for radio in form.patron_crecimiento %}
+                                        <div class="form-check">
+                                            {{ radio.tag }}
+                                            <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label fw-bold">Maloclusión:</label>
+                                    {% for radio in form.maloclusion %}
+                                        <div class="form-check">
+                                            {{ radio.tag }}
+                                            <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label fw-bold">Mordida Cruzada:</label>
+                                    {% for radio in form.mordida_cruzada %}
+                                        <div class="form-check">
+                                            {{ radio.tag }}
+                                            <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                        </div>
+                                    {% endfor %}
+                                    
+                                    <div class="form-check form-switch mt-2">
+                                        {{ form.mordida_abierta }}
+                                        <label class="form-check-label" for="{{ form.mordida_abierta.id_for_label }}">Mordida Abierta</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h5 class="mb-3 text-primary">Amígdalas</h5>
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Grado:</label>
+                                    <div class="d-flex gap-3">
+                                        {% for radio in form.amigdalas_grado %}
+                                            <div class="form-check">
+                                                {{ radio.tag }}
+                                                <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Más inflamada:</label>
+                                    <div class="d-flex gap-3">
+                                        {% for radio in form.amigdalas_inflamada %}
+                                            <div class="form-check">
+                                                {{ radio.tag }}
+                                                <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB 2: Funcional -->
+                        <div class="tab-pane fade" id="funcional" role="tabpanel">
+                            <h5 class="mb-3 text-primary">Capacidad Masticatoria</h5>
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    <label class="fw-bold d-block">Masticador:</label>
+                                    <div class="form-check">
+                                        {{ form.masticador_derecho }}
+                                        <label class="form-check-label">Derecho</label>
+                                    </div>
+                                    <div class="form-check">
+                                        {{ form.masticador_izquierdo }}
+                                        <label class="form-check-label">Izquierdo</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="fw-bold d-block">Preferencias:</label>
+                                    <div class="form-check">{{ form.prefiere_yogurt }} <label class="form-check-label">Yogurt</label></div>
+                                    <div class="form-check">{{ form.prefiere_manzana }} <label class="form-check-label">Manzana</label></div>
+                                    <div class="form-check">{{ form.prefiere_naranja }} <label class="form-check-label">Naranja</label></div>
+                                    <div class="form-check">{{ form.prefiere_zumo }} <label class="form-check-label">Zumo</label></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="fw-bold d-block">Hábitos:</label>
+                                    <div class="row">
+                                        <div class="col-12 mb-2">
+                                            <label class="form-label small mb-0">¿Cuánto tarda en comer?</label>
+                                            <div class="d-flex gap-3">
+                                                {% for radio in form.tiempo_comer %}
+                                                    <div class="form-check">
+                                                        {{ radio.tag }}
+                                                        <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        <div class="col-6 mb-2">
+                                            <label class="small">¿Corta a bocados?</label>
+                                            {{ form.corta_bocados }}
+                                        </div>
+                                        <div class="col-6 mb-2">
+                                            <label class="small">Aguanta 5 min sellado</label>
+                                            {{ form.aguanta_5min_sellado }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-md-3">
+                                    <label class="small">Sellado de día</label>
+                                    {{ form.sellado_labial_dia }}
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="small">Sellado durmiendo</label>
+                                    {{ form.sellado_labial_durmiendo }}
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="small">Respirador oral</label>
+                                    {{ form.es_respirador_oral }}
+                                </div>
+                            </div>
+
+                            <h5 class="mb-3 text-primary">Capacidad Respiratoria y Lengua</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="fw-bold mb-2">Deglución:</label>
+                                    <div class="form-check">{{ form.deglucion_normal }} <label class="form-check-label">Traga con normalidad</label></div>
+                                    <div class="form-check">{{ form.deglucion_dificultad }} <label class="form-check-label">Traga con dificultad</label></div>
+                                    <div class="form-check">{{ form.mete_lengua_dientes }} <label class="form-check-label">Mete la lengua entre dientes</label></div>
+                                    <div class="form-check">{{ form.lengua_marcas_bordes }} <label class="form-check-label">Lengua con marcas en bordes</label></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="fw-bold mb-2">Lengua con boca abierta:</label>
+                                    <div class="form-check">{{ form.lengua_alcanza_nariz }} <label class="form-check-label">Alcanza nariz (muy suelta)</label></div>
+                                    <div class="form-check">{{ form.lengua_llega_paladar }} <label class="form-check-label">Llega al paladar (suelta)</label></div>
+                                    <div class="form-check">{{ form.lengua_mitad_camino }} <label class="form-check-label">Mitad camino (frenectomía rec.)</label></div>
+                                    <div class="form-check">{{ form.lengua_apenas_incisivos }} <label class="form-check-label">Apenas incisivos (frenectomía segura)</label></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB 3: Historial -->
+                        <div class="tab-pane fade" id="historial" role="tabpanel">
+                             <h5 class="mb-3 text-primary">Alergias</h5>
+                             <div class="row mb-3">
+                                 <div class="col-md-3">
+                                     <label class="form-label">¿Es alérgico?</label>
+                                     {{ form.es_alergico }}
+                                 </div>
+                                 <div class="col-md-9">
+                                     <label class="form-label">¿A qué?</label>
+                                     {{ form.alergico_a }}
+                                 </div>
+                             </div>
+                             
+                             <h5 class="mb-3 text-primary">Frecuencia Enfermedades (último año)</h5>
+                             <div class="row mb-4">
+                                 <div class="col-md-4">
+                                     <label class="fw-bold mb-2">Resfríos</label>
+                                     {% for radio in form.veces_resfrio %}
+                                         <div class="form-check">
+                                             {{ radio.tag }}
+                                             <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                         </div>
+                                     {% endfor %}
+                                 </div>
+                                 <div class="col-md-4">
+                                     <label class="fw-bold mb-2">Amigdalitis/Otitis...</label>
+                                     {% for radio in form.veces_amigdalitis %}
+                                         <div class="form-check">
+                                             {{ radio.tag }}
+                                             <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                         </div>
+                                     {% endfor %}
+                                 </div>
+                                 <div class="col-md-4">
+                                     <label class="fw-bold mb-2">Antibióticos</label>
+                                     {% for radio in form.veces_antibioticos %}
+                                         <div class="form-check">
+                                             {{ radio.tag }}
+                                             <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                         </div>
+                                     {% endfor %}
+                                 </div>
+                             </div>
+
+                             <h5 class="mb-3 text-primary">Sueño y Respiración</h5>
+                             <div class="row">
+                                 <div class="col-md-6 mb-3">
+                                     <label class="form-label fw-bold">Respiración nocturna</label>
+                                     {% for radio in form.respiracion_nocturna %}
+                                         <div class="form-check">
+                                             {{ radio.tag }}
+                                             <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                         </div>
+                                     {% endfor %}
+                                 </div>
+                                 <div class="col-md-6 mb-3">
+                                     <label class="form-label fw-bold">Movilidad al dormir</label>
+                                     {% for radio in form.movilidad_dormir %}
+                                         <div class="form-check">
+                                             {{ radio.tag }}
+                                             <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                         </div>
+                                     {% endfor %}
+                                 </div>
+                                 <div class="col-md-6 mb-3">
+                                     <label class="form-label fw-bold">Bruxismo</label>
+                                     {% for radio in form.bruxismo %}
+                                         <div class="form-check">
+                                             {{ radio.tag }}
+                                             <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                         </div>
+                                     {% endfor %}
+                                 </div>
+                                 <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Recuperación al despertar</label>
+                                    {% for radio in form.recuperacion_despertar %}
+                                        <div class="form-check">
+                                            {{ radio.tag }}
+                                            <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                             </div>
+                        </div>
+
+                        <!-- TAB 4: Evaluación General -->
+                        <div class="tab-pane fade" id="evaluacion" role="tabpanel">
+                            <h5 class="mb-3 text-primary">Evaluación de Funciones</h5>
+                            <div class="row mb-4">
+                                <div class="col-md-4">
+                                    <label class="fw-bold mb-2">Masticación</label>
+                                    {% for radio in form.masticacion_eval %}
+                                        <div class="form-check">
+                                            {{ radio.tag }}
+                                            <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="fw-bold mb-2">Respiración</label>
+                                    {% for radio in form.respiracion_eval %}
+                                        <div class="form-check">
+                                            {{ radio.tag }}
+                                            <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="fw-bold mb-2">Deglución</label>
+                                    {% for radio in form.deglucion_eval %}
+                                        <div class="form-check">
+                                            {{ radio.tag }}
+                                            <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <h5 class="mb-3 text-primary">Evaluación Neurovegetativa</h5>
+                            <div class="row mb-4">
+                                <div class="col-md-6 mb-3">
+                                    <label class="fw-bold mb-2">Fonación</label>
+                                    {% for radio in form.fonacion %}
+                                        <div class="form-check">
+                                            {{ radio.tag }}
+                                            <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="fw-bold mb-2">Actividad Física</label>
+                                    {% for radio in form.actividad_fisica %}
+                                        <div class="form-check">
+                                            {{ radio.tag }}
+                                            <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="fw-bold mb-2">Hábitos Alimentarios</label>
+                                    {% for radio in form.habitos_alimentarios %}
+                                        <div class="form-check">
+                                            {{ radio.tag }}
+                                            <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="fw-bold mb-2">Horas de pantallas</label>
+                                    <div class="d-flex gap-3">
+                                        {% for radio in form.horas_pantallas %}
+                                            <div class="form-check">
+                                                {{ radio.tag }}
+                                                <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h5 class="mb-3 text-primary">Estado General</h5>
+                            <div class="row mb-4">
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        {{ form.estado_satisfactorio }}
+                                        <label class="form-check-label">Satisfactorio</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        {{ form.estado_mejorable }}
+                                        <label class="form-check-label">Mejorable</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        {{ form.estado_muy_mejorable }}
+                                        <label class="form-check-label">Muy Mejorable</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Antecedentes de interés</label>
+                                {{ form.antecedentes_interes }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Enfermedad actual</label>
+                                {{ form.enfermedad_actual }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Medicación actual</label>
+                                {{ form.medicacion_actual }}
+                            </div>
+                        </div>
+
+                        <!-- TAB 5: Tratamiento -->
+                        <div class="tab-pane fade" id="tratamiento" role="tabpanel">
+                            <h5 class="mb-3 text-primary">Plan de Tratamiento</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check mb-2">{{ form.plan_refuerzo_habitos }} <label class="form-check-label">Solo refuerzo de hábitos saludables</label></div>
+                                    <div class="form-check mb-2">{{ form.plan_placa_confort }} <label class="form-check-label">PlacaConfort y recomendaciones</label></div>
+                                    <div class="form-check mb-2">{{ form.plan_deglu_confort }} <label class="form-check-label">DegluConfort y recomendaciones</label></div>
+                                    <div class="form-check mb-2">{{ form.plan_nariz_confort }} <label class="form-check-label">NarizConfort y recomendaciones</label></div>
+                                    <div class="form-check mb-2">{{ form.plan_mascalin }} <label class="form-check-label">Mascalín (>5 años)</label></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="text-muted">Mucosidad Nasal / Alimentación:</h6>
+                                    <div class="form-check mb-2">{{ form.plan_retirada_lacteos }} <label class="form-check-label">Retirada lácteos (1 mes)</label></div>
+                                    <div class="form-check mb-2">{{ form.plan_evitar_azucar }} <label class="form-check-label">Evitar azúcar y harinas</label></div>
+                                    <div class="form-check mb-2">{{ form.plan_alimentos_duros }} <label class="form-check-label">Alimentos duros/correosos</label></div>
+                                    <div class="form-check mb-2">{{ form.plan_comer_sin_cubiertos }} <label class="form-check-label">Comer sin cubiertos</label></div>
+                                    
+                                    <div class="mt-3">
+                                        <label class="fw-bold mb-2">Comer por lado preferente:</label>
+                                        {% for radio in form.plan_comer_lado %}
+                                            <div class="form-check">
+                                                {{ radio.tag }}
+                                                <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid mt-4 pt-3 border-top">
+                        <button type="submit" class="btn btn-primary btn-lg">💾 Guardar Protocolo</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
