@@ -166,3 +166,71 @@ def eventos_ics_view(request):
             'ahora': ahora_error,
             'manana': manana_error
         })
+
+@login_required
+def widget_citas_ajax(request):
+    """
+    Vista AJAX que descarga y procesa el calendario ICS para mostrar
+    el widget de 'Citas de Hoy' sin bloquear la carga inicial de la página.
+    """
+    # URL del calendario
+    ics_url = "https://calendar.google.com/calendar/ical/anamarquez1987%40gmail.com/private-7bdd1e3e17e30fbae0c751f9429c4cbe/basic.ics"
+    
+    citas_hoy_list = []
+    
+    try:
+        # Descarga con timeout corto
+        response = requests.get(ics_url, timeout=5)
+        response.raise_for_status()
+        cal = Calendar.from_ical(response.content)
+        
+        # Zona horaria de Perú
+        peru_tz = ZoneInfo('America/Lima')
+        ahora = datetime.now(peru_tz)
+        hoy_peru = ahora.date()
+        
+        # Procesar eventos
+        for componente in cal.walk():
+            if componente.name == "VEVENT":
+                try:
+                    inicio = componente.get('dtstart').dt
+                    if not inicio:
+                        continue
+                    
+                    # Convertir a datetime con timezone de Perú
+                    if isinstance(inicio, datetime):
+                        if inicio.tzinfo is None:
+                            inicio_utc = inicio.replace(tzinfo=ZoneInfo('UTC'))
+                            inicio_peru = inicio_utc.astimezone(peru_tz)
+                        else:
+                            inicio_peru = inicio.astimezone(peru_tz)
+                        inicio_peru_date = inicio_peru.date()
+                    else:
+                        # Evento de todo el día
+                        inicio_peru_date = inicio
+                        inicio_peru = datetime.combine(inicio, datetime.min.time(), tzinfo=peru_tz)
+                    
+                    # Solo citas de hoy
+                    if inicio_peru_date == hoy_peru:
+                        citas_hoy_list.append({
+                            'titulo': str(componente.get('summary', 'Sin título')),
+                            'inicio': inicio_peru,
+                        })
+                        
+                except Exception as e:
+                    logger.warning(f"Error al procesar evento en widget AJAX: {e}")
+                    continue
+        
+        # Ordenar por hora
+        citas_hoy_list.sort(key=lambda x: x['inicio'])
+        
+    except Exception as e:
+        logger.error(f"Error al obtener citas en widget AJAX: {e}")
+        # En caso de error, simplemente no mostramos nada o lista vacía
+    
+    context = {
+        'citas_hoy_count': len(citas_hoy_list),
+        'citas_hoy_sidebar': citas_hoy_list[:5]  # Máximo 5 citas
+    }
+    
+    return render(request, 'citas/componentes/lista_citas_sidebar.html', context)
