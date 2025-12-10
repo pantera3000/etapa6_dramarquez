@@ -9,7 +9,7 @@ class ProtocoloNinoForm(forms.ModelForm):
         exclude = ['paciente', 'creado_en', 'actualizado_en']
         widgets = {
             # Datos básicos
-            'fecha': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'fecha': forms.DateInput(format='%Y-%m-%d', attrs={'class': 'form-control', 'type': 'date'}),
             'edad_protocolo': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Años'}),
             
             # Radios - Ventana Nasal

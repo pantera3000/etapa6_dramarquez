@@ -42,7 +42,8 @@ class CrearProtocoloView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
     
     def get_success_url(self):
-        return reverse('protocolos:lista', kwargs={'paciente_id': self.paciente.pk})
+        # Redirigir al detalle del paciente, pestaña protocolos
+        return reverse('pacientes:detalle', kwargs={'pk': self.paciente.pk}) + '?protocolos_page=1'
 
 class EditarProtocoloView(LoginRequiredMixin, UpdateView):
     model = ProtocoloNino
@@ -77,7 +78,8 @@ class EliminarProtocoloView(LoginRequiredMixin, DeleteView):
     template_name = 'protocolos/confirmar_eliminar.html'
     
     def get_success_url(self):
-        return reverse('protocolos:lista', kwargs={'paciente_id': self.object.paciente.pk})
+        # Redirigir al detalle del paciente
+        return reverse('pacientes:detalle', kwargs={'pk': self.object.paciente.pk}) + '?protocolos_page=1'
     
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, 'Protocolo eliminado exitosamente.')
