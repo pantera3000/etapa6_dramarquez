@@ -374,6 +374,12 @@
         let currentTool = { state: 'CARIES', color: '#ff4d4f' };
         let hallazgosMap = {}; 
         let selectedToothId = null;
+        
+        // Mapa de nombres completos (Global Scope)
+        const faceNames = {
+            'V': 'Vestibular', 'L': 'Lingual', 'M': 'Mesial', 
+            'D': 'Distal', 'O': 'Oclusal', 'R': 'Raíz'
+        };
 
         // 1. Initial Render (Clone SVG)
         wrappers.forEach(wrapper => {
@@ -537,15 +543,13 @@
             }
             noMsg.classList.add('d-none');
 
-            // Mapa de nombres completos
-            const faceNames = {
-                'V': 'Vestibular', 'L': 'Lingual', 'M': 'Mesial', 
-                'D': 'Distal', 'O': 'Oclusal', 'R': 'Raíz'
-            };
+            // Mapa Global usado: faceNames
 
             // Generate Input for each finding
             keys.forEach(key => {
                 const h = hallazgosMap[key];
+                if (!key.includes('-')) return;
+                
                 const faceKey = key.split('-')[1];
                 const faceName = faceNames[faceKey] || faceKey;
                 
@@ -560,7 +564,7 @@
                     <input type="text" class="form-control form-control-sm comment-input" 
                            data-key="${key}" 
                            value="${h.comment || ''}" 
-                           placeholder="Nota para ${face}..."
+                           placeholder="Nota para ${faceKey}..."
                     >
                 `;
                 container.appendChild(wrapper);
@@ -585,8 +589,15 @@
             });
             
             if (inputs.length === 0) {
-                alert('Primero marca algún estado en el diente.');
-                return;
+                // Validación para usuario: Si no hay inputs, es porque no hay hallazgos.
+                // Intentar regenerar panel por si acaso
+                updateSelectionPanel();
+                const recheck = document.querySelectorAll('.comment-input');
+                if (recheck.length === 0) {
+                    alert('Primero marca algún estado en el diente.');
+                    return;
+                }
+                // Si se regeneraron, continuar
             }
             
             updateIndicators(); 
@@ -604,10 +615,8 @@
              document.querySelectorAll('.tooth-wrapper').forEach(wrapper => {
                 const toothId = wrapper.dataset.tooth;
                 const badges = wrapper.querySelectorAll('.comment-badge');
-                
                 // Check if any hallazgo for this tooth has comment
                 const hasComment = Object.entries(hallazgosMap).some(([k, v]) => k.startsWith(`${toothId}-`) && v.comment);
-                
                 badges.forEach(b => b.style.display = hasComment ? 'block' : 'none');
              });
         }
@@ -624,12 +633,8 @@
             }
 
             // Reverse for "Recent First" visual perception
-            const faceNames = {
-                'V': 'Vestibular', 'L': 'Lingual', 'M': 'Mesial', 
-                'D': 'Distal', 'O': 'Oclusal', 'R': 'Raíz'
-            };
-
             items.reverse().forEach(([key, val]) => {
+                if (!key.includes('-')) return;
                 const [tooth, faceKey] = key.split('-');
                 const faceName = faceNames[faceKey] || faceKey;
                 
