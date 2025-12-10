@@ -30,7 +30,7 @@ INSTALLED_APPS = [
     'protocolos',
     'citas',
     'usuarios',
-    'configuracion',  # AGREGAR ESTA LÍNEA
+    'configuracion',
 ]
 
 MIDDLEWARE = [

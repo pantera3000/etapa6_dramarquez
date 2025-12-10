@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Programa Salud-Confort - {{ paciente.nombre_completo }}</title>
+    <style>
+        body { font-family: "Segoe UI", Tahoma, sans-serif; font-size: 11px; color: #000; line-height: 1.3; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .header { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { max-height: 50px; }
+        h1 { font-size: 16px; text-transform: uppercase; margin: 0; }
+        .consultorio-nombre { font-size: 12px; font-weight: bold; margin-top: 4px; }
+        .info-box { border: 1px solid #ccc; padding: 8px 12px; margin-bottom: 15px; background-color: #f9f9f9; display: flex; justify-content: space-between; }
+        .section-title { background-color: #eee; border-top: 2px solid #000; border-bottom: 1px solid #000; padding: 6px 8px; font-weight: bold; font-size: 13px; margin-top: 15px; margin-bottom: 10px; text-transform: uppercase; text-align: center; }
+        .subtitulo { font-weight: bold; font-size: 11px; margin-top: 8px; margin-bottom: 2px; text-decoration: underline; }
+        .row { display: flex; flex-wrap: wrap; margin: 0 -10px; }
+        .col { flex: 1; padding: 0 10px; }
+        .check-row { margin-bottom: 2px; display: flex; align-items: center; }
+        .check-box { display: inline-block; width: 12px; height: 12px; border: 1px solid #000; margin-right: 6px; text-align: center; line-height: 10px; font-size: 10px; }
+        .check-box.checked::after { content: "✓"; font-weight: bold; }
+        .actividad-box { border: 1px solid #999; padding: 8px; margin-bottom: 10px; break-inside: avoid; }
+        .actividad-titulo { font-weight: bold; background: #ddd; padding: 2px 5px; display: inline-block; margin-bottom: 5px; }
+        
+        .footer { margin-top: 30px; border-top: 1px solid #000; padding-top: 5px; text-align: center; font-size: 9px; color: #555; }
+        @media print { .no-print { display: none; } body { padding: 0; } }
+    </style>
+</head>
+<body onload="window.print()">
+    <div class="no-print" style="margin-bottom: 20px; text-align: right;">
+        <button onclick="window.print()" style="padding: 8px 15px; background: #0056b3; color: white; border: none; cursor: pointer; border-radius: 4px;">🖨️ Imprimir</button>
+        <button onclick="window.close()" style="padding: 8px 15px; background: #6c757d; color: white; border: none; cursor: pointer; border-radius: 4px;">Cerrar</button>
+    </div>
+
+    <div class="header">
+        <div>
+            <h1>PROGRAMA SALUD-CONFORT</h1>
+            <div class="consultorio-nombre">Dr. Emilio López Jiménez - {{ config.nombre_consultorio }}</div>
+        </div>
+        {% if config.logo %}
+            <img src="{{ config.logo.url }}" class="logo" alt="Logo">
+        {% endif %}
+    </div>
+
+    <div class="info-box">
+        <div><strong>Paciente:</strong> {{ paciente.nombre_completo }}</div>
+        <div><strong>Edad:</strong> {{ programa.fecha|timesince:paciente.fecha_nacimiento }}</div>
+        <div><strong>Fecha:</strong> {{ programa.fecha|date:"d/m/Y" }}</div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <strong>Lado predominante al masticar:</strong><br>
+            <span class="check-box {% if programa.lado_predominante == 'D' %}checked{% endif %}"></span> Derecho
+            <span class="check-box {% if programa.lado_predominante == 'I' %}checked{% endif %}" style="margin-left: 10px;"></span> Izquierdo
+        </div>
+        <div class="col">
+            <strong>Ventana nasal más cerrada:</strong><br>
+            <span class="check-box {% if programa.ventana_nasal == 'D' %}checked{% endif %}"></span> Derecha
+            <span class="check-box {% if programa.ventana_nasal == 'I' %}checked{% endif %}" style="margin-left: 10px;"></span> Izquierda
+        </div>
+    </div>
+
+    <div class="section-title">DIAGNÓSTICO CLÍNICO</div>
+    <div class="row">
+        <div class="col">
+            <div class="subtitulo">Síndrome Simpático Silencioso (SSS)</div>
+            <div class="check-row"><span class="check-box {% if programa.sss_respiracion_oral %}checked{% endif %}"></span> Respiración oral / Boca seca</div>
+            <div class="check-row"><span class="check-box {% if programa.sss_calidad_sueno %}checked{% endif %}"></span> Calidad sueño / Ronquido / Apnea</div>
+            <div class="check-row"><span class="check-box {% if programa.sss_gingivitis %}checked{% endif %}"></span> Gingivitis / Enf. periodontal</div>
+            <div class="check-row"><span class="check-box {% if programa.sss_faringitis %}checked{% endif %}"></span> Faringitis crónica</div>
+            <div class="check-row"><span class="check-box {% if programa.sss_atm %}checked{% endif %}"></span> Desorden ATM / Bruxismo</div>
+            <div class="check-row"><span class="check-box {% if programa.sss_reflujos %}checked{% endif %}"></span> Reflujos / Digestivos</div>
+            <div class="check-row"><span class="check-box {% if programa.sss_cefaleas %}checked{% endif %}"></span> Cefaleas / Migrañas</div>
+        </div>
+        <div class="col">
+            <div style="height: 14px;"></div> <!-- Spacer -->
+            <div class="check-row"><span class="check-box {% if programa.sss_dolor_cervical %}checked{% endif %}"></span> Dolor cervical/corporal</div>
+            <div class="check-row"><span class="check-box {% if programa.sss_patologia_homolateral %}checked{% endif %}"></span> Patología homolateral</div>
+            <div class="check-row"><span class="check-box {% if programa.sss_masticacion_unilateral %}checked{% endif %}"></span> Masticación unilateral</div>
+            <div class="check-row"><span class="check-box {% if programa.sss_astenia %}checked{% endif %}"></span> Astenia / Agotamiento</div>
+            <div class="check-row"><span class="check-box {% if programa.sss_ansiedad %}checked{% endif %}"></span> Ansiedad / Depresión</div>
+            <div class="check-row"><span class="check-box {% if programa.sss_alergias %}checked{% endif %}"></span> Alergias / Rinitis</div>
+            <div class="check-row"><span class="check-box {% if programa.sss_hipertension %}checked{% endif %}"></span> Hipertensión / Risk Cardio</div>
+        </div>
+    </div>
+    
+    <div style="margin-top: 10px;">
+        <strong>Otras patologías:</strong> {{ programa.otras_patologias|default:"_______________________________________" }}<br>
+        <strong>Medicación:</strong> {{ programa.medicacion|default:"_______________________________________" }}<br>
+        <strong>Intervenciones previas:</strong> {{ programa.intervenciones_previas|default:"_______________________________________" }}<br>
+        <strong>Ejercicio físico:</strong> {{ programa.ejercicio_fisico_desc|default:"_______________________________________" }}<br>
+        <strong>Hábitos:</strong> 
+        <span class="check-box {% if programa.habito_fumador %}checked{% endif %}"></span> Fumador 
+        <span class="check-box {% if programa.habito_bebedor %}checked{% endif %}" style="margin-left:10px"></span> Bebedor
+    </div>
+
+    <div class="section-title">ACTIVIDADES A REALIZAR DURANTE EL DÍA</div>
+    
+    <div class="actividad-box">
+        <div class="actividad-titulo">1. Enjuagues con aceite de oliva</div>
+        <div>
+            1 cucharada: 
+            Mañana <span class="check-box {% if programa.enjuagues_manana %}checked{% endif %}"></span> 
+            Tarde <span class="check-box {% if programa.enjuagues_tarde %}checked{% endif %}"></span>
+            <span style="margin-left: 10px; font-style: italic;">Instrucciones: Mantén 15 min en la boca y traga lentamente.</span>
+        </div>
+    </div>
+
+    <div class="actividad-box">
+        <div class="actividad-titulo">2. AcuaConfort (Hidratación)</div>
+        {% if programa.acuaconfort_asignado %}<strong>(INDICADO)</strong>{% endif %}
+        <div>
+            - 3/4 de agua de manantial + 1/4 Agua de mar + 1 limón pequeño.<br>
+            - Bebe 1 litro al día, tragos pequeños, paladeando 20 seg antes de tragar.
+        </div>
+    </div>
+
+    <div class="actividad-box">
+        <div class="actividad-titulo">3. PlacaConfort / DegluConfort</div>
+        <div style="display: flex; justify-content: space-between;">
+            <div>TALLA: <strong>{{ programa.placa_talla|default:"_____" }}</strong></div>
+            <div>
+                <span class="check-box {% if programa.placa_3_ratos %}checked{% endif %}"></span> Usar 3 ratos al día (relax)
+                <span class="check-box {% if programa.placa_noche %}checked{% endif %}" style="margin-left: 10px;"></span> Usar todas las noches
+            </div>
+        </div>
+    </div>
+
+    <div class="actividad-box">
+        <div class="actividad-titulo">4. NarizConfort</div>
+        <div>
+            TALLA: <strong>{{ programa.nariz_talla|default:"_____" }}</strong>
+            <span style="margin-left: 20px;">Uso:</span>
+            <span class="check-box {% if programa.nariz_uso == 'D' %}checked{% endif %}"></span> Derecho
+            <span class="check-box {% if programa.nariz_uso == 'I' %}checked{% endif %}"></span> Izquierdo
+            <span class="check-box {% if programa.nariz_uso == 'B' %}checked{% endif %}"></span> Bilateral
+            <br>
+            <span style="font-style: italic;">Instrucción: Úsalo para dormir y a ratos durante el día.</span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div class="actividad-box">
+                <div class="actividad-titulo">5. Hueso de aceituna</div>
+                <span class="check-box {% if programa.hueso_aceituna %}checked{% endif %}"></span> Indicado<br>
+                <span style="font-size: 10px;">Llevar 1 ó 2 en la boca siempre que sea posible.</span>
+            </div>
+        </div>
+        <div class="col">
+            <div class="actividad-box">
+                <div class="actividad-titulo">6. Vaselina o cacao</div>
+                <span class="check-box {% if programa.vaselina_labios %}checked{% endif %}"></span> Indicado<br>
+                <span style="font-size: 10px;">Poner en labios cada media hora, frotar fuerte 10 veces.</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="actividad-box">
+        <div class="actividad-titulo">7 & 8. Alimentación</div>
+        <div>
+            <strong>Masticar por lado:</strong> 
+            <span class="check-box {% if programa.alimentacion_lado == 'D' %}checked{% endif %}"></span> Derecho
+            <span class="check-box {% if programa.alimentacion_lado == 'I' %}checked{% endif %}"></span> Izquierdo
+        </div>
+        <div style="margin-top: 5px;">
+            <span class="check-box {% if programa.ali_fruta_bocados %}checked{% endif %}"></span> Fruta entera bocados
+            <span class="check-box {% if programa.ali_evita_carbonatadas %}checked{% endif %}" style="margin-left:10px"></span> Evita carbonatadas
+            <span class="check-box {% if programa.ali_reduce_lacteos %}checked{% endif %}" style="margin-left:10px"></span> Reduce lácteos/harinas
+        </div>
+        <div style="margin-top: 5px;">
+            <strong>Regla 3-2-1:</strong> 
+            <span class="check-box {% if programa.regla_321_comer %}checked{% endif %}"></span> No comer 3h antes
+            <span class="check-box {% if programa.regla_321_beber %}checked{% endif %}"></span> No beber 2h antes
+            <span class="check-box {% if programa.regla_321_pantallas %}checked{% endif %}"></span> No pantallas 1h antes
+        </div>
+    </div>
+
+    <div class="actividad-box">
+        <div class="actividad-titulo">9 & 10. Ejercicio y Hábitos</div>
+        <div>
+            <span class="check-box {% if programa.ej_caminata_1h %}checked{% endif %}"></span> Caminata 1h/día
+            <span class="check-box {% if programa.ej_con_huesito %}checked{% endif %}"></span> Con huesito
+            <span class="check-box {% if programa.ej_labios_pegados %}checked{% endif %}"></span> Labios pegados
+            <br>
+            <span class="check-box {% if programa.ej_pesas %}checked{% endif %}"></span> Levantar pesas (Masa muscular)
+            <br>
+            <span class="check-box {% if programa.reducir_tabaco_alcohol %}checked{% endif %}"></span> <strong>Reducir tabaco y alcohol</strong>
+        </div>
+    </div>
+
+    <div class="footer">
+        Nota: El éxito del programa radica en la CONSTANCIA. Realízalo todos los días.
+    </div>
+</body>
+</html>

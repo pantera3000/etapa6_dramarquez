@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Detalle Programa Salud{% endblock %}
+
+{% block extra_css %}
+<style>
+    .opcion-row { display: flex; align-items: center; margin-bottom: 4px; color: #666; }
+    .opcion-row.seleccionada { color: #0d6efd; font-weight: bold; }
+    .check-icon { width: 20px; display: inline-block; font-size: 1.2em; }
+    .seccion-titulo { background-color: #f0f2f5; padding: 10px 15px; border-left: 4px solid #0d6efd; margin-top: 20px; margin-bottom: 15px; font-weight: bold; color: #2c3e50; }
+    .subtitulo { font-size: 0.95rem; font-weight: bold; color: #555; margin-bottom: 8px; margin-top: 10px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+    .info-header { background-color: #e3f2fd; border-radius: 8px; padding: 15px; }
+    .tratamiento-card { border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; margin-bottom: 15px; height: 100%; }
+    .tratamiento-titulo { font-weight: bold; color: #198754; border-bottom: 1px solid #198754; padding-bottom: 5px; margin-bottom: 10px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="mb-0">🧘 Programa Salud-Confort</h2>
+                <div class="text-muted small">Evaluación y Prescripción</div>
+            </div>
+            <div class="btn-group">
+                <a href="{% url 'pacientes:detalle' paciente.pk %}" class="btn btn-outline-secondary">← Volver</a>
+                <a href="{% url 'programa_salud:editar' programa.pk %}" class="btn btn-warning">✏️ Editar</a>
+                <a href="{% url 'programa_salud:pdf' programa.pk %}" target="_blank" class="btn btn-danger">📄 Exportar PDF</a>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-5">
+            <div class="card-body p-4">
+                
+                <!-- Header -->
+                <div class="info-header mb-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h4 class="mb-1 text-primary">{{ paciente.nombre_completo }}</h4>
+                            <p class="mb-0"><strong>Fecha:</strong> {{ programa.fecha|date:"d/m/Y" }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 1: EVALUACIÓN / DIAGNÓSTICO -->
+                <div class="seccion-titulo">1. EVALUACIÓN Y DIAGNÓSTICO</div>
+                <div class="row">
+                    <!-- Columna Izquierda: Datos Básicos y SSS -->
+                    <div class="col-md-6 pe-md-4">
+                        <div class="subtitulo">Datos Básicos</div>
+                        <div class="row">
+                            <div class="col-6">
+                                <small class="text-muted d-block">Lado predominante:</small>
+                                <div class="opcion-row {% if programa.lado_predominante == 'D' %}seleccionada{% endif %}">
+                                    <span class="check-icon">{% if programa.lado_predominante == 'D' %}✅{% else %}⚪{% endif %}</span> Derecho
+                                </div>
+                                <div class="opcion-row {% if programa.lado_predominante == 'I' %}seleccionada{% endif %}">
+                                    <span class="check-icon">{% if programa.lado_predominante == 'I' %}✅{% else %}⚪{% endif %}</span> Izquierdo
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">Ventana nasal cerrada:</small>
+                                <div class="opcion-row {% if programa.ventana_nasal == 'D' %}seleccionada{% endif %}">
+                                    <span class="check-icon">{% if programa.ventana_nasal == 'D' %}✅{% else %}⚪{% endif %}</span> Derecha
+                                </div>
+                                <div class="opcion-row {% if programa.ventana_nasal == 'I' %}seleccionada{% endif %}">
+                                    <span class="check-icon">{% if programa.ventana_nasal == 'I' %}✅{% else %}⚪{% endif %}</span> Izquierda
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="subtitulo mt-3">Síndrome Simpático Silencioso (SSS)</div>
+                        <div class="opcion-row {% if programa.sss_respiracion_oral %}seleccionada{% endif %}"><span class="check-icon">{% if programa.sss_respiracion_oral %}✅{% else %}⚪{% endif %}</span> Respiración oral / Boca seca</div>
+                        <div class="opcion-row {% if programa.sss_calidad_sueno %}seleccionada{% endif %}"><span class="check-icon">{% if programa.sss_calidad_sueno %}✅{% else %}⚪{% endif %}</span> Calidad del sueño / Ronquido</div>
+                        <div class="opcion-row {% if programa.sss_gingivitis %}seleccionada{% endif %}"><span class="check-icon">{% if programa.sss_gingivitis %}✅{% else %}⚪{% endif %}</span> Gingivitis / Enf. periodontal</div>
+                        <div class="opcion-row {% if programa.sss_faringitis %}seleccionada{% endif %}"><span class="check-icon">{% if programa.sss_faringitis %}✅{% else %}⚪{% endif %}</span> Faringitis crónica</div>
+                        <div class="opcion-row {% if programa.sss_atm %}seleccionada{% endif %}"><span class="check-icon">{% if programa.sss_atm %}✅{% else %}⚪{% endif %}</span> Desorden ATM / Bruxismo</div>
+                        <div class="opcion-row {% if programa.sss_reflujos %}seleccionada{% endif %}"><span class="check-icon">{% if programa.sss_reflujos %}✅{% else %}⚪{% endif %}</span> Reflujos / Digestivos</div>
+                        <div class="opcion-row {% if programa.sss_cefaleas %}seleccionada{% endif %}"><span class="check-icon">{% if programa.sss_cefaleas %}✅{% else %}⚪{% endif %}</span> Cefaleas / Migrañas</div>
+                    </div>
+
+                    <!-- Columna Derecha: SSS cont. y Historial -->
+                    <div class="col-md-6 ps-md-4 border-start-md">
+                         <div class="subtitulo">SSS (Continuación)</div>
+                         <div class="opcion-row {% if programa.sss_dolor_cervical %}seleccionada{% endif %}"><span class="check-icon">{% if programa.sss_dolor_cervical %}✅{% else %}⚪{% endif %}</span> Dolor cervical / corporal</div>
+                         <div class="opcion-row {% if programa.sss_patologia_homolateral %}seleccionada{% endif %}"><span class="check-icon">{% if programa.sss_patologia_homolateral %}✅{% else %}⚪{% endif %}</span> Patología homolateral</div>
+                         <div class="opcion-row {% if programa.sss_masticacion_unilateral %}seleccionada{% endif %}"><span class="check-icon">{% if programa.sss_masticacion_unilateral %}✅{% else %}⚪{% endif %}</span> Masticación unilateral</div>
+                         <div class="opcion-row {% if programa.sss_astenia %}seleccionada{% endif %}"><span class="check-icon">{% if programa.sss_astenia %}✅{% else %}⚪{% endif %}</span> Astenia / Agotamiento</div>
+                         <div class="opcion-row {% if programa.sss_ansiedad %}seleccionada{% endif %}"><span class="check-icon">{% if programa.sss_ansiedad %}✅{% else %}⚪{% endif %}</span> Ansiedad / Depresión</div>
+                         <div class="opcion-row {% if programa.sss_alergias %}seleccionada{% endif %}"><span class="check-icon">{% if programa.sss_alergias %}✅{% else %}⚪{% endif %}</span> Alergias / Rinitis / Asma</div>
+                         <div class="opcion-row {% if programa.sss_hipertension %}seleccionada{% endif %}"><span class="check-icon">{% if programa.sss_hipertension %}✅{% else %}⚪{% endif %}</span> Hipertensión / Risk Cardio</div>
+
+                         <div class="subtitulo mt-3">Historial Adicional</div>
+                         <div class="mb-2"><strong>Otras Patologías:</strong> {{ programa.otras_patologias|default:"-" }}</div>
+                         <div class="mb-2"><strong>Medicación:</strong> {{ programa.medicacion|default:"-" }}</div>
+                         <div class="mb-2"><strong>Intervenciones:</strong> {{ programa.intervenciones_previas|default:"-" }}</div>
+                         <div class="mb-2"><strong>Ejercicio (Anamnesis):</strong> {{ programa.ejercicio_fisico_desc|default:"-" }}</div>
+                         <div class="d-flex gap-3 mt-2">
+                            <span class="badge {% if programa.habito_fumador %}bg-danger{% else %}bg-light text-dark border{% endif %}">Fumador: {% if programa.habito_fumador %}SI{% else %}NO{% endif %}</span>
+                            <span class="badge {% if programa.habito_bebedor %}bg-danger{% else %}bg-light text-dark border{% endif %}">Bebedor: {% if programa.habito_bebedor %}SI{% else %}NO{% endif %}</span>
+                         </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 2: TRATAMIENTO (ACTIVIDADES) -->
+                <div class="seccion-titulo mt-5">2. ACTIVIDADES Y PRESCRIPCIÓN</div>
+                
+                <div class="row">
+                    <!-- Fila 1 -->
+                    <div class="col-md-4">
+                        <div class="tratamiento-card">
+                            <div class="tratamiento-titulo">1. Enjuagues Aceite</div>
+                            <div class="opcion-row {% if programa.enjuagues_manana %}seleccionada{% endif %}"><span class="check-icon">{% if programa.enjuagues_manana %}✅{% else %}⚪{% endif %}</span> Mañana</div>
+                            <div class="opcion-row {% if programa.enjuagues_tarde %}seleccionada{% endif %}"><span class="check-icon">{% if programa.enjuagues_tarde %}✅{% else %}⚪{% endif %}</span> Tarde</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="tratamiento-card">
+                            <div class="tratamiento-titulo">2. AcuaConfort</div>
+                            <div class="opcion-row {% if programa.acuaconfort_asignado %}seleccionada{% endif %}"><span class="check-icon">{% if programa.acuaconfort_asignado %}✅{% else %}⚪{% endif %}</span> ASIGNADO</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="tratamiento-card">
+                            <div class="tratamiento-titulo">3. PlacaConfort</div>
+                            <div class="mb-1"><strong>Talla:</strong> {{ programa.placa_talla|default:"-" }}</div>
+                            <div class="opcion-row {% if programa.placa_3_ratos %}seleccionada{% endif %}"><span class="check-icon">{% if programa.placa_3_ratos %}✅{% else %}⚪{% endif %}</span> 3 ratos/día</div>
+                            <div class="opcion-row {% if programa.placa_noche %}seleccionada{% endif %}"><span class="check-icon">{% if programa.placa_noche %}✅{% else %}⚪{% endif %}</span> Noches</div>
+                        </div>
+                    </div>
+
+                    <!-- Fila 2 -->
+                    <div class="col-md-4">
+                        <div class="tratamiento-card">
+                            <div class="tratamiento-titulo">4. NarizConfort</div>
+                            <div class="mb-1"><strong>Talla:</strong> {{ programa.nariz_talla|default:"-" }}</div>
+                            <div class="mb-1"><strong>Uso:</strong> {{ programa.get_nariz_uso_display|default:"-" }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="tratamiento-card">
+                            <div class="tratamiento-titulo">5. Hueso Aceituna</div>
+                            <div class="opcion-row {% if programa.hueso_aceituna %}seleccionada{% endif %}"><span class="check-icon">{% if programa.hueso_aceituna %}✅{% else %}⚪{% endif %}</span> INDICADO</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="tratamiento-card">
+                            <div class="tratamiento-titulo">6. Vaselina/Cacao</div>
+                            <div class="opcion-row {% if programa.vaselina_labios %}seleccionada{% endif %}"><span class="check-icon">{% if programa.vaselina_labios %}✅{% else %}⚪{% endif %}</span> INDICADO</div>
+                        </div>
+                    </div>
+
+                    <!-- Fila 3 -->
+                    <div class="col-md-6">
+                        <div class="tratamiento-card">
+                            <div class="tratamiento-titulo">7 & 8. Alimentación</div>
+                            <div class="mb-2"><strong>Masticar por lado:</strong> {{ programa.get_alimentacion_lado_display|default:"-" }}</div>
+                            <div class="opcion-row {% if programa.ali_fruta_bocados %}seleccionada{% endif %}"><span class="check-icon">{% if programa.ali_fruta_bocados %}✅{% else %}⚪{% endif %}</span> Fruta entera a bocados</div>
+                            <div class="opcion-row {% if programa.ali_evita_carbonatadas %}seleccionada{% endif %}"><span class="check-icon">{% if programa.ali_evita_carbonatadas %}✅{% else %}⚪{% endif %}</span> Evita carbonatadas</div>
+                            <div class="opcion-row {% if programa.ali_reduce_lacteos %}seleccionada{% endif %}"><span class="check-icon">{% if programa.ali_reduce_lacteos %}✅{% else %}⚪{% endif %}</span> Reduce lácteos/harinas/azúcar</div>
+                            
+                            <strong class="d-block mt-2">Regla 3-2-1:</strong>
+                            <div class="opcion-row {% if programa.regla_321_comer %}seleccionada{% endif %}"><span class="check-icon">{% if programa.regla_321_comer %}✅{% else %}⚪{% endif %}</span> No comer 3h antes</div>
+                            <div class="opcion-row {% if programa.regla_321_beber %}seleccionada{% endif %}"><span class="check-icon">{% if programa.regla_321_beber %}✅{% else %}⚪{% endif %}</span> No beber 2h antes</div>
+                            <div class="opcion-row {% if programa.regla_321_pantallas %}seleccionada{% endif %}"><span class="check-icon">{% if programa.regla_321_pantallas %}✅{% else %}⚪{% endif %}</span> No pantallas 1h antes</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="tratamiento-card">
+                            <div class="tratamiento-titulo">9 & 10. Ejercicio y Hábitos</div>
+                            <div class="opcion-row {% if programa.ej_caminata_1h %}seleccionada{% endif %}"><span class="check-icon">{% if programa.ej_caminata_1h %}✅{% else %}⚪{% endif %}</span> Caminata 1h al día</div>
+                            <div class="opcion-row {% if programa.ej_con_huesito %}seleccionada{% endif %}"><span class="check-icon">{% if programa.ej_con_huesito %}✅{% else %}⚪{% endif %}</span> Con huesito en la boca</div>
+                            <div class="opcion-row {% if programa.ej_labios_pegados %}seleccionada{% endif %}"><span class="check-icon">{% if programa.ej_labios_pegados %}✅{% else %}⚪{% endif %}</span> Labios pegados al caminar</div>
+                            <div class="opcion-row {% if programa.ej_pesas %}seleccionada{% endif %}"><span class="check-icon">{% if programa.ej_pesas %}✅{% else %}⚪{% endif %}</span> Levantar pesas (masa musc.)</div>
+                            
+                            <hr>
+                            <div class="opcion-row text-danger {% if programa.reducir_tabaco_alcohol %}seleccionada{% endif %}"><span class="check-icon">{% if programa.reducir_tabaco_alcohol %}✅{% else %}⚪{% endif %}</span> <strong>Reducir tabaco y alcohol</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

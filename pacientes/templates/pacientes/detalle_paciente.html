@@ -91,6 +91,11 @@
                         📋 Protocolo Niños ({{ protocolos.count }})
                     </button>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="programa-tab" data-bs-toggle="tab" data-bs-target="#programa" type="button">
+                        🧘 Programa Salud ({{ programas.count }})
+                    </button>
+                </li>
             </ul>
 
             <div class="tab-content p-3" id="patientTabsContent">
@@ -410,6 +415,11 @@
                 <div class="tab-pane fade" id="protocolos" role="tabpanel">
                     {% include 'protocolos/lista_protocolos.html' %}
                 </div>
+
+                <!-- Programa Salud -->
+                <div class="tab-pane fade" id="programa" role="tabpanel">
+                    {% include 'programa_salud/lista_programas.html' %}
+                </div>
             </div>
         </div>
     </div>
@@ -428,6 +438,10 @@ document.addEventListener('DOMContentLoaded', function() {
         activeTab = 'notas-tab';
     } else if (urlParams.has('historias_page')) {
         activeTab = 'historias-tab';
+    } else if (urlParams.has('protocolos_page')) {
+        activeTab = 'protocolos-tab';
+    } else if (urlParams.has('programa_page')) {
+        activeTab = 'programa-tab';
     }
 
     const tabButton = document.querySelector('#' + activeTab);

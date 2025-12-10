@@ -56,8 +56,12 @@ class DetallePacienteView(LoginRequiredMixin, DetailView):
 
         # Protocolos de Niños
         context['protocolos'] = paciente.protocolos_ninos.all().order_by('-fecha')
+        
+        # Programas de Salud
+        context['programas'] = paciente.programas_salud.all().order_by('-fecha')
 
         return context
+
 
 class CrearPacienteView(LoginRequiredMixin, CreateView):
     model = Paciente
