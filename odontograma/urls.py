@@ -6,4 +6,5 @@ app_name = 'odontograma'
 urlpatterns = [
     path('paciente/<int:paciente_id>/', views.ver_odontograma, name='ver_odontograma'),
     path('paciente/<int:paciente_id>/guardar/', views.guardar_odontograma, name='guardar_odontograma'),
+    path('paciente/<int:paciente_id>/pdf/', views.exportar_pdf, name='exportar_pdf'),
 ]

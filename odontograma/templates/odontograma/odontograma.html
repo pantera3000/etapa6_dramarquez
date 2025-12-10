@@ -1,179 +1,333 @@
+{% extends 'base.html' %}
 {% load static %}
 
-<!-- Contenido del Odontograma (Componente Reutilizable) -->
+{% block content %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
+    /* Estilos Odontograma */
+    .odontograma-container {
+        background-color: #f8f9fa;
+        min-height: calc(100vh - 100px);
+        padding: 20px;
+    }
+    
     .tooth-container {
         display: inline-block;
-        margin: 5px;
+        margin: 4px;
         text-align: center;
-        width: 60px;
+        width: 55px;
         cursor: pointer;
+        transition: transform 0.2s;
+        position: relative;
     }
+    .tooth-container:hover {
+        transform: scale(1.05);
+        z-index: 10;
+    }
+    
     .tooth-svg {
         width: 100%;
         height: auto;
-        /* filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.1)); */
+        filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.2));
     }
+    
     .tooth-polygon {
         fill: #ffffff;
         stroke: #333;
-        stroke-width: 1;
-        transition: fill 0.2s;
+        stroke-width: 1.5;
+        transition: fill 0.1s;
     }
     .tooth-polygon:hover {
-        fill: #e9ecef;
+        fill: #e2e6ea;
+        opacity: 0.8;
+        stroke: #000;
     }
-    .quadrant {
-        border: 1px solid #ddd;
-        padding: 10px;
-        margin-bottom: 20px;
+    
+    /* Toolbar */
+    .tool-btn {
+        width: 100%;
+        margin-bottom: 8px;
+        text-align: left;
+        display: flex;
+        align-items: center;
+        padding: 8px 12px;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
         background: white;
-        border-radius: 8px;
+        transition: all 0.2s;
     }
-    .toolbar-btn {
-        width: 40px;
-        height: 40px;
+    .tool-btn:hover {
+        background: #f1f3f5;
+        transform: translateX(3px);
+    }
+    .tool-btn.active {
+        background-color: #e7f5ff;
+        border-color: #339af0;
+        color: #1971c2;
+        font-weight: 500;
+        box-shadow: 0 0 0 2px rgba(51, 154, 240, 0.25);
+    }
+    .color-dot {
+        width: 16px;
+        height: 16px;
         border-radius: 50%;
-        border: 2px solid #ddd;
-        margin: 0 5px;
-        background: white;
+        margin-right: 10px;
+        border: 1px solid rgba(0,0,0,0.1);
     }
-    .toolbar-btn.active {
-        border-color: #0d6efd;
-        transform: scale(1.1);
+
+    /* Paneles Laterales */
+    .sidebar-panel {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        height: 100%;
+        border: 1px solid #edf2f7;
+    }
+    .sidebar-header {
+        padding: 15px;
+        border-bottom: 1px solid #edf2f7;
+        font-weight: 600;
+        color: #2d3748;
+    }
+    .sidebar-content {
+        padding: 15px;
+        max-height: calc(100vh - 200px);
+        overflow-y: auto;
+    }
+
+    /* Historial */
+    .history-item {
+        font-size: 0.85rem;
+        padding: 8px 0;
+        border-bottom: 1px dashed #edf2f7;
+    }
+    .history-time {
+        color: #718096;
+        font-size: 0.75rem;
+    }
+
+    /* Custom Tooltip */
+    #tooth-tooltip {
+        position: fixed;
+        background: rgba(33, 37, 41, 0.9);
+        color: white;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        pointer-events: none;
+        z-index: 9999;
+        display: none;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        max-width: 200px;
     }
 </style>
 
-<div class="container-fluid">
-    <div class="row">
-        <!-- Toolbar -->
+<div class="container-fluid odontograma-container">
+    <div id="tooth-tooltip"></div>
+    <div class="row g-3">
+        
+        <!-- COLUMNA IZQUIERDA: Herramientas -->
         <div class="col-md-2">
-            <div class="card shadow sticky-top" style="top: 20px;">
-                <div class="card-header bg-primary text-white">
-                    Herramientas
+            <div class="sidebar-panel">
+                <div class="sidebar-header bg-primary text-white rounded-top">
+                    🛠️ Herramientas
                 </div>
-                <div class="card-body">
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-outline-danger text-start select-tool" data-color="red" data-state="CARIES">
-                            🔴 Caries
-                        </button>
-                        <button class="btn btn-outline-primary text-start select-tool" data-color="blue" data-state="OBTURADO">
-                            🔵 Resina/Obt.
-                        </button>
-                        <button class="btn btn-outline-warning text-start select-tool" data-color="yellow" data-state="SELLANTE">
-                            🟡 Sellante
-                        </button>
-                        <button class="btn btn-outline-success text-start select-tool" data-color="green" data-state="CORONA">
-                            🟢 Corona
-                        </button>
-                        <button class="btn btn-outline-dark text-start select-tool" data-color="black" data-state="AUSENTE">
-                            ⚫ Ausente (X)
-                        </button>
-                        <hr>
-                        <button class="btn btn-secondary select-tool" data-color="white" data-state="SANO">
-                            ⚪ Borrar
-                        </button>
-                    </div>
-                    
-                    <hr>
-                    <button class="btn btn-success w-100" id="btn-save">
-                        💾 Guardar
+                <div class="sidebar-content">
+                    <p class="text-muted small fw-bold mb-2">ESTADOS BÁSICOS</p>
+                    <button class="tool-btn active select-tool" data-state="CARIES" data-color="#ff4d4f">
+                        <span class="color-dot" style="background: #ff4d4f;"></span> Caries
                     </button>
+                    <button class="tool-btn select-tool" data-state="OBTURADO" data-color="#1890ff">
+                        <span class="color-dot" style="background: #1890ff;"></span> Obturado
+                    </button>
+                    <button class="tool-btn select-tool" data-state="CORONA" data-color="#fadb14">
+                        <span class="color-dot" style="background: #fadb14; border: 1px solid #d4b106;"></span> Corona
+                    </button>
+                    <button class="tool-btn select-tool" data-state="AUSENTE" data-color="#434343">
+                        <span class="color-dot" style="background: #434343;"></span> Ausente (X)
+                    </button>
+                    <button class="tool-btn select-tool" data-state="ENDODONCIA" data-color="#eb2f96">
+                        <span class="color-dot" style="background: #eb2f96;"></span> Endodoncia
+                    </button>
+                    <button class="tool-btn select-tool" data-state="SELLANTE" data-color="#52c41a">
+                        <span class="color-dot" style="background: #52c41a;"></span> Sellante
+                    </button>
+                    <button class="tool-btn select-tool" data-state="SANO" data-color="#ffffff">
+                        <span class="color-dot" style="background: #ffffff; border: 1px solid #ccc;"></span> Sano / Borrar
+                    </button>
+
+                    <p class="text-muted small fw-bold mt-3 mb-2">ORTODONCIA</p>
+                    <button class="tool-btn select-tool" data-state="BRACKET" data-color="#722ed1">
+                        <span class="color-dot" style="background: #722ed1;"></span> Bracket
+                    </button>
+                    <button class="tool-btn select-tool" data-state="RETENEDOR" data-color="#13c2c2">
+                         <span class="color-dot" style="background: #13c2c2;"></span> Retenedor
+                    </button>
+                    <button class="tool-btn select-tool" data-state="APARATO_REMOVIBLE" data-color="#2f54eb">
+                         <span class="color-dot" style="background: #2f54eb;"></span> Ap. Removible
+                    </button>
+                     <button class="tool-btn select-tool" data-state="EXTRACCION_PROGRAMADA" data-color="#fa541c">
+                         <span class="color-dot" style="background: #fa541c;"></span> Ext. Programada
+                    </button>
+
+                    <p class="text-muted small fw-bold mt-3 mb-2">ADICIONALES</p>
+                    <button class="tool-btn select-tool" data-state="FRACTURA" data-color="#cf1322">
+                        <span class="color-dot" style="background: #cf1322;"></span> Fractura
+                    </button>
+                    <button class="tool-btn select-tool" data-state="IMPLANTE" data-color="#006d75">
+                         <span class="color-dot" style="background: #006d75;"></span> Implante
+                    </button>
+                    <button class="tool-btn select-tool" data-state="PUENTE" data-color="#fa8c16">
+                         <span class="color-dot" style="background: #fa8c16;"></span> Puente
+                    </button>
+                    <button class="tool-btn select-tool" data-state="PROTESIS_PARCIAL" data-color="#8c8c8c">
+                         <span class="color-dot" style="background: #8c8c8c;"></span> Prótesis Parcial
+                    </button>
+                     <button class="tool-btn select-tool" data-state="PROTESIS_TOTAL" data-color="#595959">
+                         <span class="color-dot" style="background: #595959;"></span> Prótesis Total
+                    </button>
+                    <button class="tool-btn select-tool" data-state="EN_ERUPCION" data-color="#a0d911">
+                         <span class="color-dot" style="background: #a0d911;"></span> En Erupción
+                    </button>
+                    <button class="tool-btn select-tool" data-state="DIENTE_RETENIDO" data-color="#d4380d">
+                         <span class="color-dot" style="background: #d4380d;"></span> Diente Retenido
+                    </button>
+
+                    <hr>
+                    <button class="btn btn-success w-100 py-2 fw-bold shadow-sm" id="btn-save">
+                        💾 GUARDAR CAMBIOS
+                    </button>
+                    <button class="btn btn-danger w-100 py-2 fw-bold shadow-sm mt-2" id="btn-pdf">
+                        📄 EXPORTAR PDF
+                    </button>
+                    <a href="{% url 'pacientes:detalle' paciente.pk %}" class="btn btn-outline-secondary w-100 mt-2">
+                        ← Volver al Paciente
+                    </a>
                 </div>
             </div>
         </div>
 
-        <!-- Odontograma Area -->
-        <div class="col-md-10">
-            <div class="card shadow">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0">🦷 Odontograma</h4>
-                    <div class="btn-group">
+        <!-- COLUMNA CENTRAL: Visualización -->
+        <div class="col-md-7">
+            <div class="sidebar-panel" id="capture-area">
+                <div class="sidebar-header d-flex justify-content-between align-items-center">
+                    <span>🦷 Odontograma: <strong>{{ paciente.nombre }} {{ paciente.apellido }}</strong></span>
+                    
+                    <div class="btn-group btn-group-sm">
                         <button class="btn btn-outline-primary active" id="view-adult">Adulto</button>
                         <button class="btn btn-outline-primary" id="view-child">Niño</button>
                         <button class="btn btn-outline-primary" id="view-mixed">Mixta</button>
                     </div>
                 </div>
-                <div class="card-body bg-light text-center" id="odontogram-canvas">
+                
+                <div class="card-body bg-white text-center p-4" style="overflow-x: auto; min-height: 500px;">
                     
-                    <!-- Adulto Arriba -->
-                    <div class="row justify-content-center mb-4" id="row-adult-top">
-                        <div class="col-5 text-end border-end pe-4" id="q1">
-                            <!-- Cuadrante 1: 18-11 -->
-                            <div class="d-flex justify-content-end gap-1">
-                                {% for i in "87654321" %}
-                                    <div class="tooth-wrapper" data-tooth="1{{ i }}"></div>
-                                {% endfor %}
+                    <!-- VISTA ADULTO -->
+                    <div id="view-adult-container">
+                        <!-- Maxilar Superior -->
+                        <div class="row justify-content-center mb-4">
+                            <div class="col-auto text-end border-end pe-3">
+                                <div class="d-flex gap-1 justify-content-end">
+                                    {% for i in "87654321" %}
+                                        <div class="tooth-wrapper" data-tooth="1{{ i }}"></div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-auto text-start border-start ps-3">
+                                <div class="d-flex gap-1 justify-content-start">
+                                    {% for i in "12345678" %}
+                                        <div class="tooth-wrapper" data-tooth="2{{ i }}"></div>
+                                    {% endfor %}
+                                </div>
                             </div>
                         </div>
-                        <div class="col-5 text-start border-start ps-4" id="q2">
-                            <!-- Cuadrante 2: 21-28 -->
-                            <div class="d-flex justify-content-start gap-1">
-                                {% for i in "12345678" %}
-                                    <div class="tooth-wrapper" data-tooth="2{{ i }}"></div>
-                                {% endfor %}
+
+                        <!-- Mandíbula -->
+                        <div class="row justify-content-center mt-5">
+                            <div class="col-auto text-end border-end pe-3">
+                                <div class="d-flex gap-1 justify-content-end">
+                                    {% for i in "87654321" %}
+                                        <div class="tooth-wrapper" data-tooth="4{{ i }}"></div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-auto text-start border-start ps-3">
+                                <div class="d-flex gap-1 justify-content-start">
+                                    {% for i in "12345678" %}
+                                        <div class="tooth-wrapper" data-tooth="3{{ i }}"></div>
+                                    {% endfor %}
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Niño (Oculto default) -->
-                    <div class="row justify-content-center mb-4 d-none" id="row-child-top">
-                        <!-- 55-51 | 61-65 -->
-                        <div class="col-4 text-end border-end" id="q5">
-                             <div class="d-flex justify-content-end gap-1">
-                                {% for i in "54321" %}
-                                    <div class="tooth-wrapper" data-tooth="5{{ i }}"></div>
-                                {% endfor %}
+                    <!-- VISTA NIÑO -->
+                    <div id="view-child-container" class="d-none mt-4">
+                        <h6 class="text-muted mb-3">- Dentición Temporal -</h6>
+                        <!-- Superior -->
+                        <div class="row justify-content-center mb-4">
+                            <div class="col-auto text-end border-end pe-3">
+                                <div class="d-flex gap-1 justify-content-end">
+                                    {% for i in "54321" %}
+                                        <div class="tooth-wrapper" data-tooth="5{{ i }}"></div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-auto text-start border-start ps-3">
+                                <div class="d-flex gap-1 justify-content-start">
+                                    {% for i in "12345" %}
+                                        <div class="tooth-wrapper" data-tooth="6{{ i }}"></div>
+                                    {% endfor %}
+                                </div>
                             </div>
                         </div>
-                        <div class="col-4 text-start border-start" id="q6">
-                             <div class="d-flex justify-content-start gap-1">
-                                {% for i in "12345" %}
-                                    <div class="tooth-wrapper" data-tooth="6{{ i }}"></div>
-                                {% endfor %}
+                        
+                        <!-- Inferior -->
+                        <div class="row justify-content-center">
+                            <div class="col-auto text-end border-end pe-3">
+                                <div class="d-flex gap-1 justify-content-end">
+                                    {% for i in "54321" %}
+                                        <div class="tooth-wrapper" data-tooth="8{{ i }}"></div>
+                                    {% endfor %}
+                                </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Niño Abajo -->
-                    <div class="row justify-content-center mb-4 d-none" id="row-child-bottom">
-                         <!-- 85-81 | 71-75 -->
-                        <div class="col-4 text-end border-end" id="q8">
-                             <div class="d-flex justify-content-end gap-1">
-                                {% for i in "54321" %}
-                                    <div class="tooth-wrapper" data-tooth="8{{ i }}"></div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        <div class="col-4 text-start border-start" id="q7">
-                             <div class="d-flex justify-content-start gap-1">
-                                {% for i in "12345" %}
-                                    <div class="tooth-wrapper" data-tooth="7{{ i }}"></div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Adulto Abajo -->
-                    <div class="row justify-content-center" id="row-adult-bottom">
-                        <div class="col-5 text-end border-end pe-4" id="q4">
-                            <!-- Cuadrante 4: 48-41 -->
-                            <div class="d-flex justify-content-end gap-1">
-                                {% for i in "87654321" %}
-                                    <div class="tooth-wrapper" data-tooth="4{{ i }}"></div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        <div class="col-5 text-start border-start ps-4" id="q3">
-                            <!-- Cuadrante 3: 31-38 -->
-                            <div class="d-flex justify-content-start gap-1">
-                                {% for i in "12345678" %}
-                                    <div class="tooth-wrapper" data-tooth="3{{ i }}"></div>
-                                {% endfor %}
+                            <div class="col-auto text-start border-start ps-3">
+                                <div class="d-flex gap-1 justify-content-start">
+                                    {% for i in "12345" %}
+                                        <div class="tooth-wrapper" data-tooth="7{{ i }}"></div>
+                                    {% endfor %}
+                                </div>
                             </div>
                         </div>
                     </div>
 
+                </div>
+            </div>
+        </div>
+
+        <!-- COLUMNA DERECHA: Detalles e Historial -->
+        <div class="col-md-3">
+             <div class="sidebar-panel">
+                <div class="sidebar-header">
+                    📋 Detalle e Historial
+                </div>
+                <div class="sidebar-content">
+                    <div class="alert alert-info py-2 small">
+                        ℹ️ <strong>Tip:</strong> Clic derecho para añadir nota rápida. Clic normal para pintar.
+                    </div>
+                    
+                    <!-- Panel de Selección Actual -->
+                    <div id="selection-panel" class="d-none mb-4 p-3 bg-light rounded border">
+                        <h6 class="mb-2">Diente <span id="selected-tooth-id" class="fw-bold text-primary">--</span></h6>
+                        <textarea class="form-control mb-2 form-control-sm" id="tooth-comment" rows="2" placeholder="Escribir nota..."></textarea>
+                        <button class="btn btn-sm btn-primary w-100" id="btn-update-comment">Guardar Nota</button>
+                    </div>
+
+                    <!-- Lista de Hallazgos -->
+                    <h6 class="small fw-bold text-uppercase text-muted border-bottom pb-2">Hallazgos Registrados</h6>
+                    <div id="findings-list" style="max-height: 400px; overflow-y: auto;">
+                        <p class="text-muted text-center small mt-3">Sin hallazgos aún.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -183,26 +337,20 @@
 <!-- Template SVG Diente -->
 <template id="tooth-template">
     <div class="tooth-container">
-        <!-- SVG 60x100? -->
         <svg viewBox="0 0 100 140" class="tooth-svg">
-            <!-- Raíz / General -->
-            <polygon points="30,0 70,0 60,40 40,40" class="tooth-polygon" data-face="R" fill="#eee" stroke="#999" />
-            
-            <!-- Corona (Cuadrada 100x100 offset 40?) -->
+            <polygon points="30,0 70,0 60,40 40,40" class="tooth-polygon" data-face="R" fill="#eee" />
             <g transform="translate(0,40)">
-                <!-- Vestibular (Arriba) -->
                 <polygon points="0,0 100,0 80,20 20,20" class="tooth-polygon" data-face="V" />
-                <!-- Distal (Derecha) -->
                 <polygon points="100,0 100,100 80,80 80,20" class="tooth-polygon" data-face="D" />
-                <!-- Lingual/Palatino (Abajo) -->
                 <polygon points="100,100 0,100 20,80 80,80" class="tooth-polygon" data-face="L" />
-                <!-- Mesial (Izquierda) -->
                 <polygon points="0,100 0,0 20,20 20,80" class="tooth-polygon" data-face="M" />
-                <!-- Oclusal (Centro) -->
                 <rect x="20" y="20" width="60" height="60" class="tooth-polygon" data-face="O" />
             </g>
+            <!-- Badge Indicador de Comentario -->
+            <circle cx="85" cy="15" r="8" fill="#1890ff" stroke="white" stroke-width="1" class="comment-badge" style="display: none;" />
+            <text x="85" y="19" text-anchor="middle" fill="white" font-size="10" font-weight="bold" class="comment-badge" style="display: none;">i</text>
         </svg>
-        <div class="small fw-bold mt-1 tooth-number"></div>
+        <div class="small fw-bold mt-1 text-muted tooth-number" style="font-size: 10px;"></div>
     </div>
 </template>
 
@@ -210,156 +358,305 @@
     document.addEventListener('DOMContentLoaded', function() {
         const template = document.getElementById('tooth-template');
         const wrappers = document.querySelectorAll('.tooth-wrapper');
-        let currentTool = { color: 'red', state: 'CARIES' }; // Default
+        const tooltip = document.getElementById('tooth-tooltip');
+        
+        // Initial Tool
+        let currentTool = { state: 'CARIES', color: '#ff4d4f' };
+        let hallazgosMap = {}; 
+        let selectedToothId = null;
 
-        // 1. Renderizar dientes
+        // 1. Initial Render (Clone SVG)
         wrappers.forEach(wrapper => {
             const toothId = wrapper.dataset.tooth;
             const clone = template.content.cloneNode(true);
-            
-            // Asignar número
             clone.querySelector('.tooth-number').textContent = toothId;
             
-            // Asignar eventos a caras
-            const polygons = clone.querySelectorAll('.tooth-polygon');
-            polygons.forEach(poly => {
-                poly.addEventListener('click', function() {
-                    handleToothClick(this, toothId); 
-                });
+            const container = clone.querySelector('.tooth-container');
+            
+            // Interaction: Left Click
+            container.addEventListener('click', () => {
+                selectedToothId = toothId;
+                updateSelectionPanel();
             });
 
+            // Interaction: Context Menu (Right Click) -> Comment Focus
+            container.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                selectedToothId = toothId;
+                updateSelectionPanel();
+                document.getElementById('tooth-comment').focus();
+            });
+
+            // Interaction: Tooltip Hover
+            container.addEventListener('mousemove', (e) => {
+                const keys = Object.keys(hallazgosMap).filter(k => k.startsWith(`${toothId}-`));
+                if (keys.length > 0) {
+                    let content = `<strong>Diente ${toothId}</strong><br>`;
+                    keys.forEach(k => {
+                        const h = hallazgosMap[k];
+                        content += `${h.state} (${k.split('-')[1]})`;
+                        if(h.comment) content += `<br><em>"${h.comment}"</em>`;
+                        content += `<br>`;
+                    });
+                    
+                    tooltip.innerHTML = content;
+                    tooltip.style.display = 'block';
+                    tooltip.style.left = (e.pageX + 10) + 'px';
+                    tooltip.style.top = (e.pageY + 10) + 'px';
+                }
+            });
+            container.addEventListener('mouseleave', () => {
+                tooltip.style.display = 'none';
+            });
+
+            const polygons = clone.querySelectorAll('.tooth-polygon');
+            polygons.forEach(poly => {
+                poly.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    selectedToothId = toothId;
+                    handleFaceClick(this, toothId); 
+                    updateSelectionPanel();
+                });
+            });
             wrapper.appendChild(clone);
         });
 
-        // 2. Selección de herramienta
-        document.querySelectorAll('.select-tool').forEach(btn => {
-            btn.addEventListener('click', function() {
-                // Quitar active
-                document.querySelectorAll('.select-tool').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                currentTool = {
-                    color: this.dataset.color,
-                    state: this.dataset.state
-                };
-                console.log("Herramienta:", currentTool);
-            });
-        });
-
-        // Estado Local
-        let hallazgosMap = {}; // Key: "18-V" -> State
-
-        // Cargar hallazgos previos (desde Django)
+        // Cargar Datos Iniciales
         const initialData = {{ hallazgos_json|safe }};
         if (initialData) {
             initialData.forEach(h => {
                 const key = `${h.diente_id}-${h.cara}`;
-                hallazgosMap[key] = h.estado;
-                // Pintar visualmente
-                const toothEl = document.querySelector(`.tooth-wrapper[data-tooth="${h.diente_id}"]`);
-                if (toothEl) {
-                    const faceEl = toothEl.querySelector(`[data-face="${h.cara}"]`);
-                    if (faceEl) {
-                        // Mapear estado a color
-                        let color = 'white';
-                        if (h.estado === 'CARIES') color = 'red';
-                        else if (h.estado === 'OBTURADO') color = 'blue';
-                        else if (h.estado === 'SELLANTE') color = 'yellow';
-                        else if (h.estado === 'CORONA') color = 'green';
-                        else if (h.estado === 'AUSENTE') color = 'black';
-                        
-                        faceEl.style.fill = color;
-                    }
-                }
+                hallazgosMap[key] = { state: h.estado, comment: h.comentario || '' };
+                paintFace(h.diente_id, h.cara, h.estado);
             });
+            renderFindingsList();
+            updateIndicators();
         }
 
-        // 3. Lógica Click
-        function handleToothClick(element, toothId) {
+        // Tools Click
+        document.querySelectorAll('.select-tool').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.select-tool').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentTool = {
+                    state: this.dataset.state,
+                    color: this.dataset.color
+                };
+            });
+        });
+
+        // Views Switcher Logic
+        document.getElementById('view-adult').addEventListener('click', () => toggleView('adult'));
+        document.getElementById('view-child').addEventListener('click', () => toggleView('child'));
+        document.getElementById('view-mixed').addEventListener('click', () => toggleView('mixed'));
+
+        function toggleView(mode) {
+            const adult = document.getElementById('view-adult-container');
+            const child = document.getElementById('view-child-container');
+            
+            ['adult','child','mixed'].forEach(m => document.getElementById(`view-${m}`).classList.remove('active'));
+            document.getElementById(`view-${mode}`).classList.add('active');
+
+            if(mode==='adult') { adult.classList.remove('d-none'); child.classList.add('d-none'); }
+            if(mode==='child') { adult.classList.add('d-none'); child.classList.remove('d-none'); }
+            if(mode==='mixed') { adult.classList.remove('d-none'); child.classList.remove('d-none'); }
+        }
+
+        // Handle Face Click
+        function handleFaceClick(element, toothId) {
             const face = element.dataset.face;
             const key = `${toothId}-${face}`;
             
-            console.log(`Click en Diente ${toothId}, Cara ${face}`);
-
-            if (currentTool.state === 'AUSENTE') {
-                // Pintar todas las caras
+            if (currentTool.state === 'AUSENTE' || currentTool.state === 'EXTRACCION_PROGRAMADA') {
                 const allFaces = element.closest('.tooth-svg').querySelectorAll('.tooth-polygon');
                 allFaces.forEach(f => {
-                    f.style.fill = 'black';
-                    const faceKey = `${toothId}-${f.dataset.face}`;
-                    hallazgosMap[faceKey] = 'AUSENTE';
+                    const fKey = `${toothId}-${f.dataset.face}`;
+                    hallazgosMap[fKey] = { state: currentTool.state, comment: hallazgosMap[fKey]?.comment || '' };
+                    f.style.fill = currentTool.color;
                 });
             } else if (currentTool.state === 'SANO') {
-                element.style.fill = '#fff'; // Restaurar
-                delete hallazgosMap[key]; // Borrar del mapa
+                delete hallazgosMap[key];
+                element.style.fill = '#eee'; // Default para raiz
+                if (face !== 'R') element.style.fill = '#fff'; // Default corona
             } else {
+                hallazgosMap[key] = { 
+                    state: currentTool.state, 
+                    comment: hallazgosMap[key]?.comment || '' 
+                };
                 element.style.fill = currentTool.color;
-                hallazgosMap[key] = currentTool.state;
             }
+            renderFindingsList();
+            updateIndicators();
         }
-        
-        // 5. Guardar
+
+        // Helper Paint
+        function paintFace(toothId, face, state) {
+            const btn = document.querySelector(`.select-tool[data-state="${state}"]`);
+            const color = btn ? btn.dataset.color : 'black';
+            const toothEl = document.querySelector(`.tooth-wrapper[data-tooth="${toothId}"]`);
+            if (!toothEl) return;
+            const faceEl = toothEl.querySelector(`[data-face="${face}"]`);
+            if (faceEl) faceEl.style.fill = color;
+        }
+
+        // Panel Update (Show Comment Form)
+        function updateSelectionPanel() {
+            document.getElementById('selection-panel').classList.remove('d-none');
+            document.getElementById('selected-tooth-id').textContent = selectedToothId;
+            const keys = Object.keys(hallazgosMap).filter(k => k.startsWith(`${selectedToothId}-`));
+            let existingComment = '';
+            // Get comment from first hallazgo of this tooth that has one
+            const commentEntry = keys.find(k => hallazgosMap[k].comment);
+            if (commentEntry) existingComment = hallazgosMap[commentEntry].comment;
+
+            document.getElementById('tooth-comment').value = existingComment;
+        }
+
+        // Save Comment Local
+        document.getElementById('btn-update-comment').addEventListener('click', function() {
+            if (!selectedToothId) return;
+            const text = document.getElementById('tooth-comment').value;
+            const keys = Object.keys(hallazgosMap).filter(k => k.startsWith(`${selectedToothId}-`));
+            
+            if (keys.length === 0) {
+                // If clean tooth, add specific hallazgo? No, simple: Alert user.
+                alert('Primero marca algún estado en el diente.');
+                return;
+            }
+            keys.forEach(k => { hallazgosMap[k].comment = text; });
+            
+            updateIndicators(); // Refresh icon
+            renderFindingsList(); // Refresh list to show comment
+            
+            // Feedback subtle
+            const btn = this;
+            const originalText = btn.innerText;
+            btn.innerText = '✅ Guardado';
+            setTimeout(() => btn.innerText = originalText, 1000);
+        });
+
+        // Update Indicators (Blue Badge)
+        function updateIndicators() {
+             document.querySelectorAll('.tooth-wrapper').forEach(wrapper => {
+                const toothId = wrapper.dataset.tooth;
+                const badges = wrapper.querySelectorAll('.comment-badge');
+                
+                // Check if any hallazgo for this tooth has comment
+                const hasComment = Object.entries(hallazgosMap).some(([k, v]) => k.startsWith(`${toothId}-`) && v.comment);
+                
+                badges.forEach(b => b.style.display = hasComment ? 'block' : 'none');
+             });
+        }
+
+        // Render List (Reverse Order)
+        function renderFindingsList() {
+            const container = document.getElementById('findings-list');
+            container.innerHTML = '';
+            
+            const items = Object.entries(hallazgosMap);
+            if (items.length === 0) {
+                container.innerHTML = '<p class="text-muted text-center small mt-3">Sin hallazgos.</p>';
+                return;
+            }
+
+            // Reverse for "Recent First" visual perception
+            items.reverse().forEach(([key, val]) => {
+                const [tooth, face] = key.split('-');
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                
+                let html = `
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span><strong>#${tooth}</strong> (${face}) - ${val.state}</span>
+                    </div>
+                `;
+                if (val.comment) {
+                    html += `<div class="text-muted small mt-1 bg-light p-1 rounded">📝 ${val.comment}</div>`;
+                }
+                
+                div.innerHTML = html;
+                container.appendChild(div);
+            });
+        }
+
+        // Save to Backend
         document.getElementById('btn-save').addEventListener('click', function() {
             const btn = this;
             btn.disabled = true;
             btn.textContent = 'Guardando...';
-            
-            // Convertir map a list
             const payload = [];
-            for (const [key, state] of Object.entries(hallazgosMap)) {
-                const parts = key.split('-');
+            for (const [key, val] of Object.entries(hallazgosMap)) {
+                const [tooth, face] = key.split('-');
                 payload.push({
-                    tooth: parts[0],
-                    face: parts[1],
-                    state: state
+                    tooth: tooth, face: face, state: val.state, comment: val.comment
                 });
             }
             
             fetch("{% url 'odontograma:guardar_odontograma' paciente.pk %}", {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
                 body: JSON.stringify({ hallazgos: payload })
             })
-            .then(response => response.json())
+            .then(res => res.json())
             .then(data => {
-                if (data.status === 'ok') {
-                    alert('Odontograma guardado correctamente ✅');
-                } else {
-                    alert('Error: ' + data.message);
+                if(data.status === 'ok') {
+                    // Silent success
+                    btn.classList.remove('btn-success');
+                    btn.classList.add('btn-outline-success');
+                    btn.textContent = '✅ GUARDADO';
+                    setTimeout(() => {
+                         btn.classList.add('btn-success');
+                         btn.classList.remove('btn-outline-success');
+                         btn.textContent = '💾 GUARDAR CAMBIOS';
+                         btn.disabled = false;
+                    }, 2000);
                 }
+                else alert('Error: ' + data.message);
             })
-            .catch(err => alert('Error de red: ' + err))
-            .finally(() => {
+            .catch(err => {
+                alert('Error de red');
                 btn.disabled = false;
-                btn.textContent = '💾 Guardar';
             });
         });
-        const rowAdultTop = document.getElementById('row-adult-top');
-        const rowAdultBottom = document.getElementById('row-adult-bottom');
-        const rowChildTop = document.getElementById('row-child-top');
-        const rowChildBottom = document.getElementById('row-child-bottom');
 
-        document.getElementById('view-adult').addEventListener('click', () => {
-             rowAdultTop.classList.remove('d-none');
-             rowAdultBottom.classList.remove('d-none');
-             rowChildTop.classList.add('d-none');
-             rowChildBottom.classList.add('d-none');
+        // PDF Export
+        document.getElementById('btn-pdf').addEventListener('click', function() {
+            const btn = this;
+            btn.disabled = true;
+            btn.textContent = 'Generando...';
+            const element = document.getElementById('capture-area');
+            
+            html2canvas(element, { scale: 2, backgroundColor: '#ffffff' }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                fetch("{% url 'odontograma:exportar_pdf' paciente.pk %}", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                    body: JSON.stringify({ image: imgData })
+                })
+                .then(response => {
+                    if (response.ok) return response.blob();
+                    throw new Error('Error generando PDF');
+                })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = "Odontograma_{{ paciente.apellido }}.pdf";
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    alert('PDF Generado Correctamente 📄');
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Error al generar PDF: ' + err.message);
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.textContent = '📄 EXPORTAR PDF';
+                });
+            });
         });
-        document.getElementById('view-child').addEventListener('click', () => {
-             rowAdultTop.classList.add('d-none');
-             rowAdultBottom.classList.add('d-none');
-             rowChildTop.classList.remove('d-none');
-             rowChildBottom.classList.remove('d-none');
-        });
-        document.getElementById('view-mixed').addEventListener('click', () => {
-             rowAdultTop.classList.remove('d-none');
-             rowAdultBottom.classList.remove('d-none');
-             rowChildTop.classList.remove('d-none');
-             rowChildBottom.classList.remove('d-none');
-        });
-
     });
 </script>
-
+{% endblock %}

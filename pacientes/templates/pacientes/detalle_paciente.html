@@ -30,6 +30,11 @@
                 <div class="d-flex gap-2 flex-wrap w-100 w-sm-auto">
                     <a href="{% url 'pacientes:editar' paciente.pk %}" class="btn btn-warning btn-sm flex-fill flex-sm-grow-0">✏️ Editar</a>
                     <a href="{% url 'pacientes:lista' %}" class="btn btn-secondary btn-sm flex-fill flex-sm-grow-0">← Lista</a>
+
+                    
+                    <a href="{% url 'pacientes:eliminar' paciente.pk %}" class="btn btn-danger">🗑️ Eliminar</a>
+
+
                 </div>
             </div>
         </div>
@@ -67,6 +72,13 @@
                 </div>
             </div>
         </div>
+        
+        
+        <!-- Acciones -->
+        <div class="d-grid gap-2 d-md-block mt-3 mb-4">
+
+             <a href="{% url 'odontograma:ver_odontograma' paciente.pk %}" class="btn btn-primary">🦷 Ver Odontograma</a>
+        </div>
 
         <!-- Pestañas de información relacionada -->
         <div class="bg-white rounded shadow-sm border">
@@ -100,11 +112,7 @@
                     </button>
                 </li>
                 {% endif %}
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="odontograma-tab" data-bs-toggle="tab" data-bs-target="#odontograma" type="button">
-                        🦷 Odontograma
-                    </button>
-                </li>
+
             </ul>
 
             <div class="tab-content p-3" id="patientTabsContent">
@@ -434,10 +442,7 @@
                 </div>
                 {% endif %}
                 
-                <!-- Odontograma -->
-                <div class="tab-pane fade" id="odontograma" role="tabpanel">
-                    {% include 'odontograma/odontograma.html' %}
-                </div>
+
             </div>
         </div>
     </div>

@@ -1,11 +1,10 @@
 from django.db import models
 from pacientes.models import Paciente
+from django.conf import settings
 
 class Odontograma(models.Model):
     """
     Contenedor principal del estado de la boca de un paciente.
-    Generalmente un paciente tiene un odontograma 'Actual' que se va modificando,
-    o snapshots en el tiempo.
     """
     TIPO_CHOICES = [
         ('INICIAL', 'Inicial'),
@@ -36,15 +35,27 @@ class Hallazgo(models.Model):
     ]
 
     ESTADO_CHOICES = [
-        ('SANO', 'Sano'),
+        # Básicos
+        ('SANO', 'Sano / Borrar'),
         ('CARIES', 'Caries'),
-        ('OBTURADO', 'Obturado/Resina'),
-        ('AUSENTE', 'Ausente'),
+        ('OBTURADO', 'Obturado / Resina'),
         ('CORONA', 'Corona'),
-        ('TRATAMIENTO_CONDUCTO', 'Tratamiento de Conducto'),
-        ('EXTRACCION_INDICADA', 'Indicado para Extracción'),
+        ('AUSENTE', 'Ausente'),
+        ('ENDODONCIA', 'Endodoncia'),
         ('SELLANTE', 'Sellante'),
-        ('PROTESIS', 'Prótesis'),
+        # Ortodoncia
+        ('BRACKET', 'Bracket'),
+        ('RETENEDOR', 'Retenedor'),
+        ('APARATO_REMOVIBLE', 'Aparato Removible'),
+        ('EXTRACCION_PROGRAMADA', 'Extracción Programada'),
+        # Adicionales
+        ('FRACTURA', 'Fractura'),
+        ('IMPLANTE', 'Implante'),
+        ('PUENTE', 'Puente'),
+        ('PROTESIS_PARCIAL', 'Prótesis Parcial'),
+        ('PROTESIS_TOTAL', 'Prótesis Total'),
+        ('EN_ERUPCION', 'En Erupción'),
+        ('DIENTE_RETENIDO', 'Diente Retenido'),
     ]
 
     odontograma = models.ForeignKey(Odontograma, on_delete=models.CASCADE, related_name='hallazgos')
@@ -52,16 +63,27 @@ class Hallazgo(models.Model):
     cara = models.CharField(max_length=1, choices=CARA_CHOICES)
     estado = models.CharField(max_length=50, choices=ESTADO_CHOICES)
     
-    # Opcional: Para guardar notas específicas de ese hallazgo
-    notas = models.CharField(max_length=200, blank=True, null=True)
+    # Fase 2: Comentarios
+    comentario = models.TextField(blank=True, null=True, help_text="Notas específicas sobre este hallazgo")
+    fecha_hallazgo = models.DateField(auto_now_add=True, null=True)
     
     creado_en = models.DateTimeField(auto_now_add=True)
     
     class Meta:
-        # Evitar duplicados de estado en la misma cara del mismo diente para el mismo odontograma?
-        # A veces se puede tener "Caries" y luego "Obturado" encima? No, se reemplaza.
-        # Pero se podría tener "Tratamiento Conducto" (Raiz) y "Corona" (Completo).
         pass
 
     def __str__(self):
         return f"Diente {self.diente_id} [{self.get_cara_display()}]: {self.get_estado_display()}"
+
+class LogOdontograma(models.Model):
+    """
+    Historial de acciones sobre el odontograma.
+    """
+    odontograma = models.ForeignKey(Odontograma, on_delete=models.CASCADE, related_name='logs')
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    accion = models.CharField(max_length=255)
+    detalles = models.JSONField(default=dict, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.timestamp} - {self.accion}"
