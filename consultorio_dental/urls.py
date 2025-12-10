@@ -18,6 +18,7 @@ urlpatterns = [
     path('configuracion/', include('configuracion.urls')),
     path('protocolos/', include('protocolos.urls')),
     path('programa_salud/', include('programa_salud.urls')),
+    path('odontograma/', include('odontograma.urls')),
 ]
 
 # Servir archivos de medios en desarrollo

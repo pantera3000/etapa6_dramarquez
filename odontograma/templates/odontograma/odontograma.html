@@ -1,0 +1,365 @@
+{% load static %}
+
+<!-- Contenido del Odontograma (Componente Reutilizable) -->
+<style>
+    .tooth-container {
+        display: inline-block;
+        margin: 5px;
+        text-align: center;
+        width: 60px;
+        cursor: pointer;
+    }
+    .tooth-svg {
+        width: 100%;
+        height: auto;
+        /* filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.1)); */
+    }
+    .tooth-polygon {
+        fill: #ffffff;
+        stroke: #333;
+        stroke-width: 1;
+        transition: fill 0.2s;
+    }
+    .tooth-polygon:hover {
+        fill: #e9ecef;
+    }
+    .quadrant {
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin-bottom: 20px;
+        background: white;
+        border-radius: 8px;
+    }
+    .toolbar-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 2px solid #ddd;
+        margin: 0 5px;
+        background: white;
+    }
+    .toolbar-btn.active {
+        border-color: #0d6efd;
+        transform: scale(1.1);
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Toolbar -->
+        <div class="col-md-2">
+            <div class="card shadow sticky-top" style="top: 20px;">
+                <div class="card-header bg-primary text-white">
+                    Herramientas
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-danger text-start select-tool" data-color="red" data-state="CARIES">
+                            🔴 Caries
+                        </button>
+                        <button class="btn btn-outline-primary text-start select-tool" data-color="blue" data-state="OBTURADO">
+                            🔵 Resina/Obt.
+                        </button>
+                        <button class="btn btn-outline-warning text-start select-tool" data-color="yellow" data-state="SELLANTE">
+                            🟡 Sellante
+                        </button>
+                        <button class="btn btn-outline-success text-start select-tool" data-color="green" data-state="CORONA">
+                            🟢 Corona
+                        </button>
+                        <button class="btn btn-outline-dark text-start select-tool" data-color="black" data-state="AUSENTE">
+                            ⚫ Ausente (X)
+                        </button>
+                        <hr>
+                        <button class="btn btn-secondary select-tool" data-color="white" data-state="SANO">
+                            ⚪ Borrar
+                        </button>
+                    </div>
+                    
+                    <hr>
+                    <button class="btn btn-success w-100" id="btn-save">
+                        💾 Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Odontograma Area -->
+        <div class="col-md-10">
+            <div class="card shadow">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">🦷 Odontograma</h4>
+                    <div class="btn-group">
+                        <button class="btn btn-outline-primary active" id="view-adult">Adulto</button>
+                        <button class="btn btn-outline-primary" id="view-child">Niño</button>
+                        <button class="btn btn-outline-primary" id="view-mixed">Mixta</button>
+                    </div>
+                </div>
+                <div class="card-body bg-light text-center" id="odontogram-canvas">
+                    
+                    <!-- Adulto Arriba -->
+                    <div class="row justify-content-center mb-4" id="row-adult-top">
+                        <div class="col-5 text-end border-end pe-4" id="q1">
+                            <!-- Cuadrante 1: 18-11 -->
+                            <div class="d-flex justify-content-end gap-1">
+                                {% for i in "87654321" %}
+                                    <div class="tooth-wrapper" data-tooth="1{{ i }}"></div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-5 text-start border-start ps-4" id="q2">
+                            <!-- Cuadrante 2: 21-28 -->
+                            <div class="d-flex justify-content-start gap-1">
+                                {% for i in "12345678" %}
+                                    <div class="tooth-wrapper" data-tooth="2{{ i }}"></div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Niño (Oculto default) -->
+                    <div class="row justify-content-center mb-4 d-none" id="row-child-top">
+                        <!-- 55-51 | 61-65 -->
+                        <div class="col-4 text-end border-end" id="q5">
+                             <div class="d-flex justify-content-end gap-1">
+                                {% for i in "54321" %}
+                                    <div class="tooth-wrapper" data-tooth="5{{ i }}"></div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-4 text-start border-start" id="q6">
+                             <div class="d-flex justify-content-start gap-1">
+                                {% for i in "12345" %}
+                                    <div class="tooth-wrapper" data-tooth="6{{ i }}"></div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Niño Abajo -->
+                    <div class="row justify-content-center mb-4 d-none" id="row-child-bottom">
+                         <!-- 85-81 | 71-75 -->
+                        <div class="col-4 text-end border-end" id="q8">
+                             <div class="d-flex justify-content-end gap-1">
+                                {% for i in "54321" %}
+                                    <div class="tooth-wrapper" data-tooth="8{{ i }}"></div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-4 text-start border-start" id="q7">
+                             <div class="d-flex justify-content-start gap-1">
+                                {% for i in "12345" %}
+                                    <div class="tooth-wrapper" data-tooth="7{{ i }}"></div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Adulto Abajo -->
+                    <div class="row justify-content-center" id="row-adult-bottom">
+                        <div class="col-5 text-end border-end pe-4" id="q4">
+                            <!-- Cuadrante 4: 48-41 -->
+                            <div class="d-flex justify-content-end gap-1">
+                                {% for i in "87654321" %}
+                                    <div class="tooth-wrapper" data-tooth="4{{ i }}"></div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-5 text-start border-start ps-4" id="q3">
+                            <!-- Cuadrante 3: 31-38 -->
+                            <div class="d-flex justify-content-start gap-1">
+                                {% for i in "12345678" %}
+                                    <div class="tooth-wrapper" data-tooth="3{{ i }}"></div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Template SVG Diente -->
+<template id="tooth-template">
+    <div class="tooth-container">
+        <!-- SVG 60x100? -->
+        <svg viewBox="0 0 100 140" class="tooth-svg">
+            <!-- Raíz / General -->
+            <polygon points="30,0 70,0 60,40 40,40" class="tooth-polygon" data-face="R" fill="#eee" stroke="#999" />
+            
+            <!-- Corona (Cuadrada 100x100 offset 40?) -->
+            <g transform="translate(0,40)">
+                <!-- Vestibular (Arriba) -->
+                <polygon points="0,0 100,0 80,20 20,20" class="tooth-polygon" data-face="V" />
+                <!-- Distal (Derecha) -->
+                <polygon points="100,0 100,100 80,80 80,20" class="tooth-polygon" data-face="D" />
+                <!-- Lingual/Palatino (Abajo) -->
+                <polygon points="100,100 0,100 20,80 80,80" class="tooth-polygon" data-face="L" />
+                <!-- Mesial (Izquierda) -->
+                <polygon points="0,100 0,0 20,20 20,80" class="tooth-polygon" data-face="M" />
+                <!-- Oclusal (Centro) -->
+                <rect x="20" y="20" width="60" height="60" class="tooth-polygon" data-face="O" />
+            </g>
+        </svg>
+        <div class="small fw-bold mt-1 tooth-number"></div>
+    </div>
+</template>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const template = document.getElementById('tooth-template');
+        const wrappers = document.querySelectorAll('.tooth-wrapper');
+        let currentTool = { color: 'red', state: 'CARIES' }; // Default
+
+        // 1. Renderizar dientes
+        wrappers.forEach(wrapper => {
+            const toothId = wrapper.dataset.tooth;
+            const clone = template.content.cloneNode(true);
+            
+            // Asignar número
+            clone.querySelector('.tooth-number').textContent = toothId;
+            
+            // Asignar eventos a caras
+            const polygons = clone.querySelectorAll('.tooth-polygon');
+            polygons.forEach(poly => {
+                poly.addEventListener('click', function() {
+                    handleToothClick(this, toothId); 
+                });
+            });
+
+            wrapper.appendChild(clone);
+        });
+
+        // 2. Selección de herramienta
+        document.querySelectorAll('.select-tool').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Quitar active
+                document.querySelectorAll('.select-tool').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentTool = {
+                    color: this.dataset.color,
+                    state: this.dataset.state
+                };
+                console.log("Herramienta:", currentTool);
+            });
+        });
+
+        // Estado Local
+        let hallazgosMap = {}; // Key: "18-V" -> State
+
+        // Cargar hallazgos previos (desde Django)
+        const initialData = {{ hallazgos_json|safe }};
+        if (initialData) {
+            initialData.forEach(h => {
+                const key = `${h.diente_id}-${h.cara}`;
+                hallazgosMap[key] = h.estado;
+                // Pintar visualmente
+                const toothEl = document.querySelector(`.tooth-wrapper[data-tooth="${h.diente_id}"]`);
+                if (toothEl) {
+                    const faceEl = toothEl.querySelector(`[data-face="${h.cara}"]`);
+                    if (faceEl) {
+                        // Mapear estado a color
+                        let color = 'white';
+                        if (h.estado === 'CARIES') color = 'red';
+                        else if (h.estado === 'OBTURADO') color = 'blue';
+                        else if (h.estado === 'SELLANTE') color = 'yellow';
+                        else if (h.estado === 'CORONA') color = 'green';
+                        else if (h.estado === 'AUSENTE') color = 'black';
+                        
+                        faceEl.style.fill = color;
+                    }
+                }
+            });
+        }
+
+        // 3. Lógica Click
+        function handleToothClick(element, toothId) {
+            const face = element.dataset.face;
+            const key = `${toothId}-${face}`;
+            
+            console.log(`Click en Diente ${toothId}, Cara ${face}`);
+
+            if (currentTool.state === 'AUSENTE') {
+                // Pintar todas las caras
+                const allFaces = element.closest('.tooth-svg').querySelectorAll('.tooth-polygon');
+                allFaces.forEach(f => {
+                    f.style.fill = 'black';
+                    const faceKey = `${toothId}-${f.dataset.face}`;
+                    hallazgosMap[faceKey] = 'AUSENTE';
+                });
+            } else if (currentTool.state === 'SANO') {
+                element.style.fill = '#fff'; // Restaurar
+                delete hallazgosMap[key]; // Borrar del mapa
+            } else {
+                element.style.fill = currentTool.color;
+                hallazgosMap[key] = currentTool.state;
+            }
+        }
+        
+        // 5. Guardar
+        document.getElementById('btn-save').addEventListener('click', function() {
+            const btn = this;
+            btn.disabled = true;
+            btn.textContent = 'Guardando...';
+            
+            // Convertir map a list
+            const payload = [];
+            for (const [key, state] of Object.entries(hallazgosMap)) {
+                const parts = key.split('-');
+                payload.push({
+                    tooth: parts[0],
+                    face: parts[1],
+                    state: state
+                });
+            }
+            
+            fetch("{% url 'odontograma:guardar_odontograma' paciente.pk %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ hallazgos: payload })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    alert('Odontograma guardado correctamente ✅');
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(err => alert('Error de red: ' + err))
+            .finally(() => {
+                btn.disabled = false;
+                btn.textContent = '💾 Guardar';
+            });
+        });
+        const rowAdultTop = document.getElementById('row-adult-top');
+        const rowAdultBottom = document.getElementById('row-adult-bottom');
+        const rowChildTop = document.getElementById('row-child-top');
+        const rowChildBottom = document.getElementById('row-child-bottom');
+
+        document.getElementById('view-adult').addEventListener('click', () => {
+             rowAdultTop.classList.remove('d-none');
+             rowAdultBottom.classList.remove('d-none');
+             rowChildTop.classList.add('d-none');
+             rowChildBottom.classList.add('d-none');
+        });
+        document.getElementById('view-child').addEventListener('click', () => {
+             rowAdultTop.classList.add('d-none');
+             rowAdultBottom.classList.add('d-none');
+             rowChildTop.classList.remove('d-none');
+             rowChildBottom.classList.remove('d-none');
+        });
+        document.getElementById('view-mixed').addEventListener('click', () => {
+             rowAdultTop.classList.remove('d-none');
+             rowAdultBottom.classList.remove('d-none');
+             rowChildTop.classList.remove('d-none');
+             rowChildBottom.classList.remove('d-none');
+        });
+
+    });
+</script>
+

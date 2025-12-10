@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'protocolos',
     'citas',
     'usuarios',
+    'odontograma',
     'configuracion',
 ]
 

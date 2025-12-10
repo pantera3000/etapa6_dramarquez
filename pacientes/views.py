@@ -60,6 +60,16 @@ class DetallePacienteView(LoginRequiredMixin, DetailView):
         # Programas de Salud
         context['programas'] = paciente.programas_salud.all().order_by('-fecha')
 
+        # ODONTOGRAMA
+        from odontograma.models import Odontograma
+        odontograma = Odontograma.objects.filter(paciente=self.object).last()
+        hallazgos = []
+        if odontograma:
+            hallazgos = list(odontograma.hallazgos.values('diente_id', 'cara', 'estado'))
+        
+        import json
+        context['hallazgos_json'] = json.dumps(hallazgos)
+
         return context
 
 
