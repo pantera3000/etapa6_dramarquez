@@ -45,6 +45,19 @@ class ConfiguracionConsultorio(models.Model):
     # Redes sociales (opcional)
     facebook = models.URLField(blank=True, help_text='URL de Facebook')
     instagram = models.URLField(blank=True, help_text='URL de Instagram')
+
+    # Módulos Opcionales
+    modulo_protocolos_activo = models.BooleanField(
+        default=True,
+        verbose_name='Activar Módulo Protocolo Niños',
+        help_text='Si se desactiva, se ocultará la pestaña y funcionalidades de Protocolo Niños.'
+    )
+    modulo_programa_salud_activo = models.BooleanField(
+        default=True,
+        verbose_name='Activar Módulo Programa Salud-Confort',
+        help_text='Si se desactiva, se ocultará la pestaña y funcionalidades de Programa Salud.'
+    )
+
     
     class Meta:
         verbose_name = 'Configuración del Consultorio'

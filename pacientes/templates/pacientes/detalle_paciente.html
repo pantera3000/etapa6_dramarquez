@@ -86,16 +86,20 @@
                         📝 Notas ({{ paciente.notas.count }})
                     </button>
                 </li>
+                {% if config.modulo_protocolos_activo %}
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="protocolos-tab" data-bs-toggle="tab" data-bs-target="#protocolos" type="button">
                         📋 Protocolo Niños ({{ protocolos.count }})
                     </button>
                 </li>
+                {% endif %}
+                {% if config.modulo_programa_salud_activo %}
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="programa-tab" data-bs-toggle="tab" data-bs-target="#programa" type="button">
                         🧘 Programa Salud ({{ programas.count }})
                     </button>
                 </li>
+                {% endif %}
             </ul>
 
             <div class="tab-content p-3" id="patientTabsContent">
@@ -412,14 +416,18 @@
                 </div>
 
                 <!-- Protocolo Niños -->
+                {% if config.modulo_protocolos_activo %}
                 <div class="tab-pane fade" id="protocolos" role="tabpanel">
                     {% include 'protocolos/lista_protocolos.html' %}
                 </div>
+                {% endif %}
 
                 <!-- Programa Salud -->
+                {% if config.modulo_programa_salud_activo %}
                 <div class="tab-pane fade" id="programa" role="tabpanel">
                     {% include 'programa_salud/lista_programas.html' %}
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>
