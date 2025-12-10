@@ -150,54 +150,57 @@
         <!-- Enlaces de navegación -->
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'pacientes:lista' %}">👥 Pacientes</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'historias:lista' %}">📚 Historias Clínicas</a>
-                </li>
-
-
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'tratamientos:lista' %}">💰 Tratamientos</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'tratamientos:lista_pagos' %}">🧾 Pagos</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'notas:lista' %}">📝 Notas</a>
-                </li>
-
-                <!-- <li class="nav-item">
-                    <a class="nav-link" href="{% url 'citas:calendario' %}">📅 Citas</a>
-                </li> -->
-
+                
+                <!-- 1. GRUPO PACIENTES -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        📅 Citas
+                        👥 Pacientes
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{% url 'citas:calendario' %}">Ver Calendario</a></li>
-                        <li><a class="dropdown-item" href="{% url 'citas:eventos_ics' %}">Lista de Citas</a></li>
+                        <li><a class="dropdown-item" href="{% url 'pacientes:lista' %}">Ver Lista de Pacientes</a></li>
+                        <!--<li><a class="dropdown-item" href="{% url 'pacientes:crear' %}">Registrar Nuevo</a></li>-->
+                        <li><hr class="dropdown-divider"></li>
+                         <li><a class="dropdown-item" href="{% url 'pacientes:lista' %}?q=">Buscar Paciente...</a></li>
                     </ul>
                 </li>
 
-
-
-
-                <!-- Próximamente -->
-                <!-- Próximamente -->
+                <!-- 2. GRUPO CLÍNICA (Historias, Citas, Notas) -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        📚 Más
+                        🏥 Clínica
                     </a>
                     <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'citas:calendario' %}">📅 Calendario de Citas</a></li>
+                        <li><a class="dropdown-item" href="{% url 'citas:eventos_ics' %}">📋 Lista de Citas</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'historias:lista' %}">📚 Historias Clínicas</a></li>
+                        <li><a class="dropdown-item" href="{% url 'notas:lista' %}">📝 Notas Generales</a></li>
+                    </ul>
+                </li>
+
+                <!-- 3. GRUPO FINANZAS (Tratamientos, Pagos) -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        💰 Finanzas
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'tratamientos:lista' %}">🦷 Tratamientos</a></li>
+                        <li><a class="dropdown-item" href="{% url 'tratamientos:lista_pagos' %}">🧾 Registro de Pagos</a></li>
+                    </ul>
+                </li>
+
+                <!-- 4. GRUPO EXTRAS / ADMIN -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        🛠️ Más
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><h6 class="dropdown-header">Módulos Adicionales</h6></li>
                         <li><a class="dropdown-item disabled" href="#">Programa Salud</a></li>
                         <li><a class="dropdown-item disabled" href="#">Protocolo Niños</a></li>
-                        <li><a class="dropdown-item disabled" href="#">Citas</a></li>
                     </ul>
                 </li>
+
                 
                 <!-- Configuración (solo administradores) -->
                 {% if user.is_superuser %}
