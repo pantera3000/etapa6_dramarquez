@@ -535,17 +535,24 @@
             }
             noMsg.classList.add('d-none');
 
+            // Mapa de nombres completos
+            const faceNames = {
+                'V': 'Vestibular', 'L': 'Lingual', 'M': 'Mesial', 
+                'D': 'Distal', 'O': 'Oclusal', 'R': 'Raíz'
+            };
+
             // Generate Input for each finding
             keys.forEach(key => {
                 const h = hallazgosMap[key];
-                const face = key.split('-')[1];
+                const faceKey = key.split('-')[1];
+                const faceName = faceNames[faceKey] || faceKey;
                 
                 const wrapper = document.createElement('div');
                 wrapper.className = 'mb-2 p-2 bg-white border rounded';
                 
                 wrapper.innerHTML = `
                     <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="badge bg-secondary text-white small" style="font-size: 0.7rem;">${face}</span>
+                        <span class="badge bg-secondary text-white small" style="font-size: 0.7rem;">${faceName}</span>
                         <span class="small fw-bold text-dark">${h.state}</span>
                     </div>
                     <input type="text" class="form-control form-control-sm comment-input" 
@@ -615,14 +622,21 @@
             }
 
             // Reverse for "Recent First" visual perception
+            const faceNames = {
+                'V': 'Vestibular', 'L': 'Lingual', 'M': 'Mesial', 
+                'D': 'Distal', 'O': 'Oclusal', 'R': 'Raíz'
+            };
+
             items.reverse().forEach(([key, val]) => {
-                const [tooth, face] = key.split('-');
+                const [tooth, faceKey] = key.split('-');
+                const faceName = faceNames[faceKey] || faceKey;
+                
                 const div = document.createElement('div');
                 div.className = 'history-item';
                 
                 let html = `
                     <div class="d-flex justify-content-between align-items-center">
-                        <span><strong>#${tooth}</strong> (${face}) - ${val.state}</span>
+                        <span><strong>#${tooth}</strong> (${faceName}) - ${val.state}</span>
                         <small class="text-muted ms-2" style="font-size:0.7rem;">${val.creado_en || 'Reciente'}</small>
                     </div>
                 `;

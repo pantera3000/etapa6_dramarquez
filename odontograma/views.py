@@ -7,6 +7,8 @@ from django.views.decorators.http import require_POST
 from .models import Odontograma, Hallazgo
 from pacientes.models import Paciente
 
+from django.utils import timezone
+
 @login_required
 def ver_odontograma(request, paciente_id):
     # Obtener o crear odontograma activo
@@ -19,7 +21,6 @@ def ver_odontograma(request, paciente_id):
     )
     
     # Cargar hallazgos existentes
-    # Cargar hallazgos existentes
     # Incluimos creado_en para mostrar fecha en historial. Convertimos a str en JS o serializador custom si fuera necesario, 
     # pero values() devuelve datetime. JSON serializará datetime si usamos un encoder, o lo pasamos a str.
     hallazgos_qs = odontograma.hallazgos.all()
@@ -30,7 +31,7 @@ def ver_odontograma(request, paciente_id):
             'cara': h.cara,
             'estado': h.estado,
             'comentario': h.comentario,
-            'creado_en': h.creado_en.strftime("%d/%m/%Y %H:%M") # Serializamos manual fecha
+            'creado_en': timezone.localtime(h.creado_en).strftime("%d/%m/%Y %H:%M") # Serializamos manual con TZ local
         })
     
     return render(request, 'odontograma/odontograma.html', {
