@@ -224,13 +224,35 @@ def widget_citas_ajax(request):
         # Ordenar por hora
         citas_hoy_list.sort(key=lambda x: x['inicio'])
         
+        # LOGICA DE VISUALIZACION (Solicitada por usuario)
+        # 1. Separar pasadas y futuras
+        citas_pasadas = [c for c in citas_hoy_list if c['inicio'] < ahora]
+        citas_futuras = [c for c in citas_hoy_list if c['inicio'] >= ahora]
+        
+        lista_final = []
+        
+        # 2. Si hay pasadas, solo mostrar la ULTIMA (la más reciente que ya pasó)
+        if citas_pasadas:
+            ultima_pasada = citas_pasadas[-1]
+            ultima_pasada['pasada'] = True  # Marcar para tachar en template
+            lista_final.append(ultima_pasada)
+            
+        # 3. Agregar las futuras
+        for c in citas_futuras:
+            c['pasada'] = False
+            lista_final.append(c)
+            
+        # 4. Limitar a 10 citas en total
+        lista_final = lista_final[:10]
+        
     except Exception as e:
         logger.error(f"Error al obtener citas en widget AJAX: {e}")
+        lista_final = []
         # En caso de error, simplemente no mostramos nada o lista vacía
     
     context = {
-        'citas_hoy_count': len(citas_hoy_list),
-        'citas_hoy_sidebar': citas_hoy_list[:5]  # Máximo 5 citas
+        'citas_hoy_count': len(citas_hoy_list), # Total real de citas del día para el contador
+        'citas_hoy_sidebar': lista_final # Lista filtrada para visualización
     }
     
     return render(request, 'citas/componentes/lista_citas_sidebar.html', context)
