@@ -82,9 +82,22 @@
 
         <!-- Pestañas de información relacionada -->
         <div class="bg-white rounded shadow-sm border">
+            <!-- Estilos específicos para tabs scrollables -->
+            <style>
+                #patientTabs {
+                    min-width: 100%; /* Asegura borde completo */
+                }
+                #patientTabs .nav-item {
+                    flex: 0 0 auto; /* Evita que se aplasten */
+                }
+                #patientTabs .nav-link {
+                    white-space: nowrap; /* Texto en una línea */
+                }
+            </style>
+            
             <!-- Wrapper para scroll horizontal fluido en móvil -->
             <div class="overflow-auto px-2 pt-2">
-                <ul class="nav nav-tabs flex-nowrap" id="patientTabs" role="tablist" style="min-width: max-content;">
+                <ul class="nav nav-tabs flex-nowrap gap-2" id="patientTabs" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="historias-tab" data-bs-toggle="tab" data-bs-target="#historias" type="button">
                         📚 Historias ({{ paciente.entradas_historia.count }})
