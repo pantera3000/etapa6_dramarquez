@@ -19,8 +19,19 @@ def ver_odontograma(request, paciente_id):
     )
     
     # Cargar hallazgos existentes
-    hallazgos = list(odontograma.hallazgos.values('diente_id', 'cara', 'estado', 'comentario'))
-    # Pero en el JS uso color. Mapear Estado -> Color en JS.
+    # Cargar hallazgos existentes
+    # Incluimos creado_en para mostrar fecha en historial. Convertimos a str en JS o serializador custom si fuera necesario, 
+    # pero values() devuelve datetime. JSON serializará datetime si usamos un encoder, o lo pasamos a str.
+    hallazgos_qs = odontograma.hallazgos.all()
+    hallazgos = []
+    for h in hallazgos_qs:
+        hallazgos.append({
+            'diente_id': h.diente_id,
+            'cara': h.cara,
+            'estado': h.estado,
+            'comentario': h.comentario,
+            'creado_en': h.creado_en.strftime("%d/%m/%Y %H:%M") # Serializamos manual fecha
+        })
     
     return render(request, 'odontograma/odontograma.html', {
         'paciente': paciente,

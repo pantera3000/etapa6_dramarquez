@@ -200,9 +200,9 @@
                     <button class="btn btn-danger w-100 py-2 fw-bold shadow-sm mt-2" id="btn-pdf">
                         📄 EXPORTAR PDF
                     </button>
-                    <a href="{% url 'pacientes:detalle' paciente.pk %}" class="btn btn-outline-secondary w-100 mt-2">
+                    <button class="btn btn-outline-secondary w-100 mt-2" id="btn-back">
                         ← Volver al Paciente
-                    </a>
+                    </button>
                 </div>
             </div>
         </div>
@@ -318,9 +318,19 @@
                     
                     <!-- Panel de Selección Actual -->
                     <div id="selection-panel" class="d-none mb-4 p-3 bg-light rounded border">
-                        <h6 class="mb-2">Diente <span id="selected-tooth-id" class="fw-bold text-primary">--</span></h6>
-                        <textarea class="form-control mb-2 form-control-sm" id="tooth-comment" rows="2" placeholder="Escribir nota..."></textarea>
-                        <button class="btn btn-sm btn-primary w-100" id="btn-update-comment">Guardar Nota</button>
+                        <h6 class="mb-2 border-bottom pb-2">Diente <span id="selected-tooth-id" class="fw-bold text-primary">--</span></h6>
+                        
+                        <div id="dynamic-comments-list" class="mb-2" style="max-height: 200px; overflow-y: auto;">
+                            <!-- Inputs generados dinámicamente -->
+                        </div>
+
+                        <div id="no-findings-msg" class="text-muted small text-center my-3 d-none">
+                            Selecciona una herramienta y marca una cara.
+                        </div>
+
+                        <button class="btn btn-sm btn-primary w-100" id="btn-update-comment">
+                            💾 Guardar Notas
+                        </button>
                     </div>
 
                     <!-- Lista de Hallazgos -->
@@ -426,7 +436,11 @@
         if (initialData) {
             initialData.forEach(h => {
                 const key = `${h.diente_id}-${h.cara}`;
-                hallazgosMap[key] = { state: h.estado, comment: h.comentario || '' };
+                hallazgosMap[key] = { 
+                    state: h.estado, 
+                    comment: h.comentario || '',
+                    creado_en: h.creado_en || ''
+                };
                 paintFace(h.diente_id, h.cara, h.estado);
             });
             renderFindingsList();
@@ -471,7 +485,11 @@
                 const allFaces = element.closest('.tooth-svg').querySelectorAll('.tooth-polygon');
                 allFaces.forEach(f => {
                     const fKey = `${toothId}-${f.dataset.face}`;
-                    hallazgosMap[fKey] = { state: currentTool.state, comment: hallazgosMap[fKey]?.comment || '' };
+                    hallazgosMap[fKey] = { 
+                        state: currentTool.state, 
+                        comment: hallazgosMap[fKey]?.comment || '',
+                        creado_en: 'Ahora'
+                    };
                     f.style.fill = currentTool.color;
                 });
             } else if (currentTool.state === 'SANO') {
@@ -481,7 +499,8 @@
             } else {
                 hallazgosMap[key] = { 
                     state: currentTool.state, 
-                    comment: hallazgosMap[key]?.comment || '' 
+                    comment: hallazgosMap[key]?.comment || '',
+                    creado_en: 'Ahora' // Marca temporal local
                 };
                 element.style.fill = currentTool.color;
             }
@@ -503,30 +522,66 @@
         function updateSelectionPanel() {
             document.getElementById('selection-panel').classList.remove('d-none');
             document.getElementById('selected-tooth-id').textContent = selectedToothId;
-            const keys = Object.keys(hallazgosMap).filter(k => k.startsWith(`${selectedToothId}-`));
-            let existingComment = '';
-            // Get comment from first hallazgo of this tooth that has one
-            const commentEntry = keys.find(k => hallazgosMap[k].comment);
-            if (commentEntry) existingComment = hallazgosMap[commentEntry].comment;
-
-            document.getElementById('tooth-comment').value = existingComment;
-        }
-
-        // Save Comment Local
-        document.getElementById('btn-update-comment').addEventListener('click', function() {
-            if (!selectedToothId) return;
-            const text = document.getElementById('tooth-comment').value;
+            
+            const container = document.getElementById('dynamic-comments-list');
+            container.innerHTML = '';
+            
+            const noMsg = document.getElementById('no-findings-msg');
             const keys = Object.keys(hallazgosMap).filter(k => k.startsWith(`${selectedToothId}-`));
             
             if (keys.length === 0) {
-                // If clean tooth, add specific hallazgo? No, simple: Alert user.
+                noMsg.classList.remove('d-none');
+                return;
+            }
+            noMsg.classList.add('d-none');
+
+            // Generate Input for each finding
+            keys.forEach(key => {
+                const h = hallazgosMap[key];
+                const face = key.split('-')[1];
+                
+                const wrapper = document.createElement('div');
+                wrapper.className = 'mb-2 p-2 bg-white border rounded';
+                
+                wrapper.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="badge bg-secondary text-white small" style="font-size: 0.7rem;">${face}</span>
+                        <span class="small fw-bold text-dark">${h.state}</span>
+                    </div>
+                    <input type="text" class="form-control form-control-sm comment-input" 
+                           data-key="${key}" 
+                           value="${h.comment || ''}" 
+                           placeholder="Nota para ${face}..."
+                    >
+                `;
+                container.appendChild(wrapper);
+            });
+        }
+
+        // Save Comment Local (Granular)
+        document.getElementById('btn-update-comment').addEventListener('click', function() {
+            if (!selectedToothId) return;
+            
+            const inputs = document.querySelectorAll('.comment-input');
+            let updatedCount = 0;
+
+            inputs.forEach(input => {
+                const key = input.dataset.key;
+                if (hallazgosMap[key]) {
+                    if (hallazgosMap[key].comment !== input.value) {
+                         hallazgosMap[key].comment = input.value;
+                         updatedCount++;
+                    }
+                }
+            });
+            
+            if (inputs.length === 0) {
                 alert('Primero marca algún estado en el diente.');
                 return;
             }
-            keys.forEach(k => { hallazgosMap[k].comment = text; });
             
-            updateIndicators(); // Refresh icon
-            renderFindingsList(); // Refresh list to show comment
+            updateIndicators(); 
+            renderFindingsList(); 
             
             // Feedback subtle
             const btn = this;
@@ -568,6 +623,7 @@
                 let html = `
                     <div class="d-flex justify-content-between align-items-center">
                         <span><strong>#${tooth}</strong> (${face}) - ${val.state}</span>
+                        <small class="text-muted ms-2" style="font-size:0.7rem;">${val.creado_en || 'Reciente'}</small>
                     </div>
                 `;
                 if (val.comment) {
@@ -579,43 +635,73 @@
             });
         }
 
-        // Save to Backend
+        // Guardado Refactorizado
+        function saveOdontogram() {
+            return new Promise((resolve, reject) => {
+                const payload = [];
+                for (const [key, val] of Object.entries(hallazgosMap)) {
+                    const [tooth, face] = key.split('-');
+                    payload.push({
+                        tooth: tooth, face: face, state: val.state, comment: val.comment
+                    });
+                }
+                
+                fetch("{% url 'odontograma:guardar_odontograma' paciente.pk %}", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                    body: JSON.stringify({ hallazgos: payload })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.status === 'ok') resolve(data);
+                    else reject(data.message);
+                })
+                .catch(err => reject('Error de red: ' + err));
+            });
+        }
+
+        // Botón Guardar Manual
         document.getElementById('btn-save').addEventListener('click', function() {
             const btn = this;
             btn.disabled = true;
             btn.textContent = 'Guardando...';
-            const payload = [];
-            for (const [key, val] of Object.entries(hallazgosMap)) {
-                const [tooth, face] = key.split('-');
-                payload.push({
-                    tooth: tooth, face: face, state: val.state, comment: val.comment
-                });
-            }
             
-            fetch("{% url 'odontograma:guardar_odontograma' paciente.pk %}", {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
-                body: JSON.stringify({ hallazgos: payload })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data.status === 'ok') {
-                    // Silent success
-                    btn.classList.remove('btn-success');
-                    btn.classList.add('btn-outline-success');
-                    btn.textContent = '✅ GUARDADO';
-                    setTimeout(() => {
-                         btn.classList.add('btn-success');
-                         btn.classList.remove('btn-outline-success');
-                         btn.textContent = '💾 GUARDAR CAMBIOS';
-                         btn.disabled = false;
-                    }, 2000);
-                }
-                else alert('Error: ' + data.message);
+            saveOdontogram()
+            .then(() => {
+                // Silent success visual feedback
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-outline-success');
+                btn.textContent = '✅ GUARDADO';
+                setTimeout(() => {
+                        btn.classList.add('btn-success');
+                        btn.classList.remove('btn-outline-success');
+                        btn.textContent = '💾 GUARDAR CAMBIOS';
+                        btn.disabled = false;
+                }, 2000);
             })
             .catch(err => {
-                alert('Error de red');
+                alert('Error al guardar: ' + err);
                 btn.disabled = false;
+            });
+        });
+
+        // Botón Volver (Auto-save)
+        document.getElementById('btn-back').addEventListener('click', function() {
+            const btn = this;
+            btn.disabled = true;
+            btn.textContent = 'Guardando y saliendo...';
+            
+            saveOdontogram()
+            .then(() => {
+                window.location.href = "{% url 'pacientes:detalle' paciente.pk %}";
+            })
+            .catch(err => {
+                if(confirm('Hubo un error al guardar automáticamente (' + err + '). ¿Deseas salir sin guardar?')) {
+                    window.location.href = "{% url 'pacientes:detalle' paciente.pk %}";
+                } else {
+                    btn.disabled = false;
+                    btn.textContent = '← Volver al Paciente';
+                }
             });
         });
 
