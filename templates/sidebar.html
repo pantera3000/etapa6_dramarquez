@@ -1,0 +1,83 @@
+{% load static %}
+<div class="border-end bg-white" id="sidebar-wrapper">
+    <div class="sidebar-heading border-bottom bg-primary text-white d-flex align-items-center justify-content-between">
+        <div class="sidebar-brand d-flex align-items-center gap-2 text-decoration-none text-white fw-bold truncate-text">
+            {% if config.logo %}
+                <img src="{{ config.logo.url }}" alt="Logo" style="height: 30px; width: auto; object-fit: contain;">
+            {% else %}
+                <div class="sidebar-icon-placeholder">🦷</div>
+            {% endif %}
+            <span class="sidebar-title">{{ config.nombre_consultorio|default:"Consultorio" }}</span>
+        </div>
+        <!-- Botón cerrar (solo visible en móvil) -->
+        <button class="btn btn-link text-white d-md-none p-0" id="sidebarClose">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
+    
+    <div class="list-group list-group-flush flex-grow-1 overflow-auto custom-scrollbar">
+        <!-- SECCIÓN PACIENTES -->
+        <small class="text-muted px-3 mt-3 mb-1 text-uppercase fw-bold section-title" style="font-size: 0.7rem;">Pacientes</small>
+        <a href="{% url 'pacientes:lista' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'pacientes' in request.path %}active{% endif %}">
+            <i class="bi bi-people fs-5 me-2"></i> <span>Pacientes</span>
+        </a>
+        <a href="{% url 'pacientes:cumpleanos_proximos' %}" class="list-group-item list-group-item-action list-group-item-light p-3 position-relative {% if 'cumpleanos' in request.path %}active{% endif %}">
+            <i class="bi bi-cake2 fs-5 me-2 text-danger"></i> <span>Cumpleaños</span>
+            {% if cumpleaneros_hoy_count > 0 %}
+                <span class="badge bg-danger rounded-pill position-absolute top-50 end-0 translate-middle-y me-3">{{ cumpleaneros_hoy_count }}</span>
+            {% endif %}
+        </a>
+
+        <!-- SECCIÓN CLINICA -->
+        <small class="text-muted px-3 mt-3 mb-1 text-uppercase fw-bold section-title" style="font-size: 0.7rem;">Clínica</small>
+        <a href="{% url 'citas:calendario' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'calendario' in request.path %}active{% endif %}">
+            <i class="bi bi-calendar-week fs-5 me-2 text-primary"></i> <span>Calendario</span>
+        </a>
+        <a href="{% url 'citas:eventos_ics' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'lista_citas' in request.path %}active{% endif %}">
+            <i class="bi bi-list-check fs-5 me-2 text-primary"></i> <span>Lista Citas</span>
+        </a>
+        <a href="{% url 'historias:lista' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'historias' in request.path %}active{% endif %}">
+            <i class="bi bi-journal-medical fs-5 me-2 text-success"></i> <span>Historias</span>
+        </a>
+        <a href="{% url 'notas:lista' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'notas' in request.path %}active{% endif %}">
+            <i class="bi bi-sticky fs-5 me-2 text-warning"></i> <span>Notas</span>
+        </a>
+
+        <!-- SECCIÓN FINANZAS -->
+        <small class="text-muted px-3 mt-3 mb-1 text-uppercase fw-bold section-title" style="font-size: 0.7rem;">Finanzas</small>
+        <a href="{% url 'tratamientos:lista' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'tratamientos' in request.path and 'pagos' not in request.path %}active{% endif %}">
+            <i class="bi bi-bandaid fs-5 me-2 text-info"></i> <span>Tratamientos</span>
+        </a>
+        <a href="{% url 'tratamientos:lista_pagos' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'pagos' in request.path %}active{% endif %}">
+            <i class="bi bi-cash-stack fs-5 me-2 text-success"></i> <span>Pagos</span>
+        </a>
+
+        <!-- SECCIÓN CONFIG -->
+        {% if user.is_superuser %}
+        <small class="text-muted px-3 mt-3 mb-1 text-uppercase fw-bold section-title" style="font-size: 0.7rem;">Admin</small>
+        <a href="{% url 'configuracion:editar' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'configuracion' in request.path %}active{% endif %}">
+            <i class="bi bi-gear fs-5 me-2 text-dark"></i> <span>Configuración</span>
+        </a>
+        <a href="{% url 'usuarios:lista' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'usuarios' in request.path %}active{% endif %}">
+            <i class="bi bi-people-fill fs-5 me-2 text-dark"></i> <span>Usuarios</span>
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- FOOTER USUARIO -->
+    <div class="border-top p-3 bg-light">
+        <div class="dropdown">
+            <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="avatar-placeholder rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                    {{ user.username|first|upper }}
+                </div>
+                <strong class="sidebar-user-name">{{ user.username }}</strong>
+            </a>
+            <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
+                <li><a class="dropdown-item" href="#">Perfil</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#">Cerrar Sesión</a></li>
+            </ul>
+        </div>
+    </div>
+</div>

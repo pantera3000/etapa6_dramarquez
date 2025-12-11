@@ -8,384 +8,353 @@
     <title>Consultorio Dental - {% block title %}Inicio{% endblock %}</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- En el <head> de base.html -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-
     <style>
-    /* Pestañas con fondo de color y texto blanco */
-    .nav-tabs .nav-link {
-        color: white; /* Texto blanco */
-        background-color: #6c757d; /* o #28a745 para verde más fuerte */
-        border: none;
-        padding: 0.75rem 1.25rem;
-        font-weight: 500;
-        transition: all 0.2s ease;
-        border-radius: 6px 6px 0 0;
-        margin-right: 4px;
-    }
+        :root {
+            --sidebar-width: 250px;
+            --sidebar-collapsed-width: 80px;
+            --topbar-height: 60px;
+        }
 
-    .nav-tabs .nav-link:hover {
-        background-color: #8d17aa; /* Gris más oscuro al pasar el mouse */
-    }
+        body {
+            overflow-x: hidden;
+            background-color: #f8f9fa;
+        }
 
-    .nav-tabs .nav-link.active {
-        background-color: #198754; /* verde dental */
-        box-shadow: 0 -2px 5px rgba(25, 135, 84, 0.3);
-        color: white;
-        font-weight: 600;
-        box-shadow: 0 -2px 5px rgba(13, 110, 253, 0.2);
-    }
+        /* SIDEBAR STYLES */
+        #sidebar-wrapper {
+            min-height: 100vh;
+            margin-left: -var(--sidebar-width);
+            width: var(--sidebar-width);
+            position: fixed;
+            z-index: 1000;
+            transition: margin 0.25s ease-out, width 0.25s ease-out;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+        }
 
-    .nav-tabs {
-        border-bottom: none;
-        padding-bottom: 0;
-    }
+        #sidebar-wrapper .sidebar-heading {
+            padding: 0.875rem 1.25rem;
+            font-size: 1.2rem;
+            height: var(--topbar-height);
+        }
 
-    /* Contenido de las pestañas */
-    .tab-content {
-        border: 1px solid #dee2e6;
-        border-top: none;
-        border-radius: 0 0 6px 6px;
-    }
+        #sidebar-wrapper .list-group {
+            width: var(--sidebar-width);
+        }
 
-    .btn-white-text {
-        color: white !important;
-    }
+        /* CONTENIDO PRINCIPAL */
+        #page-content-wrapper {
+            width: 100%;
+            transition: margin 0.25s ease-out;
+            margin-left: 0;
+            padding-top: var(--topbar-height); /* Espacio para el topbar móvil */
+        }
 
+        /* DESKTOP TOGGLED (EXPANDIDO) */
+        body.sb-sidenav-toggled #sidebar-wrapper {
+            margin-left: 0;
+        }
+        
+        body.sb-sidenav-toggled #page-content-wrapper {
+            margin-left: var(--sidebar-width);
+        }
 
+        /* DESKTOP COLLAPSED (SOLO ICONOS) - Nueva lógica 'mini-sidebar' */
+        @media (min-width: 768px) {
+            #sidebar-wrapper {
+                margin-left: 0; /* Siempre visible en desktop */
+            }
+
+            #page-content-wrapper {
+                margin-left: var(--sidebar-width);
+                padding-top: 0; /* No necesitamos padding top en desktop si no hay navbar fija arriba del todo */
+            }
+
+            /* Clase para colapsar a mini-sidebar */
+            body.sb-sidenav-collapsed #sidebar-wrapper {
+                width: var(--sidebar-collapsed-width);
+            }
+
+            body.sb-sidenav-collapsed #sidebar-wrapper .list-group {
+                width: var(--sidebar-collapsed-width);
+            }
+
+            body.sb-sidenav-collapsed #page-content-wrapper {
+                margin-left: var(--sidebar-collapsed-width);
+            }
+
+            /* Ocultar textos en modo colapsado */
+            body.sb-sidenav-collapsed .sidebar-title,
+            body.sb-sidenav-collapsed .sidebar-user-name,
+            body.sb-sidenav-collapsed .list-group-item span,
+            body.sb-sidenav-collapsed .section-title,
+            body.sb-sidenav-collapsed .badge {
+                display: none !important;
+            }
+            
+            body.sb-sidenav-collapsed .sidebar-brand {
+                justify-content: center;
+            }
+            
+            body.sb-sidenav-collapsed .list-group-item {
+                text-align: center;
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+            
+            body.sb-sidenav-collapsed .list-group-item i {
+                margin-right: 0 !important;
+                font-size: 1.5rem;
+            }
+            
+            /* Tooltip on hover para items colapsados (opcional, avanzado) */
+        }
+        
+        /* MOBILE STYLES */
+        @media (max-width: 767.98px) {
+            #sidebar-wrapper {
+                margin-left: -100%; /* Oculto completamente */
+                width: 100%; /* Full width en móvil al abrir */
+            }
+            
+            #page-content-wrapper {
+                min-width: 100vw;
+                margin-left: 0;
+            }
+            
+            body.sb-sidenav-toggled #sidebar-wrapper {
+                margin-left: 0;
+            }
+        }
+
+        /* GLOBAL STYLES IMPORTADOS */
+        .toast-container { z-index: 1060; }
+        
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
     </style>
-
-
-
-
-
-    <!-- Agregar en el <head> de base.html -->
-    <style>
-    /* Mejoras para toasts en móvil */
-    @media (max-width: 768px) {
-        .toast-container {
-            width: 95% !important;
-            max-width: 320px;
-            left: 50% !important;
-            transform: translateX(-50%);
-        }
-        
-        .toast-container.bottom-0.start-0 {
-            left: 2.5% !important;
-            transform: none;
-        }
-        
-        .toast-container.bottom-0.end-0 {
-            right: 2.5% !important;
-            left: auto !important;
-            transform: none;
-        }
-        
-        .toast {
-            font-size: 0.85rem;
-            max-width: 100%;
-        }
-        
-        .toast-body {
-            padding: 0.6rem !important;
-        }
-        
-        .toast-body ul {
-            font-size: 0.75em !important;
-            padding-left: 1rem;
-            margin-bottom: 0.5rem !important;
-        }
-        
-        .toast-body strong {
-            font-size: 0.9em;
-        }
-    }
-    </style>
-
-
-
-
-
-
-
 
     <!-- CSS personalizado -->
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
     {% block extra_css %}{% endblock %}
-    <style>
-        body {
-            padding-top: 70px; /* Espacio para navbar fija */
-        }
-        .navbar-brand {
-            font-weight: bold;
-        }
-        @media (max-width: 991.98px) {
-            body {
-                padding-top: 60px;
-            }
-        }
-    </style>
 </head>
-<body>
+<body class="sb-sidenav-toggled"> <!-- Clase inicial para Desktop Expandido -->
 
-<!-- Navbar fija -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow">
-    <div class="container-fluid">
-        <!-- Logo / Título -->
-        <a class="navbar-brand" href="{% url 'pacientes:lista' %}">
-            {% if config.logo %}
-                <img src="{{ config.logo.url }}" alt="{{ config.nombre_consultorio }}" style="height: 30px; margin-right: 8px;">
-            {% else %}
-                🦷
-            {% endif %}
-            {{ config.nombre_consultorio }}
-        </a>
+    <div class="d-flex" id="wrapper">
+        <!-- Sidebar -->
+        {% include 'sidebar.html' %}
 
-        <!-- Botón hamburguesa para móvil -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <!-- Enlaces de navegación -->
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            
+            <!-- Top Navigation (Mobile Toggle + User Menu Desktop) -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom px-3 h-100 d-flex justify-content-between align-items-center" style="max-height: var(--topbar-height);">
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Toggle Mobile -->
+                    <button class="btn btn-primary d-md-none" id="sidebarToggleMobile">
+                        <i class="bi bi-list"></i>
+                    </button>
+                    <!-- Toggle Desktop (Collapse) -->
+                    <button class="btn btn-outline-secondary d-none d-md-block" id="sidebarToggleDesktop">
+                        <i class="bi bi-list"></i>
+                    </button>
+                    
+                    <!-- Título dinámico (opcional) o Breadcrumb -->
+                    <h5 class="m-0 text-muted d-none d-md-block">{% block page_title %}{% endblock %}</h5>
+                </div>
                 
-                <!-- 1. GRUPO PACIENTES -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        👥 Pacientes
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{% url 'pacientes:lista' %}">Ver Lista de Pacientes</a></li>
-                        <!--<li><a class="dropdown-item" href="{% url 'pacientes:crear' %}">Registrar Nuevo</a></li>-->
-                        <li><hr class="dropdown-divider"></li>
-                         <li><a class="dropdown-item" href="{% url 'pacientes:lista' %}?q=">Buscar Paciente...</a></li>
-                    </ul>
-                </li>
+                <!-- Acciones Topbar -->
+                <div class="d-flex align-items-center">
+                    <span class="text-muted small me-2 d-none d-md-block">
+                        {% now "l, d F Y" %}
+                    </span>
+                </div>
+            </nav>
 
-                <!-- 2. GRUPO CLÍNICA (Historias, Citas, Notas) -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        🏥 Clínica
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{% url 'citas:calendario' %}">📅 Calendario de Citas</a></li>
-                        <li><a class="dropdown-item" href="{% url 'citas:eventos_ics' %}">📋 Lista de Citas</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{% url 'historias:lista' %}">📚 Historias Clínicas</a></li>
-                        <li><a class="dropdown-item" href="{% url 'notas:lista' %}">📝 Notas Generales</a></li>
-                    </ul>
-                </li>
-
-                <!-- 3. GRUPO FINANZAS (Tratamientos, Pagos) -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        💰 Finanzas
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{% url 'tratamientos:lista' %}">🦷 Tratamientos</a></li>
-                        <li><a class="dropdown-item" href="{% url 'tratamientos:lista_pagos' %}">🧾 Registro de Pagos</a></li>
-                    </ul>
-                </li>
-
-                <!-- 4. GRUPO EXTRAS / ADMIN -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        🛠️ Más
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><h6 class="dropdown-header">Módulos Adicionales</h6></li>
-                        <li><a class="dropdown-item disabled" href="#">Programa Salud</a></li>
-                        <li><a class="dropdown-item disabled" href="#">Protocolo Niños</a></li>
-                    </ul>
-                </li>
-
-                
-                <!-- Configuración (solo administradores) -->
-                {% if user.is_superuser %}
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        ⚙️ Configuración
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{% url 'configuracion:editar' %}">⚙️ Configuración General</a></li>
-                        <li><a class="dropdown-item" href="{% url 'usuarios:lista' %}">👥 Gestión de Usuarios</a></li>
-                    </ul>
-                </li>
+            <!-- Main Content -->
+            <main class="container-fluid p-4">
+                <!-- Mensajes Django -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-3" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
                 {% endif %}
-                
-                <li class="nav-item dropdown">
-                    <a class="nav-link" href="{% url 'pacientes:cumpleanos_proximos' %}">
-                        🎂
-                        {% if cumpleaneros_hoy_count > 0 %}
-                            <span class="badge bg-danger">{{ cumpleaneros_hoy_count }}</span>
-                        {% endif %}
-                    </a>
-                </li>
 
-            </ul>
-
-            <!-- Acciones de usuario (más adelante con login) -->
-            <ul class="navbar-nav">
-                {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <span class="navbar-text text-white me-3">
-                            Hola, {{ user.username }}
-                        </span>
-                    </li>
-                    <li class="nav-item">
-                        <a class="btn btn-outline-light btn-sm" href="#">Salir</a>
-                    </li>
-                {% else %}
-                    <li class="nav-item">
-                        <a class="btn btn-outline-light btn-sm" href="#">Iniciar Sesión</a>
-                    </li>
-                {% endif %}
-            </ul>
+                {% block content %}
+                {% endblock %}
+            </main>
         </div>
     </div>
-</nav>
 
-<!-- Mensajes de Django -->
-{% if messages %}
-    <div class="container mt-2">
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        {% endfor %}
-    </div>
-{% endif %}
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Contenido principal -->
-<main>
-    {% block content %}
-    {% endblock %}
-</main>
+    <!-- Sidebar & App Logics -->
+    <script>
+        document.addEventListener('DOMContentLoaded', event => {
+            const body = document.body;
+            const sidebarToggleDesktop = document.getElementById('sidebarToggleDesktop');
+            const sidebarToggleMobile = document.getElementById('sidebarToggleMobile');
+            const sidebarClose = document.getElementById('sidebarClose');
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-{% block extra_js %}{% endblock %}
+            // --- LÓGICA PERSISTENCIA ---
+            // Revisar localStorage
+            const sidebarState = localStorage.getItem('sb|sidebar-toggle');
+            
+            if (window.innerWidth >= 768) {
+                // Desktop Logic
+                if (sidebarState === 'collapsed') {
+                    body.classList.add('sb-sidenav-collapsed');
+                } else {
+                    body.classList.remove('sb-sidenav-collapsed');
+                }
+                // Asegurar que en desktop siempre tenga la clase toggled para mostrar sidebar (o collapsed)
+                body.classList.add('sb-sidenav-toggled'); 
+            } else {
+                // Mobile Logic: siempre empezar cerrado
+                body.classList.remove('sb-sidenav-toggled');
+            }
 
-
-<!-- Toast de cumpleaños (solo si hay cumpleaños hoy) -->
-<!-- Toast de citas de hoy (solo si hay citas hoy) -->
-<!-- Toast de citas de hoy (Carga AJAX) -->
-<div id="widget-citas-ajax">
-    <!-- Aquí se cargará el contenido vía JS -->
-</div>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // Retrasar la carga del widget para dar prioridad a la página principal
-        // Puedes cambiar el tiempo aquí (1000 = 1 segundo)
-        setTimeout(function() {
-            fetch("{% url 'citas:widget_data' %}")
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
+            // --- LISTENERS ---
+            
+            // Desktop Toggle (Mini vs Full)
+            if (sidebarToggleDesktop) {
+                sidebarToggleDesktop.addEventListener('click', event => {
+                    event.preventDefault();
+                    body.classList.toggle('sb-sidenav-collapsed');
+                    // Guardar estado
+                    if (body.classList.contains('sb-sidenav-collapsed')) {
+                        localStorage.setItem('sb|sidebar-toggle', 'collapsed');
+                    } else {
+                        localStorage.setItem('sb|sidebar-toggle', 'expanded');
                     }
-                    return response.text();
-                })
-                .then(html => {
-                    if (html.trim()) {
-                        document.getElementById('widget-citas-ajax').innerHTML = html;
-                        
-                        // Inicializar toasts si existen en el HTML cargado
-                        const toastEl = document.getElementById('citasToast');
-                        if (toastEl && typeof bootstrap !== 'undefined') {
-                            const toast = new bootstrap.Toast(toastEl);
-                            toast.show();
+                });
+            }
+
+            // Mobile Toggle (Open/Close)
+            if (sidebarToggleMobile) {
+                sidebarToggleMobile.addEventListener('click', event => {
+                    event.preventDefault();
+                    body.classList.toggle('sb-sidenav-toggled');
+                });
+            }
+            
+            if (sidebarClose) {
+                sidebarClose.addEventListener('click', event => {
+                    event.preventDefault();
+                    body.classList.remove('sb-sidenav-toggled');
+                });
+            }
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+    
+    <!-- Widget Citas AJAX -->
+    <div id="widget-citas-ajax"></div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(function() {
+                fetch("{% url 'citas:widget_data' %}")
+                    .then(r => r.ok ? r.text() : Promise.reject(r))
+                    .then(html => {
+                        if (html.trim()) {
+                            document.getElementById('widget-citas-ajax').innerHTML = html;
+                            // Re-inicializar toasts
+                            document.querySelectorAll('.toast').forEach(t => new bootstrap.Toast(t).show());
                         }
-                    }
-                })
-                .catch(error => console.log('No hay citas o error cargando widget:', error));
-        }, 2000); // <-- TIEMPO DE RETRASO EN MILISEGUNDOS
+                    })
+                    .catch(e => console.log('Widget Citas:', e));
+            }, 2000);
+        });
+    </script>
+    
+    <!-- Toast de cumpleaños (solo si hay cumpleaños hoy) -->
+    <!-- Toast de citas de hoy (solo si hay citas hoy) -->
+    {% if cumpleaneros_hoy_count > 0 %}
+    <!-- Badge flotante para móvil (abajo, lado izquierdo) -->
+    <div id="birthdayBadge" class="d-md-none position-fixed start-0" style="bottom: 60px; left: 5px; z-index: 1050;">
+        <button class="btn btn-success rounded-circle shadow position-relative" onclick="document.getElementById('birthdayToastMobile').classList.toggle('d-none')" style="width: 42px; height: 42px; padding: 0;">
+            <span style="font-size: 1.2rem;">🎂</span>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem; padding: 0.2rem 0.35rem;">
+                {{ cumpleaneros_hoy_count }}
+            </span>
+            <button onclick="event.stopPropagation(); document.getElementById('birthdayBadge').style.display='none'; document.getElementById('birthdayToastMobile').classList.add('d-none');" class="position-absolute bottom-0 start-0 btn-close" style="font-size: 0.4rem; padding: 0.15rem; opacity: 1; margin: 2px; background-color: #dc3545; border-radius: 50%;"></button>
+        </button>
+    </div>
+
+    <!-- Toast expandible móvil (oculto por defecto) -->
+    <div id="birthdayToastMobile" class="d-none d-md-none position-fixed" style="bottom: 110px; left: 60px; max-width: 280px; z-index: 1049;">
+        <div class="toast show align-items-center text-bg-success border-0" role="alert" style="font-size: 0.85rem;">
+            <div class="d-flex">
+                <div class="toast-body" style="padding: 0.6rem;">
+                    <strong style="font-size: 0.9em;">🎂 ¡Feliz Cumpleaños!</strong><br>
+                    Hoy cumplen años:
+                    <ul class="mb-0 mt-2" style="font-size: 0.75em; padding-left: 1rem; margin-bottom: 0.5rem;">
+                        {% for paciente in cumpleaneros_hoy %}
+                        <li class="d-flex justify-content-between align-items-center mb-1">
+                            <span>{{ paciente.nombre_completo }} ({{ paciente.edad }})</span>
+                            <button class="btn btn-sm btn-success py-0 px-1 ms-2" 
+                                    onclick="abrirModalWhatsApp('{{ paciente.telefono }}', '{{ paciente.nombre_completo }}', 'CUMPLE')"
+                                    title="Enviar saludo WhatsApp">
+                                <i class="bi bi-whatsapp"></i>
+                            </button>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="document.getElementById('birthdayToastMobile').classList.add('d-none')" aria-label="Cerrar"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast normal para desktop -->
+    <div class="d-none d-md-block toast-container position-fixed bottom-0 start-0 p-2" style="max-width: 90%; width: 280px;">
+        <div id="birthdayToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="50000" style="font-size: 0.85rem;">
+            <div class="d-flex">
+                <div class="toast-body" style="padding: 0.6rem;">
+                    <strong style="font-size: 0.9em;">🎂 ¡Feliz Cumpleaños!</strong><br>
+                    Hoy cumplen años:
+                    <ul class="mb-0 mt-2" style="font-size: 0.75em; padding-left: 1rem; margin-bottom: 0.5rem;">
+                        {% for paciente in cumpleaneros_hoy %}
+                        <li class="d-flex justify-content-between align-items-center mb-1">
+                            <span>{{ paciente.nombre_completo }} ({{ paciente.edad }})</span>
+                            <button class="btn btn-sm btn-success py-0 px-1 ms-2" 
+                                    onclick="abrirModalWhatsApp('{{ paciente.telefono }}', '{{ paciente.nombre_completo }}', 'CUMPLE')"
+                                    title="Enviar saludo WhatsApp">
+                                <i class="bi bi-whatsapp"></i>
+                            </button>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const toastEl = document.getElementById('birthdayToast');
+        if (toastEl) {
+            const toast = new bootstrap.Toast(toastEl);
+            toast.show();
+        }
     });
-</script>
+    </script>
+    {% endif %}
 
-
-
-
-
-
-<!-- Toast de citas de hoy (solo si hay citas hoy) -->
-<!-- Toast de cumpleaños (solo si hay cumpleaños hoy) -->
-{% if cumpleaneros_hoy_count > 0 %}
-<!-- Badge flotante para móvil (abajo, lado izquierdo) -->
-<div id="birthdayBadge" class="d-md-none position-fixed start-0" style="bottom: 60px; left: 5px; z-index: 1050;">
-    <button class="btn btn-success rounded-circle shadow position-relative" onclick="document.getElementById('birthdayToastMobile').classList.toggle('d-none')" style="width: 42px; height: 42px; padding: 0;">
-        <span style="font-size: 1.2rem;">🎂</span>
-        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem; padding: 0.2rem 0.35rem;">
-            {{ cumpleaneros_hoy_count }}
-        </span>
-        <button onclick="event.stopPropagation(); document.getElementById('birthdayBadge').style.display='none'; document.getElementById('birthdayToastMobile').classList.add('d-none');" class="position-absolute bottom-0 start-0 btn-close" style="font-size: 0.4rem; padding: 0.15rem; opacity: 1; margin: 2px; background-color: #dc3545; border-radius: 50%;"></button>
-    </button>
-</div>
-
-<!-- Toast expandible móvil (oculto por defecto) -->
-<div id="birthdayToastMobile" class="d-none d-md-none position-fixed" style="bottom: 110px; left: 60px; max-width: 280px; z-index: 1049;">
-    <div class="toast show align-items-center text-bg-success border-0" role="alert" style="font-size: 0.85rem;">
-        <div class="d-flex">
-            <div class="toast-body" style="padding: 0.6rem;">
-                <strong style="font-size: 0.9em;">🎂 ¡Feliz Cumpleaños!</strong><br>
-                Hoy cumplen años:
-                <ul class="mb-0 mt-2" style="font-size: 0.75em; padding-left: 1rem; margin-bottom: 0.5rem;">
-                    {% for paciente in cumpleaneros_hoy %}
-                    <li class="d-flex justify-content-between align-items-center mb-1">
-                        <span>{{ paciente.nombre_completo }} ({{ paciente.edad }})</span>
-                        <button class="btn btn-sm btn-success py-0 px-1 ms-2" 
-                                onclick="abrirModalWhatsApp('{{ paciente.telefono }}', '{{ paciente.nombre_completo }}', 'CUMPLE')"
-                                title="Enviar saludo WhatsApp">
-                            <i class="bi bi-whatsapp"></i>
-                        </button>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="document.getElementById('birthdayToastMobile').classList.add('d-none')" aria-label="Cerrar"></button>
-        </div>
-    </div>
-</div>
-
-<!-- Toast normal para desktop -->
-<div class="d-none d-md-block toast-container position-fixed bottom-0 start-0 p-2" style="max-width: 90%; width: 280px;">
-    <div id="birthdayToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="50000" style="font-size: 0.85rem;">
-        <div class="d-flex">
-            <div class="toast-body" style="padding: 0.6rem;">
-                <strong style="font-size: 0.9em;">🎂 ¡Feliz Cumpleaños!</strong><br>
-                Hoy cumplen años:
-                <ul class="mb-0 mt-2" style="font-size: 0.75em; padding-left: 1rem; margin-bottom: 0.5rem;">
-                    {% for paciente in cumpleaneros_hoy %}
-                    <li class="d-flex justify-content-between align-items-center mb-1">
-                        <span>{{ paciente.nombre_completo }} ({{ paciente.edad }})</span>
-                        <button class="btn btn-sm btn-success py-0 px-1 ms-2" 
-                                onclick="abrirModalWhatsApp('{{ paciente.telefono }}', '{{ paciente.nombre_completo }}', 'CUMPLE')"
-                                title="Enviar saludo WhatsApp">
-                            <i class="fab fa-whatsapp"></i>
-                        </button>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
-        </div>
-    </div>
-</div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const toastEl = document.getElementById('birthdayToast');
-    if (toastEl) {
-        const toast = new bootstrap.Toast(toastEl);
-        toast.show();
-    }
-});
-</script>
-{% endif %}
-
-{% include 'comunicaciones/modal_whatsapp.html' %}
+    {% include 'comunicaciones/modal_whatsapp.html' %}
 </body>
 </html>
