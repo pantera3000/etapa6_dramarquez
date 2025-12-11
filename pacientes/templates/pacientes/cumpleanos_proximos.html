@@ -3,54 +3,108 @@
 {% block title %}🎂 Cumpleaños Próximos{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="mb-0">🎂 Cumpleaños Próximos...  (próximos 180 días...)</h2>
-    <a href="{% url 'pacientes:lista' %}" class="btn btn-secondary btn-sm">← Lista de Pacientes</a>
-</div>
+{% load paciente_tags %}
 
-<div class="bg-white p-4 rounded shadow-sm border">
-    {% if pacientes %}
-        <div class="table-responsive">
-            <table class="table table-hover mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>Paciente</th>
-                        <th>DNI</th>
-                        <th>Edad</th>
-                        <th>Fecha de Cumpleaños</th>
-                        <th>Días</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for paciente in pacientes %}
-                    <tr>
-                        <td>
-                            {% if paciente.dias_hasta_cumple == 0 %}
-                                <span class="badge bg-success">¡HOY!</span>
-                            {% endif %}
-                            {{ paciente.nombre_completo }}
-                        </td>
-                        <td>{{ paciente.dni }}</td>
-                        <td>{{ paciente.edad }} años</td>
-                        <td>{{ paciente.fecha_nacimiento|date:"d \d\e F" }}</td>
-                        <td>
-                            {% if paciente.dias_hasta_cumple == 0 %}
-                                <strong class="text-success">Hoy</strong>
-                            {% else %}
-                                {{ paciente.dias_hasta_cumple }} día{{ paciente.dias_hasta_cumple|pluralize }}
-                            {% endif %}
-                        </td>
-                        <td>
-                            <a href="{% url 'pacientes:detalle' paciente.pk %}" class="btn btn-sm btn-outline-info">👁️ Ver</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+<div class="d-flex justify-content-center">
+    <div class="col-lg-11">
+        <!-- Estilos Inline Festivos -->
+        <style>
+            .birthday-card {
+                background: white; border: 1px solid #e2e8f0; border-radius: 1rem;
+                overflow: hidden; transition: all 0.3s ease; position: relative;
+            }
+            .birthday-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border-color: #cbd5e1; }
+            
+            .birthday-card.is-today { border: 2px solid #ec4899; background: linear-gradient(to bottom right, #fff1f2, #fff); }
+            
+            .confetti-bg {
+                position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                background-image: radial-gradient(#fb7185 1.5px, transparent 1.5px), radial-gradient(#f472b6 1.5px, transparent 1.5px);
+                background-size: 20px 20px; background-position: 0 0, 10px 10px; opacity: 0.1; pointer-events: none;
+            }
+            
+            .avatar-xl { width: 80px; height: 80px; font-size: 2rem; border: 4px solid white; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+            
+            .days-badge {
+                position: absolute; top: 1rem; right: 1rem; padding: 0.5rem 1rem;
+                border-radius: 2rem; font-weight: 700; font-size: 0.85rem;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            }
+        </style>
+
+        <!-- HEADER -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <a href="{% url 'pacientes:lista' %}" class="btn btn-outline-secondary btn-sm mb-2" 
+                   onclick="if (document.referrer && document.referrer.includes(window.location.host)) { history.back(); return false; }">
+                    <i class="bi bi-arrow-left"></i> Atrás
+                </a>
+                <h2 class="mb-0 fw-bold text-dark">
+                    🎂 Próximos Cumpleaños
+                    <span class="fs-6 text-muted fw-normal ms-2">(Próximos 6 meses)</span>
+                </h2>
+            </div>
+            {% if pacientes %}
+                <div class="badge bg-white text-dark border p-2 shadow-sm d-none d-md-block">
+                    <i class="bi bi-gift text-danger"></i> {{ pacientes|length }} celebraciones
+                </div>
+            {% endif %}
         </div>
-    {% else %}
-        <p class="text-muted">No hay cumpleaños en los próximos 180 días.</p>
-    {% endif %}
+
+        {% if pacientes %}
+            <div class="row g-4">
+                {% for paciente in pacientes %}
+                    <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+                        <div class="birthday-card h-100 text-center p-4 {% if paciente.dias_hasta_cumple == 0 %}is-today{% endif %}">
+                            {% if paciente.dias_hasta_cumple == 0 %}
+                                <div class="confetti-bg"></div>
+                                <div class="days-badge bg-danger text-white">
+                                    ¡HOY! 🎉
+                                </div>
+                            {% else %}
+                                <div class="days-badge bg-light text-muted border">
+                                    Faltan {{ paciente.dias_hasta_cumple }} días
+                                </div>
+                            {% endif %}
+
+                            <div class="d-flex justify-content-center mb-3">
+                                <div class="avatar-circle avatar-xl bg-primary text-white d-flex align-items-center justify-content-center rounded-circle" 
+                                     style="background-color: {{ paciente.nombre_completo|avatar_color }} !important;">
+                                    {{ paciente.nombre_completo|initials_avatar }}
+                                </div>
+                            </div>
+
+                            <a href="{% url 'pacientes:detalle' paciente.pk %}" class="text-decoration-none text-dark stretched-link">
+                                <h5 class="fw-bold mb-1">{{ paciente.nombre_completo }}</h5>
+                            </a>
+                            
+                            <p class="text-muted small mb-3">DNI: {{ paciente.dni }}</p>
+
+                            <div class="d-inline-block bg-white border rounded-pill px-3 py-1 text-muted small mb-3 shadow-sm">
+                                🎂 Cumplirá <strong>{{ paciente.edad|add:"1" }}</strong> años
+                            </div>
+                            
+                            <div class="border-top pt-3 mt-2">
+                                <div class="d-flex justify-content-center gap-2 align-items-center text-secondary">
+                                    <i class="bi bi-calendar-event"></i>
+                                    <span class="fw-medium">{{ paciente.fecha_nacimiento|date:"d \d\e F" }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- EMPTY STATE -->
+            <div class="text-center py-5 bg-white rounded shadow-sm border">
+                <div class="mb-3">
+                    <i class="bi bi-calendar-x display-1 text-muted opacity-25"></i>
+                </div>
+                <h4 class="text-muted fw-normal">No hay cumpleaños cercanos</h4>
+                <p class="text-muted small mb-4">No se encontraron pacientes que cumplan años en los próximos 180 días.</p>
+                <a href="{% url 'pacientes:lista' %}" class="btn btn-primary">Volver a la lista</a>
+            </div>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

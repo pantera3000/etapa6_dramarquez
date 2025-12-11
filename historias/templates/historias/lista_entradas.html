@@ -9,16 +9,22 @@
     <div class="col-lg-9">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="mb-0">🩺 Historias Clínicas</h2>
-            {% if paciente %}
-                <a href="{% url 'historias:crear_entrada' paciente.pk %}" class="btn btn-success btn-sm">➕ Nueva Entrada</a>
-            {% else %}
-                <a href="{% url 'historias:crear_entrada' 0 %}" 
-                   class="btn btn-success btn-sm"
-                   style="background-color: #157347; border-color: #157347;"
-                   onclick="alert('Selecciona un paciente primero'); return false;">
-                    ➕ Nueva Entrada
+            <div>
+                <a href="{% url 'pacientes:lista' %}" class="btn btn-outline-secondary btn-sm me-2" 
+                   onclick="if (document.referrer && document.referrer.includes(window.location.host)) { history.back(); return false; }">
+                    <i class="bi bi-arrow-left"></i> Atrás
                 </a>
-            {% endif %}
+                {% if paciente %}
+                    <a href="{% url 'historias:crear_entrada' paciente.pk %}" class="btn btn-success btn-sm">➕ Nueva Entrada</a>
+                {% else %}
+                    <a href="{% url 'historias:crear_entrada' 0 %}" 
+                       class="btn btn-success btn-sm"
+                       style="background-color: #157347; border-color: #157347;"
+                       onclick="alert('Selecciona un paciente primero'); return false;">
+                        ➕ Nueva Entrada
+                    </a>
+                {% endif %}
+            </div>
         </div>
 
         {% if paciente %}

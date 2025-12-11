@@ -1,182 +1,223 @@
 <!-- tratamientos/templates/tratamientos/detalle_tratamiento.html -->
 {% extends 'base.html' %}
 {% load static %}
+{% load paciente_tags %}
+{% load l10n %}
 
 {% block title %}Tratamiento - {{ tratamiento.nombre }}{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-center">
-    <div class="col-lg-9">
-        <!-- Encabezado RESPONSIVE -->
-        <div class="mb-4">
-            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
-                <div class="flex-grow-1">
-                    <h2 class="mb-2">🦷 {{ tratamiento.nombre }}</h2>
-                    <div class="d-flex flex-wrap gap-2">
-                        <span class="badge bg-{{ tratamiento.clase_estado_pago }}">
-                            {% if tratamiento.estado_pago == 'completado' %}Pagado
-                            {% elif tratamiento.estado_pago == 'parcial' %}Pago parcial
-                            {% else %}Sin pago{% endif %}
-                        </span>
-                        <span class="badge bg-{{ tratamiento.clase_estado }}">
-                            {{ tratamiento.get_estado_display }}
-                        </span>
+    <div class="col-lg-10">
+        <!-- Estilos Inline (Consistente para evitar caché) -->
+        <style>
+            .card-saas {
+                background: white; border: 1px solid #e2e8f0; border-radius: 0.75rem; 
+                box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden;
+            }
+            .stat-card {
+                padding: 1.5rem; border-radius: 0.75rem; border: 1px solid #e2e8f0;
+                background: #f8fafc; transition: transform 0.2s;
+            }
+            .stat-card:hover { transform: translateY(-2px); border-color: #cbd5e1; }
+            .stat-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; font-weight: 600; }
+            .stat-value { font-size: 1.5rem; font-weight: 700; color: #0f172a; font-family: 'Consolas', monospace; }
+            
+            /* Table Styles */
+            .table-saas thead th {
+                font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;
+                color: #64748b; background-color: #f8fafc; border-bottom: 1px solid #e2e8f0; padding: 12px 16px;
+            }
+            .table-saas tbody td { vertical-align: middle; padding: 12px 16px; border-bottom: 1px solid #f1f5f9; }
+            .table-saas tbody tr:hover { background-color: #f1f5f9; }
+
+            /* Progress Bar */
+            .progress-saas { height: 10px; border-radius: 5px; background-color: #e2e8f0; overflow: hidden; }
+            .progress-bar-saas {
+                background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+                transition: width 1s ease-in-out;
+                height: 100%;
+            }
+        </style>
+
+        <!-- HEADER & NAVIGATION -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4 px-3 px-md-0">
+            <div class="w-100">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <a href="{% url 'pacientes:lista' %}" class="btn btn-outline-secondary btn-sm" 
+                       onclick="if (document.referrer && document.referrer.includes(window.location.host)) { history.back(); return false; }">
+                        <i class="bi bi-arrow-left"></i> Atrás
+                    </a>
+                    <span class="text-muted small">/ Detalles del Tratamiento</span>
+                </div>
+                <h2 class="mb-0 fw-bold text-dark text-break">{{ tratamiento.nombre }}</h2>
+            </div>
+            <div class="d-flex gap-2 w-100 w-md-auto justify-content-start justify-content-md-end">
+                <a href="{% url 'tratamientos:crear_pago' tratamiento.pk %}" class="btn btn-success shadow-sm text-nowrap">
+                    <i class="bi bi-cash-coin me-1"></i> Registrar Pago
+                </a>
+                <a href="{% url 'tratamientos:editar' tratamiento.pk %}" class="btn btn-white border shadow-sm text-dark">
+                    <i class="bi bi-pencil"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- INFO CARD: PACIENTE & ESTADO -->
+        <div class="card-saas p-4 mb-4">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                <div class="d-flex align-items-center">
+                    <div class="avatar-circle me-3 bg-primary text-white d-flex align-items-center justify-content-center rounded-circle" 
+                         style="width:48px; height:48px; font-size:1.2rem; background-color: {{ tratamiento.paciente.nombre_completo|avatar_color }} !important;">
+                        {{ tratamiento.paciente.nombre_completo|initials_avatar }}
+                    </div>
+                    <div>
+                        <label class="text-muted small text-uppercase fw-bold">Paciente</label>
+                        <a href="{% url 'pacientes:detalle' tratamiento.paciente.pk %}" class="d-block text-dark fw-bold text-decoration-none fs-5">
+                            {{ tratamiento.paciente.nombre_completo }}
+                        </a>
                     </div>
                 </div>
-                <div class="d-flex gap-2 flex-wrap">
-                    <a href="{% url 'tratamientos:editar' tratamiento.pk %}" class="btn btn-warning btn-sm">✏️ Editar</a>
-                    
-                    {% if request.META.HTTP_REFERER and 'tratamientos' in request.META.HTTP_REFERER and 'pacientes' not in request.META.HTTP_REFERER %}
-                        <a href="{% url 'tratamientos:lista' %}" class="btn btn-secondary btn-sm">← Lista</a>
-                    {% else %}
-                        <a href="{% url 'pacientes:detalle' tratamiento.paciente.pk %}?tratamientos_page=1" class="btn btn-secondary btn-sm">← Paciente</a>
-                    {% endif %}
+
+                <div class="d-flex gap-3 text-md-end">
+                    <div>
+                        <label class="d-block text-muted small text-uppercase fw-bold">Estado</label>
+                        <span class="badge bg-{{ tratamiento.clase_estado }} fs-6">{{ tratamiento.get_estado_display }}</span>
+                    </div>
+                    <div>
+                        <label class="d-block text-muted small text-uppercase fw-bold">Pago</label>
+                        <span class="badge bg-{{ tratamiento.clase_estado_pago }} fs-6">
+                            {% if tratamiento.estado_pago == 'completado' %}Pagado
+                            {% elif tratamiento.estado_pago == 'parcial' %}Parcial
+                            {% else %}Pendiente{% endif %}
+                        </span>
+                    </div>
                 </div>
             </div>
             
-            <!-- Información del paciente - MEJORADO Y CLICKEABLE -->
-            <div class="alert alert-primary mb-0">
-                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                    <div>
-                        <strong>Paciente:</strong>
-                        <a href="{% url 'pacientes:detalle' tratamiento.paciente.pk %}" class="text-decoration-none">
-                            <span class="fs-5 fw-bold text-primary ms-2">
-                                {{ tratamiento.paciente.nombre_completo }}
-                            </span>
-                        </a>
+            <hr class="my-4 text-muted opacity-25">
+
+            <!-- DASHBOARD FINANCIERO -->
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-label mb-1">Costo Total</div>
+                        <div class="stat-value text-dark">S/ {{ tratamiento.costo_total }}</div>
                     </div>
-                    <span class="badge bg-light text-dark">DNI: {{ tratamiento.paciente.dni }}</span>
                 </div>
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-label mb-1" style="color: #059669;">Pagado</div>
+                        <div class="stat-value text-success">S/ {{ tratamiento.total_pagado }}</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card" style="background-color: #fef2f2; border-color: #fee2e2;">
+                        <div class="stat-label mb-1" style="color: #dc2626;">Por Pagar</div>
+                        <div class="stat-value text-danger">S/ {{ tratamiento.deuda }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROGRESO -->
+            <div class="mt-4">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="small fw-bold text-muted">Progreso del pago</span>
+                    <span class="small fw-bold text-success">{{ tratamiento.porcentaje_pagado|floatformat:0 }}%</span>
+                </div>
+                <div class="progress-saas">
+                    <div class="progress-bar-saas" style="width: {{ tratamiento.porcentaje_pagado|unlocalize }}%;"></div>
+                </div>
+            </div>
+            
+            <!-- FECHAS Y DESCRIPCIÓN -->
+            <div class="mt-4 pt-3 border-top d-flex flex-wrap gap-4 text-secondary small">
+                <div><i class="bi bi-calendar-event me-1"></i> <strong>Inicio:</strong> {{ tratamiento.fecha_inicio|date:"d/m/Y" }}</div>
+                {% if tratamiento.fecha_fin %}
+                    <div><i class="bi bi-flag me-1"></i> <strong>Fin:</strong> {{ tratamiento.fecha_fin|date:"d/m/Y" }}</div>
+                {% endif %}
+                {% if tratamiento.descripcion %}
+                    <div class="w-100 mt-2"><i class="bi bi-justify-left me-1"></i> {{ tratamiento.descripcion }}</div>
+                {% endif %}
             </div>
         </div>
 
-        <!-- Tarjeta principal - RESPONSIVE -->
-        <div class="bg-white p-3 p-md-4 rounded shadow-sm border mb-4">
-            <div class="row">
-                <div class="col-md-6 mb-4 mb-md-0">
-                    <h5 class="mb-3">📊 Resumen Financiero</h5>
-                    <p><strong>💰 Costo Total:</strong> <span class="fw-bold">S/ {{ tratamiento.costo_total }}</span></p>
-                    <p><strong>✅ Total Pagado:</strong> <span class="fw-bold">S/ {{ tratamiento.total_pagado }}</span></p>
-                    <p><strong>📉 Deuda:</strong> <span class="fw-bold text-danger">S/ {{ tratamiento.deuda }}</span></p>
-                    
-                    <div class="mt-3">
-                        <div class="d-flex justify-content-between mb-1">
-                            <small>Progreso de pago</small>
-                            <small>{{ tratamiento.porcentaje_pagado|floatformat:1 }}%</small>
-                        </div>
-                        <div class="progress" style="height: 12px;">
-                            <div class="progress-bar bg-success" role="progressbar" 
-                                style="width: {{ tratamiento.porcentaje_pagado|stringformat:'f' }}%;">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <h5 class="mb-3">📅 Información del Tratamiento</h5>
-                    <p><strong>Inicio:</strong> {{ tratamiento.fecha_inicio|date:"d/m/Y" }}</p>
-                    {% if tratamiento.fecha_fin %}
-                    <p><strong>Finalización:</strong> {{ tratamiento.fecha_fin|date:"d/m/Y" }}</p>
-                    {% endif %}
-                    {% if tratamiento.descripcion %}
-                    <p class="mb-0"><strong>Descripción:</strong></p>
-                    <p class="text-muted">{{ tratamiento.descripcion }}</p>
-                    {% endif %}
-                </div>
+        <!-- HISTORIAL DE PAGOS -->
+        <div class="card-saas">
+            <div class="p-3 border-bottom bg-light d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-receipt me-2 text-muted"></i>Historial de Pagos</h5>
             </div>
-        </div>
-
-        <!-- Botón para nuevo pago -->
-        <div class="d-flex justify-content-end mb-4">
-            <a href="{% url 'tratamientos:crear_pago' tratamiento.pk %}" class="btn btn-success">➕ Registrar Pago</a>
-        </div>
-
-        <!-- Historial de pagos - RESPONSIVE -->
-        <h4 class="mb-3">🧾 Historial de Pagos</h4>
-        {% if tratamiento.pagos.exists %}
-            <div class="bg-white rounded shadow-sm border">
-                <!-- VISTA DE TABLA (Desktop >= 768px) -->
+            
+            {% if tratamiento.pagos.exists %}
+                <!-- TABLA DESKTOP -->
                 <div class="d-none d-md-block">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Fecha del pago</th>
-                                    <th>Registrado en</th>
-                                    <th>Monto</th>
-                                    <th>Método</th>
-                                    <th>Nota</th>
-                                    <th class="text-end">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for pago in tratamiento.pagos.all %}
-                                <tr>
-                                    <td>{{ pago.fecha_pago|date:"d/m/Y H:i" }}</td>
-                                    <td>
-                                        <small class="text-muted">{{ pago.registrado_en|date:"d/m/Y H:i" }}</small>
-                                    </td>
-                                    <td><strong>S/ {{ pago.monto }}</strong></td>
-                                    <td>{{ pago.get_metodo_pago_display }}</td>
-                                    <td>{{ pago.nota|default:"—" }}</td>
-                                    <td class="text-end">
-                                        <a href="{% url 'tratamientos:eliminar_pago' pago.pk %}" 
-                                        class="btn btn-sm btn-outline-danger" 
-                                        onclick="return confirm('¿Eliminar este pago?')">
-                                            🗑️
-                                        </a>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                    <table class="table table-saas mb-0">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Monto</th>
+                                <th>Método</th>
+                                <th>Nota</th>
+                                <th class="text-end">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pago in tratamiento.pagos.all %}
+                            <tr>
+                                <td>
+                                    <div class="fw-medium text-dark">{{ pago.fecha_pago|date:"d/m/Y" }}</div>
+                                    <small class="text-muted">{{ pago.fecha_pago|date:"H:i" }}</small>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-success font-monospace fs-6">S/ {{ pago.monto }}</span>
+                                </td>
+                                <td><span class="badge bg-light text-dark border">{{ pago.get_metodo_pago_display }}</span></td>
+                                <td class="text-muted small fst-italic">{{ pago.nota|default:"—" }}</td>
+                                <td class="text-end">
+                                    <a href="{% url 'tratamientos:eliminar_pago' pago.pk %}" 
+                                       class="btn btn-icon btn-sm text-danger btn-light rounded-circle"
+                                       onclick="return confirm('¿Eliminar este pago?')" title="Eliminar">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
 
-                <!-- VISTA DE TARJETAS (Móvil < 768px) -->
-                <div class="d-md-none p-3">
+                <!-- CARDS MÓVIL -->
+                <div class="d-md-none p-3 bg-light">
                     {% for pago in tratamiento.pagos.all %}
-                    <div class="card mb-3 shadow-sm">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h5 class="card-title fw-bold mb-0">S/ {{ pago.monto }}</h5>
-                                <span class="badge bg-info">{{ pago.get_metodo_pago_display }}</span>
+                    <div class="card bg-white border shadow-sm mb-2 p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-bold text-success fs-5">S/ {{ pago.monto }}</span>
+                            <span class="badge bg-light text-dark border">{{ pago.get_metodo_pago_display }}</span>
+                        </div>
+                        <div class="small text-muted mb-2">
+                            <i class="bi bi-calendar me-1"></i> {{ pago.fecha_pago|date:"d/m/Y H:i" }}
+                        </div>
+                        {% if pago.nota %}
+                            <div class="small bg-light p-2 rounded mb-2 border-start border-3 border-info">
+                                {{ pago.nota }}
                             </div>
-                            
-                            <p class="mb-2">
-                                <strong>Fecha de pago:</strong><br>
-                                {{ pago.fecha_pago|date:"d/m/Y H:i" }}
-                            </p>
-                            
-                            <p class="mb-2">
-                                <small class="text-muted">
-                                    Registrado: {{ pago.registrado_en|date:"d/m/Y H:i" }}
-                                </small>
-                            </p>
-                            
-                            {% if pago.nota %}
-                            <p class="mb-3">
-                                <strong>Nota:</strong><br>
-                                <small>{{ pago.nota }}</small>
-                            </p>
-                            {% endif %}
-                            
-                            <div class="d-grid">
-                                <a href="{% url 'tratamientos:eliminar_pago' pago.pk %}" 
-                                   class="btn btn-sm btn-danger"
-                                   onclick="return confirm('¿Eliminar este pago?')">
-                                    🗑️ Eliminar Pago
-                                </a>
-                            </div>
+                        {% endif %}
+                        <div class="text-end pt-2 border-top">
+                            <a href="{% url 'tratamientos:eliminar_pago' pago.pk %}" 
+                               class="text-danger small text-decoration-none fw-bold"
+                               onclick="return confirm('¿Eliminar este pago de S/ {{ pago.monto }}?')">
+                                <i class="bi bi-trash me-1"></i> Eliminar
+                            </a>
                         </div>
                     </div>
                     {% endfor %}
                 </div>
-            </div>
-        {% else %}
-            <div class="alert alert-light border">
-                <p class="mb-0">No hay pagos registrados aún.</p>
-            </div>
-        {% endif %}
+            {% else %}
+                <div class="text-center py-5">
+                    <div class="text-muted mb-3"><i class="bi bi-wallet2 display-4 opacity-50"></i></div>
+                    <p class="text-muted">No se han registrado pagos para este tratamiento.</p>
+                </div>
+            {% endif %}
+        </div>
     </div>
 </div>
 {% endblock %}
