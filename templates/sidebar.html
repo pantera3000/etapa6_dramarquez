@@ -52,7 +52,17 @@
             <i class="bi bi-cash-stack fs-5 me-2 text-success"></i> <span>Pagos</span>
         </a>
 
-        <!-- SECCIÓN CONFIG -->
+        <!-- 4. GRUPO REPORTES (Solo Finanzas/Admin) -->
+        {% if user.is_superuser or perms.tratamientos.view_pago %}
+        <div class="list-group-item list-group-item-light small text-uppercase text-muted fw-bold mt-2 section-title">
+            Reportes
+        </div>
+        <a href="{% url 'reportes:dashboard' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'reportes' in request.path %}active{% endif %}">
+            <i class="bi bi-graph-up-arrow fs-5 me-2 text-primary"></i> <span>Finanzas</span>
+        </a>
+        {% endif %}
+
+        <!-- 5. GRUPO EXTRAS -->
         {% if user.is_superuser %}
         <small class="text-muted px-3 mt-3 mb-1 text-uppercase fw-bold section-title" style="font-size: 0.7rem;">Admin</small>
         <a href="{% url 'configuracion:editar' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'configuracion' in request.path %}active{% endif %}">
