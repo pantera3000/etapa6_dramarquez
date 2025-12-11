@@ -70,6 +70,11 @@
                                     </td>
                                     <td>{{ paciente.telefono|default:"—" }}</td>
                                     <td class="text-end" onclick="event.stopPropagation()">
+                                        <button class="btn btn-sm btn-success me-1" 
+                                                onclick="abrirModalWhatsApp('{{ paciente.telefono }}', '{{ paciente.nombre_completo }}', 'GENERAL')"
+                                                title="Enviar WhatsApp">
+                                            <i class="fab fa-whatsapp"></i>
+                                        </button>
                                         <a href="{% url 'pacientes:editar' paciente.pk %}" class="btn btn-sm btn-warning me-1">✏️ Editar</a>
                                         <a href="{% url 'pacientes:eliminar' paciente.pk %}" 
                                            class="btn btn-sm btn-danger"
@@ -113,6 +118,10 @@
                             {% endif %}
                             
                             <div class="d-grid gap-2" onclick="event.stopPropagation()">
+                                <button class="btn btn-sm btn-success" 
+                                        onclick="abrirModalWhatsApp('{{ paciente.telefono }}', '{{ paciente.nombre_completo }}', 'GENERAL')">
+                                    <i class="fab fa-whatsapp"></i> WhatsApp
+                                </button>
                                 <a href="{% url 'pacientes:detalle' paciente.pk %}" class="btn btn-sm btn-info">👁️ Ver Detalle</a>
                                 <div class="btn-group" role="group">
                                     <a href="{% url 'pacientes:editar' paciente.pk %}" class="btn btn-sm btn-warning">✏️ Editar</a>

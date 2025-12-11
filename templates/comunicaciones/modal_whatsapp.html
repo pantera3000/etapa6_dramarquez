@@ -1,0 +1,127 @@
+<!-- Modal WhatsApp -->
+<div class="modal fade" id="modalWhatsApp" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="fab fa-whatsapp"></i> Enviar WhatsApp
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="waPacienteId">
+                <input type="hidden" id="waTelefono">
+                <input type="hidden" id="waNombrePaciente">
+                
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Paciente</label>
+                    <p id="waDisplayNombre" class="form-control-plaintext border-bottom">Cargando...</p>
+                </div>
+
+                <div class="mb-3">
+                    <label for="waPlantilla" class="form-label">Elegir Plantilla</label>
+                    <select class="form-select" id="waPlantilla">
+                        <option value="">-- Seleccionar --</option>
+                        <!-- Se llena con JS -->
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="waMensaje" class="form-label">Mensaje a enviar</label>
+                    <textarea class="form-control" id="waMensaje" rows="6" placeholder="Escribe tu mensaje aquí..."></textarea>
+                    <div class="form-text">Puedes editar el mensaje antes de enviar.</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" onclick="enviarWhatsApp()">
+                    <i class="fab fa-whatsapp"></i> Abrir WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let plantillasCache = [];
+
+    // Función para abrir el modal desde cualquier lugar
+    function abrirModalWhatsApp(telefono, nombre, tipoEvento = null) {
+        // Limpiar
+        document.getElementById('waTelefono').value = telefono || '';
+        document.getElementById('waNombrePaciente').value = nombre || '';
+        document.getElementById('waDisplayNombre').innerText = (nombre || 'Desconocido') + (telefono ? ` (${telefono})` : ' (Sin teléfono)');
+        document.getElementById('waMensaje').value = '';
+        
+        // Cargar plantillas si no están en caché
+        if (plantillasCache.length === 0) {
+            cargarPlantillas(tipoEvento);
+        } else {
+            renderizarOpcionesPlantillas(tipoEvento);
+        }
+
+        // Mostrar modal
+        var myModal = new bootstrap.Modal(document.getElementById('modalWhatsApp'));
+        myModal.show();
+    }
+
+    function cargarPlantillas(tipoPreseleccionado) {
+        fetch('/comunicaciones/api/plantillas/')
+            .then(r => r.json())
+            .then(data => {
+                plantillasCache = data.plantillas;
+                renderizarOpcionesPlantillas(tipoPreseleccionado);
+            })
+            .catch(e => console.error("Error cargando plantillas", e));
+    }
+
+    function renderizarOpcionesPlantillas(tipoEvento) {
+        const select = document.getElementById('waPlantilla');
+        select.innerHTML = '<option value="">-- Seleccionar --</option>';
+        
+        plantillasCache.forEach(p => {
+            const option = document.createElement('option');
+            option.value = p.id;
+            option.text = p.nombre;
+            // Guardar contenido en data attribute
+            option.dataset.contenido = p.contenido;
+            
+            // Auto-seleccionar si coincide categoría (lógica simple)
+            if (tipoEvento && p.categoria === tipoEvento) {
+                option.selected = true;
+                actualizarMensaje(p.contenido);
+            }
+            
+            select.appendChild(option);
+        });
+    }
+
+    // Al cambiar selección
+    document.getElementById('waPlantilla').addEventListener('change', function() {
+        const contenido = this.options[this.selectedIndex].dataset.contenido || '';
+        actualizarMensaje(contenido);
+    });
+
+    function actualizarMensaje(textoBase) {
+        const nombre = document.getElementById('waNombrePaciente').value;
+        // Reemplazo básico de variables
+        let final = textoBase.replace(/{paciente}/g, nombre);
+        // Aquí podríamos reemplazar más cosas como {fecha} si las pasáramos
+        document.getElementById('waMensaje').value = final;
+    }
+
+    function enviarWhatsApp() {
+        const telefono = document.getElementById('waTelefono').value;
+        if (!telefono) {
+            alert("Este paciente no tiene número de teléfono registrado.");
+            return;
+        }
+        
+        const mensaje = document.getElementById('waMensaje').value;
+        const mensajeEncoded = encodeURIComponent(mensaje);
+        
+        // Abrir WhatsApp
+        const url = `https://wa.me/51${telefono}?text=${mensajeEncoded}`;
+        window.open(url, '_blank');
+    }
+</script>
