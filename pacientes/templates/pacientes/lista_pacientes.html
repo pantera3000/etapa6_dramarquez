@@ -17,70 +17,180 @@
             </div>
         </div>
 
+{% load static paciente_tags %}
+
         <!-- Tarjeta principal -->
-        <div class="bg-white p-3 p-md-4 rounded shadow-sm border">
-            <!-- Barra de búsqueda -->
-            <form method="get" class="mb-4">
-                <div class="input-group">
-                    <input type="text" name="q" class="form-control" 
-                           placeholder="Buscar por nombre o DNI..." 
-                           value="{{ request.GET.q }}">
-                    <button class="btn btn-primary" type="submit">🔍 Buscar</button>
+        <div class="bg-white p-0 rounded-3 shadow-sm border overflow-hidden">
+            <!-- Estilos Inline para asegurar carga inmediata sin cache -->
+            <style>
+                /* --- Avatar Styles --- */
+                .avatar-circle {
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: white;
+                    font-weight: 600;
+                    font-size: 0.9rem;
+                    text-transform: uppercase;
+                    flex-shrink: 0;
+                }
+                .avatar-circle-sm {
+                    width: 32px;
+                    height: 32px;
+                    font-size: 0.8rem;
+                }
+
+                /* --- Table Styles (Desktop) --- */
+                .table-saas thead th {
+                    font-size: 0.75rem;
+                    text-transform: uppercase;
+                    letter-spacing: 0.05em;
+                    font-weight: 600;
+                    color: #64748b;
+                    background-color: #f8fafc;
+                    border-bottom: 1px solid #e2e8f0;
+                    padding-top: 12px;
+                    padding-bottom: 12px;
+                }
+                .table-saas tbody td {
+                    vertical-align: middle;
+                    padding-top: 12px;
+                    padding-bottom: 12px;
+                    border-bottom: 1px solid #f1f5f9;
+                }
+                .table-saas tbody tr {
+                    transition: background-color 0.15s ease-in-out;
+                }
+                .table-saas tbody tr:hover {
+                    background-color: #e2e8f0 !important; /* Visualmente más fuerte */
+                    cursor: pointer;
+                }
+                .patient-name {
+                    font-weight: 600;
+                    color: #1e293b;
+                    display: block;
+                }
+                .patient-meta {
+                    font-size: 0.8rem;
+                    color: #64748b;
+                }
+
+                /* --- Action Buttons --- */
+                .actions-group {
+                    opacity: 0.4;
+                    transition: opacity 0.2s;
+                }
+                .table-saas tbody tr:hover .actions-group {
+                    opacity: 1;
+                }
+
+                /* --- Mobile Cards --- */
+                .card-patient-mobile {
+                    border: 1px solid #e2e8f0;
+                    border-radius: 0.75rem;
+                    transition: transform 0.2s;
+                    background: white;
+                }
+                .card-patient-mobile:active {
+                    transform: scale(0.98);
+                }
+            </style>
+
+            <!-- Barra de búsqueda Estilizada -->
+            <div class="p-4 border-bottom bg-light bg-opacity-10">
+                <form method="get" class="d-flex gap-2">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                        <input type="text" name="q" class="form-control border-start-0 ps-0" 
+                               placeholder="Buscar por nombre, apellidos o DNI..." 
+                               value="{{ request.GET.q }}">
+                    </div>
+                    <button class="btn btn-primary px-4" type="submit">Buscar</button>
                     {% if request.GET.q %}
-                    <a href="{% url 'pacientes:lista' %}" class="btn btn-secondary">✖️ Limpiar</a>
+                    <a href="{% url 'pacientes:lista' %}" class="btn btn-outline-secondary" title="Limpiar"><i class="bi bi-x-lg"></i></a>
                     {% endif %}
-                </div>
-            </form>
+                </form>
+            </div>
 
             {% if pacientes %}
                 <!-- VISTA DE TABLA (Desktop >= 768px) -->
                 <div class="d-none d-md-block">
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0">
+                        <table class="table table-saas mb-0">
                             <thead class="table-light">
                                 <tr>
-                                    <th>Nombre</th>
-                                    <th>DNI</th>
-                                    <th>Edad</th>
-                                    <th class="d-none d-lg-table-cell">Cumpleaños</th>
-                                    <th>Teléfono</th>
-                                    <th class="text-end">Acciones</th>
+                                    <th class="ps-4">Paciente</th>
+                                    <th>Edad / Cumple</th>
+                                    <th>Contacto</th>
+                                    <th class="text-end pe-4">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for paciente in pacientes %}
                                 <tr style="cursor: pointer;" onclick="window.location='{% url 'pacientes:detalle' paciente.pk %}'">
-                                    <td>{{ paciente.nombre_completo }}</td>
-                                    <td><code>{{ paciente.dni }}</code></td>
+                                    <!-- Columna Paciente (Avatar + Nombre + DNI) -->
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle me-3" style="background-color: {{ paciente.nombre_completo|avatar_color }};">
+                                                {{ paciente.nombre_completo|initials_avatar }}
+                                            </div>
+                                            <div>
+                                                <span class="patient-name">{{ paciente.nombre_completo }}</span>
+                                                <span class="patient-meta">
+                                                    <i class="bi bi-person-vcard"></i> {{ paciente.dni }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    
+                                    <!-- Columna Edad/Cumple -->
                                     <td>
-                                        {{ paciente.edad }} años
-                                        {% if paciente.dias_hasta_cumple == 0 %}
-                                            <br><span class="badge bg-success">🎂 ¡Hoy!</span>
-                                        {% elif paciente.dias_hasta_cumple <= 30 %}
-                                            <br><span class="badge bg-warning text-dark">🎂 en {{ paciente.dias_hasta_cumple }} días</span>
+                                        <div class="d-flex flex-column">
+                                            <span class="fw-medium text-dark">{{ paciente.edad }} años</span>
+                                            {% if paciente.dias_hasta_cumple == 0 %}
+                                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill mt-1 w-auto align-self-start">
+                                                    🎂 ¡Es Hoy!
+                                                </span>
+                                            {% elif paciente.dias_hasta_cumple <= 30 %}
+                                                <span class="badge bg-warning bg-opacity-10 text-warning-emphasis border border-warning border-opacity-25 rounded-pill mt-1 w-auto align-self-start">
+                                                    🎂 {{ paciente.dias_hasta_cumple }} días
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    
+                                    <!-- Columna Contacto -->
+                                    <td>
+                                        {% if paciente.telefono %}
+                                            <span class="text-dark">{{ paciente.telefono }}</span>
+                                        {% else %}
+                                            <span class="text-muted small">sin teléfono</span>
                                         {% endif %}
                                     </td>
                                     
-                                    <td class="d-none d-lg-table-cell">
-                                        {% if paciente.dias_hasta_cumple == 0 %}
-                                            <span class="badge bg-success">¡Hoy!</span>
-                                        {% else %}
-                                            {{ paciente.dias_hasta_cumple }} día{{ paciente.dias_hasta_cumple|pluralize }}
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ paciente.telefono|default:"—" }}</td>
-                                    <td class="text-end" onclick="event.stopPropagation()">
-                                        <button class="btn btn-sm btn-success me-1" 
-                                                onclick="event.stopPropagation(); abrirModalWhatsApp('{{ paciente.telefono|default_if_none:''|escapejs }}', '{{ paciente.nombre_completo|escapejs }}', 'GENERAL')"
-                                                title="Enviar WhatsApp">
-                                            <i class="bi bi-whatsapp"></i>
-                                        </button>
-                                        <a href="{% url 'pacientes:editar' paciente.pk %}" class="btn btn-sm btn-warning me-1">✏️ Editar</a>
-                                        <a href="{% url 'pacientes:eliminar' paciente.pk %}" 
-                                           class="btn btn-sm btn-danger"
-                                           onclick="return confirm('¿Eliminar al paciente {{ paciente.nombre_completo }}?\n⚠️ Esta acción eliminará también sus historias, tratamientos y pagos asociados.')">
-                                            🗑️ Eliminar
-                                        </a>
+                                    <!-- Columna Acciones -->
+                                    <td class="text-end pe-4" onclick="event.stopPropagation()">
+                                        <div class="actions-group">
+                                            <button class="btn btn-icon btn-sm text-success btn-light rounded-circle me-1" 
+                                                    onclick="event.stopPropagation(); abrirModalWhatsApp('{{ paciente.telefono|default_if_none:''|escapejs }}', '{{ paciente.nombre_completo|escapejs }}', 'GENERAL')"
+                                                    title="Enviar WhatsApp" data-bs-toggle="tooltip">
+                                                <i class="bi bi-whatsapp"></i>
+                                            </button>
+                                            
+                                            <a href="{% url 'pacientes:editar' paciente.pk %}" class="btn btn-icon btn-sm text-primary btn-light rounded-circle me-1" title="Editar">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                            
+                                            <a href="{% url 'pacientes:eliminar' paciente.pk %}" 
+                                               class="btn btn-icon btn-sm text-danger btn-light rounded-circle"
+                                               onclick="return confirm('¿Eliminar al paciente {{ paciente.nombre_completo }}?\n⚠️ Esta acción eliminará también sus historias, tratamientos y pagos asociados.')"
+                                               title="Eliminar">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -89,49 +199,36 @@
                     </div>
                 </div>
 
-                <!-- VISTA DE TARJETAS (Móvil < 768px) -->
-                <div class="d-md-none">
+                <!-- VISTA MÓVIL (Cards Compactas) -->
+                <div class="d-md-none p-3 bg-light">
                     {% for paciente in pacientes %}
-                    <div class="card mb-3 shadow-sm" onclick="window.location='{% url 'pacientes:detalle' paciente.pk %}'" style="cursor: pointer;">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h5 class="card-title fw-bold mb-0">{{ paciente.nombre_completo }}</h5>
+                    <div class="card-patient-mobile p-3 mb-2 d-flex align-items-center shadow-sm" onclick="window.location='{% url 'pacientes:detalle' paciente.pk %}'">
+                        <!-- Avatar -->
+                        <div class="avatar-circle avatar-circle-sm me-3" style="background-color: {{ paciente.nombre_completo|avatar_color }};">
+                            {{ paciente.nombre_completo|initials_avatar }}
+                        </div>
+                        
+                        <!-- Info -->
+                        <div class="flex-grow-1 min-w-0">
+                            <h6 class="mb-0 text-truncate fw-bold text-dark">{{ paciente.nombre_completo }}</h6>
+                            <div class="d-flex align-items-center text-muted small mt-1">
+                                <span class="me-2">{{ paciente.edad }} años</span>
                                 {% if paciente.dias_hasta_cumple == 0 %}
-                                    <span class="badge bg-success">🎂 Hoy</span>
-                                {% elif paciente.dias_hasta_cumple <= 30 %}
-                                    <span class="badge bg-warning text-dark">🎂 {{ paciente.dias_hasta_cumple }}d</span>
+                                    <span class="text-success fw-bold">🎂 Hoy</span>
                                 {% endif %}
                             </div>
-                            
-                            <p class="mb-2">
-                                <strong>DNI:</strong> <code>{{ paciente.dni }}</code>
-                            </p>
-                            
-                            <p class="mb-2">
-                                <strong>Edad:</strong> {{ paciente.edad }} años
-                            </p>
-                            
-                            {% if paciente.telefono %}
-                            <p class="mb-3">
-                                <strong>Teléfono:</strong> {{ paciente.telefono }}
-                            </p>
-                            {% endif %}
-                            
-                            <div class="d-grid gap-2" onclick="event.stopPropagation()">
-                                <button class="btn btn-sm btn-success" 
-                                        onclick="abrirModalWhatsApp('{{ paciente.telefono }}', '{{ paciente.nombre_completo }}', 'GENERAL')">
-                                    <i class="fab fa-whatsapp"></i> WhatsApp
-                                </button>
-                                <a href="{% url 'pacientes:detalle' paciente.pk %}" class="btn btn-sm btn-info">👁️ Ver Detalle</a>
-                                <div class="btn-group" role="group">
-                                    <a href="{% url 'pacientes:editar' paciente.pk %}" class="btn btn-sm btn-warning">✏️ Editar</a>
-                                    <a href="{% url 'pacientes:eliminar' paciente.pk %}" 
-                                       class="btn btn-sm btn-danger"
-                                       onclick="return confirm('¿Eliminar al paciente {{ paciente.nombre_completo }}?\n⚠️ Esta acción eliminará también sus historias, tratamientos y pagos asociados.')">
-                                        🗑️ Eliminar
-                                    </a>
-                                </div>
-                            </div>
+                        </div>
+                        
+                        <!-- Actions Mobile -->
+                        <div class="d-flex ms-2" onclick="event.stopPropagation()">
+                            <button class="btn btn-sm btn-light border text-success rounded-circle me-2" 
+                                    style="width: 38px; height: 38px;"
+                                    onclick="abrirModalWhatsApp('{{ paciente.telefono|default_if_none:''|escapejs }}', '{{ paciente.nombre_completo|escapejs }}', 'GENERAL')">
+                                <i class="bi bi-whatsapp"></i>
+                            </button>
+                            <a href="{% url 'pacientes:detalle' paciente.pk %}" class="btn btn-sm btn-light border text-primary rounded-circle" style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
                         </div>
                     </div>
                     {% endfor %}
