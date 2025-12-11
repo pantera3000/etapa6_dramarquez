@@ -10,12 +10,17 @@
             </div>
             <div class="modal-body">
                 <input type="hidden" id="waPacienteId">
-                <input type="hidden" id="waTelefono">
                 <input type="hidden" id="waNombrePaciente">
                 
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Paciente</label>
-                    <p id="waDisplayNombre" class="form-control-plaintext border-bottom">Cargando...</p>
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label class="form-label fw-bold">Paciente</label>
+                        <p id="waDisplayNombre" class="form-control-plaintext border-bottom text-truncate">Cargando...</p>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label for="waTelefono" class="form-label fw-bold">Teléfono / Celular</label>
+                        <input type="tel" id="waTelefono" class="form-control" placeholder="Ej: 999888777">
+                    </div>
                 </div>
 
                 <div class="mb-3">
@@ -66,7 +71,7 @@
             // Limpiar y setear valores
             document.getElementById('waTelefono').value = telefono || '';
             document.getElementById('waNombrePaciente').value = nombre || '';
-            document.getElementById('waDisplayNombre').innerText = (nombre || 'Desconocido') + (telefono ? ` (${telefono})` : ' (Sin teléfono)');
+            document.getElementById('waDisplayNombre').innerText = nombre || 'Desconocido';
             document.getElementById('waMensaje').value = '';
             
             // Cargar plantillas
@@ -132,12 +137,18 @@
 
     function enviarWhatsApp() {
         let telefono = document.getElementById('waTelefono').value;
-        if (!telefono) {
-            telefono = prompt("Este paciente no tiene teléfono. Por favor ingresa el número (9 dígitos):");
-            if (!telefono) return;
-        }
+        
+        // Limpiar teléfono (mantener solo números)
         telefono = telefono.replace(/\D/g, '');
         
+        // Validar longitud mínima (ej. 9 dígitos para Perú)
+        if (!telefono || telefono.length < 9) {
+            alert("⚠️ Por favor ingresa un número de celular válido (9 dígitos).");
+            // Enfocar el input para que el usuario escriba
+            setTimeout(() => document.getElementById('waTelefono').focus(), 100);
+            return;
+        }
+
         const mensaje = document.getElementById('waMensaje').value;
         const mensajeEncoded = encodeURIComponent(mensaje);
         
