@@ -1,6 +1,7 @@
 <!-- tratamientos/templates/tratamientos/lista_tratamientos.html -->
 {% extends 'base.html' %}
 {% load static %}
+{% load paciente_tags %}
 
 {% block title %}Tratamientos{% endblock %}
 
@@ -97,68 +98,142 @@
         </div>
 
         <!-- Tarjeta de tabla -->
-        <!-- Contenedor responsive -->
-        <div class="bg-white p-4 rounded shadow-sm border">
+        <!-- Lista de tratamientos - Responsive (Rediseño SaaS) -->
+        <div class="bg-white rounded-3 shadow-sm border overflow-hidden">
+            <!-- Estilos Inline (Consistente para evitar caché) -->
+            <style>
+                /* --- Avatar Styles --- */
+                .avatar-circle {
+                    width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+                    color: white; font-weight: 600; font-size: 0.9rem; text-transform: uppercase; flex-shrink: 0;
+                }
+                .avatar-circle-sm { width: 32px; height: 32px; font-size: 0.8rem; }
+                
+                /* --- Table Styles --- */
+                .table-saas thead th {
+                    font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;
+                    color: #64748b; background-color: #f8fafc; border-bottom: 1px solid #e2e8f0;
+                    padding: 12px 16px;
+                }
+                .table-saas tbody td {
+                    vertical-align: middle; padding: 12px 16px; border-bottom: 1px solid #f1f5f9;
+                }
+                .table-saas tbody tr { transition: background-color 0.15s ease-in-out; }
+                .table-saas tbody tr:hover {
+                    background-color: #cbd5e1 !important; /* Gris más fuerte para feedback visual claro */
+                    cursor: pointer;
+                }
+                
+                /* --- Typography --- */
+                .text-title { color: #0f172a; font-weight: 600; font-size: 0.95rem; }
+                .text-amount { font-family: 'Consolas', monospace; font-weight: 600; color: #0f172a; }
+                .text-meta { font-size: 0.85rem; color: #64748b; }
+                
+                /* --- Badges & Status --- */
+                .badge-saas { font-weight: 500; padding: 0.35em 0.65em; font-size: 0.75em; border-radius: 6px; }
+                
+                /* --- Actions --- */
+                .actions-group { opacity: 0.4; transition: opacity 0.2s; }
+                .table-saas tbody tr:hover .actions-group { opacity: 1; }
+
+                /* --- Mobile Cards --- */
+                .card-mobile-saas {
+                    background: white; border: 1px solid #e2e8f0; border-radius: 0.75rem;
+                    transition: transform 0.2s;
+                }
+                .card-mobile-saas:active { transform: scale(0.98); }
+            </style>
+
             {% if tratamientos %}
                 
-                <!-- VISTA DE TABLA (Desktop >= 768px) -->
+                <!-- VISTA TABLA (Desktop) -->
                 <div class="d-none d-md-block">
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead class="table-light">
+                        <table class="table table-saas mb-0">
+                            <thead>
                                 <tr>
-                                    <th>Tratamiento</th>
-                                    {% if not paciente %}<th>Paciente</th>{% endif %}
-                                    <th>Costo</th>
-                                    <th>Pagado</th>
-                                    <th class="d-none d-lg-table-cell">Deuda</th>
+                                    <th>Tratamiento / Paciente</th>
+                                    <th>Fechas</th>
                                     <th>Estado</th>
+                                    <th>Finanzas</th>
                                     <th class="text-end">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for t in tratamientos %}
-                                <tr>
+                                <tr onclick="window.location='{% url 'tratamientos:detalle' t.pk %}'">
+                                    <!-- Tratamiento & Paciente -->
                                     <td>
-                                        <strong>{{ t.nombre }}</strong>
-                                        <br>
-                                        <small class="text-muted">
-                                            Inicio: {{ t.fecha_inicio|date:"d/m/Y" }}
-                                            {% if t.fecha_fin %} • Fin: {{ t.fecha_fin|date:"d/m/Y" }}{% endif %}
-                                        </small>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle me-3" style="background-color: {{ t.paciente.nombre_completo|avatar_color }};">
+                                                {{ t.paciente.nombre_completo|initials_avatar }}
+                                            </div>
+                                            <div>
+                                                <span class="d-block text-title">{{ t.nombre }}</span>
+                                                {% if not paciente %}
+                                                    <a href="{% url 'pacientes:detalle' t.paciente.pk %}" class="text-decoration-none text-meta" onclick="event.stopPropagation()">
+                                                        <i class="bi bi-person-circle mobile-label-icon"></i> {{ t.paciente.nombre_completo }}
+                                                    </a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
                                     </td>
-                                    {% if not paciente %}
-                                    <td>
-                                        <a href="{% url 'pacientes:detalle' t.paciente.pk %}" class="text-decoration-none text-primary">
-                                            {{ t.paciente.nombre_completo }}
-                                        </a>
-                                    </td>
-                                    {% endif %}
-                                    <td><strong>S/ {{ t.costo_total }}</strong></td>
-                                    <td>S/ {{ t.total_pagado }}</td>
-                                    <td class="d-none d-lg-table-cell {% if t.deuda > 0 %}text-danger fw-bold{% endif %}">S/ {{ t.deuda }}</td>
+                                    
+                                    <!-- Fechas (Nueva Columna) -->
                                     <td>
                                         <div class="d-flex flex-column">
-                                            <span class="badge bg-{{ t.clase_estado_pago }} mb-1">
+                                            <span class="text-dark fw-medium" style="font-size: 0.9rem;">
+                                                <i class="bi bi-calendar-event me-1 text-muted"></i>{{ t.fecha_inicio|date:"d/m/Y" }}
+                                            </span>
+                                            {% if t.fecha_fin %}
+                                                <small class="text-muted">Fin: {{ t.fecha_fin|date:"d/m/Y" }}</small>
+                                            {% else %}
+                                                <small class="text-muted fst-italic">En curso</small>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    
+                                    <!-- Estado -->
+                                    <td>
+                                        <div class="d-flex flex-column align-items-start">
+                                            <span class="badge bg-{{ t.clase_estado_pago }} badge-saas mb-1">
                                                 {% if t.estado_pago == 'completado' %}Pagado
                                                 {% elif t.estado_pago == 'parcial' %}Parcial
                                                 {% else %}Sin pago{% endif %}
                                             </span>
-                                            <small class="text-muted">{{ t.get_estado_display }}</small>
+                                            <small class="text-muted" style="font-size: 0.75rem;">{{ t.get_estado_display }}</small>
                                         </div>
                                     </td>
-                                    <td class="text-end">
-                                        <a href="{% url 'tratamientos:detalle' t.pk %}" class="btn btn-sm btn-info me-1">👁️ Ver</a>
-                                        <a href="{% url 'tratamientos:editar' t.pk %}" class="btn btn-sm btn-warning me-1">✏️ Editar</a>
-                                        {% if t.pagos.count == 0 %}
-                                            <a href="{% url 'tratamientos:eliminar_tratamiento' t.pk %}" 
-                                            class="btn btn-sm btn-danger"
-                                            onclick="return confirm('¿Eliminar el tratamiento \"{{ t.nombre }}\"?')">
-                                                🗑️ Eliminar
+                                    
+                                    <!-- Finanzas -->
+                                    <td>
+                                        <div class="d-flex flex-column text-end" style="width: fit-content;">
+                                            <span class="text-amount">S/ {{ t.costo_total }}</span>
+                                            {% if t.deuda > 0 %}
+                                                <small class="text-danger fw-bold" style="font-size: 0.75rem;">Debe: S/ {{ t.deuda }}</small>
+                                            {% else %}
+                                                <small class="text-success" style="font-size: 0.75rem;"><i class="bi bi-check-circle-fill"></i> Al día</small>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    
+                                    <!-- Acciones -->
+                                    <td class="text-end" onclick="event.stopPropagation()">
+                                        <div class="actions-group">
+                                            <a href="{% url 'tratamientos:detalle' t.pk %}" class="btn btn-icon btn-sm text-info btn-light rounded-circle" title="Ver Detalle">
+                                                <i class="bi bi-eye-fill"></i>
                                             </a>
-                                        {% else %}
-                                            <button class="btn btn-sm btn-outline-secondary" disabled>⏹️ Con pagos</button>
-                                        {% endif %}
+                                            <a href="{% url 'tratamientos:editar' t.pk %}" class="btn btn-icon btn-sm text-warning btn-light rounded-circle" title="Editar">
+                                                <i class="bi bi-pencil-fill"></i>
+                                            </a>
+                                            {% if t.pagos.count == 0 %}
+                                                <a href="{% url 'tratamientos:eliminar_tratamiento' t.pk %}" 
+                                                   class="btn btn-icon btn-sm text-danger btn-light rounded-circle"
+                                                   onclick="return confirm('¿Eliminar el tratamiento \"{{ t.nombre }}\"?')" title="Eliminar">
+                                                    <i class="bi bi-trash-fill"></i>
+                                                </a>
+                                            {% endif %}
+                                        </div>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -167,68 +242,42 @@
                     </div>
                 </div>
 
-                <!-- VISTA DE TARJETAS (Móvil < 768px) -->
-                <div class="d-md-none">
+                <!-- VISTA MÓVIL (Compact Cards) -->
+                <div class="d-md-none p-3 bg-light">
                     {% for t in tratamientos %}
-                    <div class="card mb-3 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title mb-2">{{ t.nombre }}</h5>
-                            
-                            {% if not paciente %}
-                            <p class="mb-2">
-                                <strong>Paciente:</strong> 
-                                <a href="{% url 'pacientes:detalle' t.paciente.pk %}" class="text-decoration-none">
-                                    {{ t.paciente.nombre_completo }}
-                                </a>
-                            </p>
-                            {% endif %}
-                            
-                            <p class="mb-2">
-                                <small class="text-muted">
-                                    Inicio: {{ t.fecha_inicio|date:"d/m/Y" }}
-                                    {% if t.fecha_fin %} • Fin: {{ t.fecha_fin|date:"d/m/Y" }}{% endif %}
-                                </small>
-                            </p>
-                            
-                            <div class="row mb-2">
-                                <div class="col-4">
-                                    <small class="text-muted">Costo:</small><br>
-                                    <strong>S/ {{ t.costo_total }}</strong>
-                                </div>
-                                <div class="col-4">
-                                    <small class="text-muted">Pagado:</small><br>
-                                    <span>S/ {{ t.total_pagado }}</span>
-                                </div>
-                                <div class="col-4">
-                                    <small class="text-muted">Deuda:</small><br>
-                                    <span class="{% if t.deuda > 0 %}text-danger fw-bold{% endif %}">S/ {{ t.deuda }}</span>
-                                </div>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <span class="badge bg-{{ t.clase_estado_pago }}">
+                    <div class="card-mobile-saas p-3 mb-2 d-flex align-items-center shadow-sm"
+                         onclick="window.location='{% url 'tratamientos:detalle' t.pk %}'">
+                        
+                        <!-- Avatar -->
+                        <div class="avatar-circle avatar-circle-sm me-3" style="background-color: {{ t.paciente.nombre_completo|avatar_color }};">
+                            {{ t.paciente.nombre_completo|initials_avatar }}
+                        </div>
+
+                        <!-- Info -->
+                        <div class="flex-grow-1 min-w-0">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <h6 class="mb-0 fw-bold text-dark text-truncate" style="max-width: 70%;">{{ t.nombre }}</h6>
+                                <span class="badge bg-{{ t.clase_estado_pago }} border" style="font-size: 0.65rem;">
                                     {% if t.estado_pago == 'completado' %}Pagado
                                     {% elif t.estado_pago == 'parcial' %}Parcial
                                     {% else %}Sin pago{% endif %}
                                 </span>
-                                <small class="text-muted ms-2">{{ t.get_estado_display }}</small>
                             </div>
                             
-                            <div class="d-grid gap-2">
-                                <a href="{% url 'tratamientos:detalle' t.pk %}" class="btn btn-sm btn-info">👁️ Ver Detalle</a>
-                                <div class="btn-group" role="group">
-                                    <a href="{% url 'tratamientos:editar' t.pk %}" class="btn btn-sm btn-warning">✏️ Editar</a>
-                                    {% if t.pagos.count == 0 %}
-                                        <a href="{% url 'tratamientos:eliminar_tratamiento' t.pk %}" 
-                                        class="btn btn-sm btn-danger"
-                                        onclick="return confirm('¿Eliminar el tratamiento \"{{ t.nombre }}\"?')">
-                                            🗑️ Eliminar
-                                        </a>
-                                    {% else %}
-                                        <button class="btn btn-sm btn-outline-secondary" disabled>⏹️ Con pagos</button>
-                                    {% endif %}
-                                </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                {% if not paciente %}
+                                    <small class="text-muted text-truncate me-2">{{ t.paciente.nombre_completo }}</small>
+                                {% else %}
+                                    <small class="text-muted">{{ t.fecha_inicio|date:"d/m" }}</small>
+                                {% endif %}
+                                
+                                <span class="text-amount fs-6">S/ {{ t.costo_total }}</span>
                             </div>
+                        </div>
+                        
+                        <!-- Flecha -->
+                        <div class="ms-2 text-muted">
+                            <i class="bi bi-chevron-right"></i>
                         </div>
                     </div>
                     {% endfor %}

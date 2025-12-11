@@ -1,6 +1,7 @@
 <!-- notas/templates/notas/lista_notas.html -->
 {% extends 'base.html' %}
 {% load static %}
+{% load paciente_tags %}
 
 {% block title %}Lista de Notas{% endblock %}
 
@@ -58,48 +59,120 @@
             {% endif %}
         </div>
 
-        <!-- Lista de notas - Responsive -->
-        <div class="bg-white rounded shadow-sm border">
+        <!-- Lista de notas - Responsive (Rediseño SaaS) -->
+        <div class="bg-white rounded-3 shadow-sm border overflow-hidden">
+            <!-- Estilos Inline (Consistente para evitar caché) -->
+            <style>
+                /* --- Avatar Styles --- */
+                .avatar-circle {
+                    width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+                    color: white; font-weight: 600; font-size: 0.9rem; text-transform: uppercase; flex-shrink: 0;
+                }
+                .avatar-circle-sm { width: 32px; height: 32px; font-size: 0.8rem; }
+                .avatar-generic { background-color: #64748b; } /* Slate 500 para notas generales */
+
+                /* --- Table Styles --- */
+                .table-saas thead th {
+                    font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;
+                    color: #64748b; background-color: #f8fafc; border-bottom: 1px solid #e2e8f0;
+                    padding: 12px 16px;
+                }
+                .table-saas tbody td {
+                    vertical-align: middle; padding: 12px 16px; border-bottom: 1px solid #f1f5f9;
+                }
+                .table-saas tbody tr { transition: background-color 0.15s ease-in-out; }
+                .table-saas tbody tr:hover {
+                    background-color: #e2e8f0 !important;
+                    cursor: pointer;
+                }
+                
+                /* --- Typography --- */
+                .text-title { color: #0f172a; font-weight: 600; font-size: 0.95rem; }
+                .text-meta { font-size: 0.85rem; color: #64748b; }
+                
+                /* --- Actions --- */
+                .actions-group { opacity: 0.4; transition: opacity 0.2s; }
+                .table-saas tbody tr:hover .actions-group { opacity: 1; }
+
+                /* --- Mobile Cards --- */
+                .card-mobile-saas {
+                    background: white; border: 1px solid #e2e8f0; border-radius: 0.75rem;
+                    transition: transform 0.2s;
+                }
+                .card-mobile-saas:active { transform: scale(0.98); }
+            </style>
+
             {% if notas %}
                 
-                <!-- VISTA DE TABLA (Desktop >= 768px) -->
+                <!-- VISTA TABLA (Desktop) -->
                 <div class="d-none d-md-block">
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead class="table-light">
+                        <table class="table table-saas mb-0">
+                            <thead>
                                 <tr>
-                                    <th>Título</th>
+                                    <th>Nota / Paciente</th>
                                     <th>Contenido</th>
-                                    {% if not paciente %}<th>Paciente</th>{% endif %}
                                     <th>Fecha</th>
                                     <th class="text-end">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for nota in notas %}
-                                <tr>
-                                    <td><strong>{{ nota.titulo }}</strong></td>
-                                    <td>{{ nota.contenido|truncatewords:10 }}</td>
-                                    {% if not paciente %}
+                                <tr onclick="window.location='{% url 'notas:detalle' nota.pk %}'">
+                                    <!-- Columna Principal -->
                                     <td>
-                                        {% if nota.paciente %}
-                                            <a href="{% url 'pacientes:detalle' nota.paciente.pk %}" class="text-decoration-none">
-                                                <span class="badge bg-primary">{{ nota.paciente.nombre_completo }}</span>
-                                            </a>
-                                        {% else %}
-                                            <span class="badge bg-secondary">Nota general</span>
-                                        {% endif %}
+                                        <div class="d-flex align-items-center">
+                                            {% if nota.paciente %}
+                                                <div class="avatar-circle me-3" style="background-color: {{ nota.paciente.nombre_completo|avatar_color }};">
+                                                    {{ nota.paciente.nombre_completo|initials_avatar }}
+                                                </div>
+                                            {% else %}
+                                                <div class="avatar-circle me-3 avatar-generic">
+                                                    <i class="bi bi-journal-text"></i>
+                                                </div>
+                                            {% endif %}
+                                            
+                                            <div>
+                                                <span class="d-block text-title">{{ nota.titulo }}</span>
+                                                {% if nota.paciente %}
+                                                    <a href="{% url 'pacientes:detalle' nota.paciente.pk %}" class="text-decoration-none text-meta" onclick="event.stopPropagation()">
+                                                        <i class="bi bi-person-circle mobile-label-icon"></i> {{ nota.paciente.nombre_completo }}
+                                                    </a>
+                                                {% else %}
+                                                    <span class="badge bg-light text-secondary border">Nota General</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
                                     </td>
-                                    {% endif %}
-                                    <td>{{ nota.creado_en|date:"d/m/Y H:i" }}</td>
-                                    <td class="text-end">
-                                        <a href="{% url 'notas:detalle' nota.pk %}" class="btn btn-sm btn-info btn-white-text me-1">👁️ Ver</a>
-                                        <a href="{% url 'notas:editar' nota.pk %}" class="btn btn-sm btn-warning me-1">✏️ Editar</a>
-                                        <a href="{% url 'notas:eliminar' nota.pk %}" 
-                                           class="btn btn-sm btn-danger"
-                                           onclick="return confirm('¿Eliminar esta nota?')">
-                                            🗑️ Eliminar
-                                        </a>
+                                    
+                                    <!-- Contenido -->
+                                    <td>
+                                        <span class="text-dark">{{ nota.contenido|truncatewords:12 }}</span>
+                                    </td>
+                                    
+                                    <!-- Fecha -->
+                                    <td>
+                                        <div class="d-flex flex-column">
+                                            <span class="fw-medium text-dark">{{ nota.creado_en|date:"d/m/Y" }}</span>
+                                            <span class="text-meta small">{{ nota.creado_en|date:"H:i" }}</span>
+                                        </div>
+                                    </td>
+                                    
+                                    <!-- Acciones -->
+                                    <td class="text-end" onclick="event.stopPropagation()">
+                                        <div class="actions-group">
+                                            <a href="{% url 'notas:detalle' nota.pk %}" class="btn btn-icon btn-sm text-info btn-light rounded-circle" title="Ver">
+                                                <i class="bi bi-eye-fill"></i>
+                                            </a>
+                                            <a href="{% url 'notas:editar' nota.pk %}" class="btn btn-icon btn-sm text-warning btn-light rounded-circle" title="Editar">
+                                                <i class="bi bi-pencil-fill"></i>
+                                            </a>
+                                            <a href="{% url 'notas:eliminar' nota.pk %}" 
+                                               class="btn btn-icon btn-sm text-danger btn-light rounded-circle"
+                                               onclick="return confirm('¿Eliminar esta nota?')" title="Eliminar">
+                                                <i class="bi bi-trash-fill"></i>
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -108,45 +181,42 @@
                     </div>
                 </div>
 
-                <!-- VISTA DE TARJETAS (Móvil < 768px) -->
-                <div class="d-md-none p-3">
+                <!-- VISTA MÓVIL (Compact Cards) -->
+                <div class="d-md-none p-3 bg-light">
                     {% for nota in notas %}
-                    <div class="card mb-3 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title fw-bold mb-2">{{ nota.titulo }}</h5>
-                            
-                            <p class="mb-2">
-                                {{ nota.contenido|truncatewords:15 }}
-                            </p>
-                            
-                            {% if not paciente %}
-                            <p class="mb-2">
-                                {% if nota.paciente %}
-                                    <strong>Paciente:</strong><br>
-                                    <a href="{% url 'pacientes:detalle' nota.paciente.pk %}" class="text-decoration-none">
-                                        <span class="badge bg-primary">{{ nota.paciente.nombre_completo }}</span>
-                                    </a>
-                                {% else %}
-                                    <span class="badge bg-secondary">Nota general</span>
-                                {% endif %}
-                            </p>
-                            {% endif %}
-                            
-                            <p class="mb-3">
-                                <small class="text-muted">📅 {{ nota.creado_en|date:"d/m/Y H:i" }}</small>
-                            </p>
-                            
-                            <div class="d-grid gap-2">
-                                <a href="{% url 'notas:detalle' nota.pk %}" class="btn btn-sm btn-info">👁️ Ver Detalle</a>
-                                <div class="btn-group" role="group">
-                                    <a href="{% url 'notas:editar' nota.pk %}" class="btn btn-sm btn-warning">✏️ Editar</a>
-                                    <a href="{% url 'notas:eliminar' nota.pk %}" 
-                                       class="btn btn-sm btn-danger"
-                                       onclick="return confirm('¿Eliminar esta nota?')">
-                                        🗑️ Eliminar
-                                    </a>
-                                </div>
+                    <div class="card-mobile-saas p-3 mb-2 d-flex align-items-center shadow-sm"
+                         onclick="window.location='{% url 'notas:detalle' nota.pk %}'">
+                        
+                        <!-- Avatar -->
+                        {% if nota.paciente %}
+                            <div class="avatar-circle avatar-circle-sm me-3" style="background-color: {{ nota.paciente.nombre_completo|avatar_color }};">
+                                {{ nota.paciente.nombre_completo|initials_avatar }}
                             </div>
+                        {% else %}
+                            <div class="avatar-circle avatar-circle-sm me-3 avatar-generic">
+                                <i class="bi bi-journal-text"></i>
+                            </div>
+                        {% endif %}
+
+                        <!-- Info -->
+                        <div class="flex-grow-1 min-w-0">
+                            <h6 class="mb-0 fw-bold text-dark text-truncate">{{ nota.titulo }}</h6>
+                            <p class="mb-0 text-muted small text-truncate">
+                                {{ nota.contenido|truncatewords:8 }}
+                            </p>
+                            <div class="d-flex align-items-center mt-1">
+                                <small class="text-secondary me-2">{{ nota.creado_en|date:"d/m" }}</small>
+                                {% if nota.paciente %}
+                                    <span class="badge bg-light text-dark border py-0 px-2" style="font-weight: 500; font-size: 0.7rem;">
+                                        {{ nota.paciente.nombre_completo|truncatechars:15 }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Flecha -->
+                        <div class="ms-2 text-muted">
+                            <i class="bi bi-chevron-right"></i>
                         </div>
                     </div>
                     {% endfor %}

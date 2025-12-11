@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}🧾 Lista de Pagos{% endblock %}
+{% load static paciente_tags %}
 
 {% block content %}
 <div class="d-flex justify-content-center">
@@ -47,50 +48,111 @@
             </form>
         </div>
 
-        <!-- Lista de pagos - Responsive -->
-        <div class="bg-white rounded shadow-sm border">
+        <!-- Lista de pagos - Responsive (Rediseño SaaS) -->
+        <div class="bg-white rounded-3 shadow-sm border overflow-hidden">
+            <!-- Estilos Inline (Consistente para evitar caché) -->
+            <style>
+                /* --- Avatar Styles --- */
+                .avatar-circle {
+                    width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+                    color: white; font-weight: 600; font-size: 0.9rem; text-transform: uppercase; flex-shrink: 0;
+                }
+                .avatar-circle-sm { width: 32px; height: 32px; font-size: 0.8rem; }
+                
+                /* --- Table Styles --- */
+                .table-saas thead th {
+                    font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;
+                    color: #64748b; background-color: #f8fafc; border-bottom: 1px solid #e2e8f0;
+                    padding: 12px 16px;
+                }
+                .table-saas tbody td {
+                    vertical-align: middle; padding: 12px 16px; border-bottom: 1px solid #f1f5f9;
+                }
+                .table-saas tbody tr { transition: background-color 0.15s ease-in-out; }
+                .table-saas tbody tr:hover {
+                    background-color: #cbd5e1 !important; /* Gris oscuro para hover visible */
+                    cursor: pointer;
+                }
+                
+                /* --- Typography --- */
+                .text-title { color: #0f172a; font-weight: 600; font-size: 0.95rem; }
+                .text-amount-lg { font-family: 'Consolas', monospace; font-weight: 700; color: #059669; font-size: 1.1rem; }
+                .text-meta { font-size: 0.85rem; color: #64748b; }
+                
+                /* --- Actions --- */
+                .actions-group { opacity: 0.4; transition: opacity 0.2s; }
+                .table-saas tbody tr:hover .actions-group { opacity: 1; }
+
+                /* --- Mobile Cards --- */
+                .card-mobile-saas {
+                    background: white; border: 1px solid #e2e8f0; border-radius: 0.75rem;
+                    transition: transform 0.2s;
+                }
+                .card-mobile-saas:active { transform: scale(0.98); }
+            </style>
+
             {% if pagos %}
                 
-                <!-- VISTA DE TABLA (Desktop >= 768px) -->
+                <!-- VISTA TABLA (Desktop) -->
                 <div class="d-none d-md-block">
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead class="table-light">
+                        <table class="table table-saas mb-0">
+                            <thead>
                                 <tr>
-                                    <th>Fecha del pago</th>
-                                    <th class="d-none d-lg-table-cell">Registrado en</th>
-                                    <th>Monto</th>
-                                    <th>Método</th>
-                                    <th>Paciente</th>
-                                    <th>Tratamiento</th>
-                                    <th class="d-none d-lg-table-cell">Nota</th>
+                                    <th>Paciente / Tratamiento</th>
+                                    <th>Monto / Método</th>
+                                    <th>Fecha</th>
                                     <th class="text-end">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for pago in pagos %}
                                 <tr>
-                                    <td>{{ pago.fecha_pago|date:"d/m/Y H:i" }}</td>
-                                    <td class="d-none d-lg-table-cell"><small class="text-muted">{{ pago.registrado_en|date:"d/m/Y H:i" }}</small></td>
-                                    <td><strong>S/ {{ pago.monto }}</strong></td>
-                                    <td>{{ pago.get_metodo_pago_display }}</td>
+                                    <!-- Paciente & Tratamiento -->
                                     <td>
-                                        <a href="{% url 'pacientes:detalle' pago.tratamiento.paciente.pk %}" class="text-decoration-none">
-                                            <span class="badge bg-primary">{{ pago.tratamiento.paciente.nombre_completo }}</span>
-                                        </a>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle me-3" style="background-color: {{ pago.tratamiento.paciente.nombre_completo|avatar_color }};">
+                                                {{ pago.tratamiento.paciente.nombre_completo|initials_avatar }}
+                                            </div>
+                                            <div>
+                                                <a href="{% url 'pacientes:detalle' pago.tratamiento.paciente.pk %}" class="text-decoration-none text-title" onclick="event.stopPropagation()">
+                                                    {{ pago.tratamiento.paciente.nombre_completo }}
+                                                </a>
+                                                <div class="text-meta">
+                                                    <i class="bi bi-tooth"></i> {{ pago.tratamiento.nombre }}
+                                                </div>
+                                            </div>
+                                        </div>
                                     </td>
+                                    
+                                    <!-- Monto & Método -->
                                     <td>
-                                        <a href="{% url 'tratamientos:detalle' pago.tratamiento.pk %}" class="text-decoration-none">
-                                            {{ pago.tratamiento.nombre }}
-                                        </a>
+                                        <div class="d-flex flex-column">
+                                            <span class="text-amount-lg">S/ {{ pago.monto }}</span>
+                                            <span class="badge bg-light text-dark border align-self-start">{{ pago.get_metodo_pago_display }}</span>
+                                        </div>
                                     </td>
-                                    <td class="d-none d-lg-table-cell">{{ pago.nota|default:"—" }}</td>
+                                    
+                                    <!-- Fecha -->
+                                    <td>
+                                        <div class="d-flex flex-column">
+                                            <span class="fw-medium text-dark">{{ pago.fecha_pago|date:"d/m/Y" }}</span>
+                                            <span class="text-meta small">{{ pago.fecha_pago|date:"H:i" }}</span>
+                                        </div>
+                                    </td>
+                                    
+                                    <!-- Acciones -->
                                     <td class="text-end">
-                                        <a href="{% url 'tratamientos:eliminar_pago' pago.pk %}" 
-                                           class="btn btn-sm btn-danger"
-                                           onclick="return confirm('¿Eliminar este pago?')">
-                                            🗑️ Eliminar
-                                        </a>
+                                        <div class="actions-group">
+                                            <a href="{% url 'tratamientos:detalle' pago.tratamiento.pk %}" class="btn btn-icon btn-sm text-info btn-light rounded-circle" title="Ver Tratamiento">
+                                                <i class="bi bi-eye-fill"></i>
+                                            </a>
+                                            <a href="{% url 'tratamientos:eliminar_pago' pago.pk %}" 
+                                               class="btn btn-icon btn-sm text-danger btn-light rounded-circle"
+                                               onclick="return confirm('¿Eliminar este pago?')" title="Eliminar">
+                                                <i class="bi bi-trash-fill"></i>
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -99,48 +161,37 @@
                     </div>
                 </div>
 
-                <!-- VISTA DE TARJETAS (Móvil < 768px) -->
-                <div class="d-md-none p-3">
+                <!-- VISTA MÓVIL (Compact Cards) -->
+                <div class="d-md-none p-3 bg-light">
                     {% for pago in pagos %}
-                    <div class="card mb-3 shadow-sm">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h5 class="card-title fw-bold mb-0">S/ {{ pago.monto }}</h5>
-                                <span class="badge bg-info">{{ pago.get_metodo_pago_display }}</span>
+                    <div class="card-mobile-saas p-3 mb-2 d-flex align-items-center shadow-sm">
+                        
+                        <!-- Avatar -->
+                        <div class="avatar-circle avatar-circle-sm me-3" style="background-color: {{ pago.tratamiento.paciente.nombre_completo|avatar_color }};">
+                            {{ pago.tratamiento.paciente.nombre_completo|initials_avatar }}
+                        </div>
+
+                        <!-- Info -->
+                        <div class="flex-grow-1 min-w-0">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <h6 class="mb-0 fw-bold text-dark text-truncate">{{ pago.tratamiento.paciente.nombre_completo }}</h6>
+                                <span class="text-amount-lg" style="font-size: 1rem;">S/ {{ pago.monto }}</span>
                             </div>
                             
-                            <p class="mb-2">
-                                <small class="text-muted">📅 {{ pago.fecha_pago|date:"d/m/Y H:i" }}</small>
-                            </p>
-                            
-                            <p class="mb-2">
-                                <strong>Paciente:</strong><br>
-                                <a href="{% url 'pacientes:detalle' pago.tratamiento.paciente.pk %}" class="text-decoration-none">
-                                    <span class="badge bg-primary">{{ pago.tratamiento.paciente.nombre_completo }}</span>
-                                </a>
-                            </p>
-                            
-                            <p class="mb-2">
-                                <strong>Tratamiento:</strong><br>
-                                <a href="{% url 'tratamientos:detalle' pago.tratamiento.pk %}" class="text-decoration-none">
-                                    {{ pago.tratamiento.nombre }}
-                                </a>
-                            </p>
-                            
-                            {% if pago.nota %}
-                            <p class="mb-3">
-                                <strong>Nota:</strong><br>
-                                <small>{{ pago.nota }}</small>
-                            </p>
-                            {% endif %}
-                            
-                            <div class="d-grid">
-                                <a href="{% url 'tratamientos:eliminar_pago' pago.pk %}" 
-                                   class="btn btn-sm btn-danger"
-                                   onclick="return confirm('¿Eliminar este pago?')">
-                                    🗑️ Eliminar Pago
-                                </a>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted text-truncate me-2">{{ pago.tratamiento.nombre }}</small>
+                                <span class="badge bg-light text-secondary border" style="font-size: 0.65rem;">{{ pago.get_metodo_pago_display }}</span>
                             </div>
+                            <small class="text-muted d-block mt-1">{{ pago.fecha_pago|date:"d/m H:i" }}</small>
+                        </div>
+                        
+                        <!-- Actions Mobile -->
+                        <div class="ms-3 d-flex flex-column gap-2">
+                             <a href="{% url 'tratamientos:eliminar_pago' pago.pk %}" 
+                                class="text-danger"
+                                onclick="return confirm('¿Eliminar este pago?')">
+                                 <i class="bi bi-trash"></i>
+                             </a>
                         </div>
                     </div>
                     {% endfor %}
