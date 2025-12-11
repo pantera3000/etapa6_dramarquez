@@ -17,9 +17,24 @@
     </a>
 </div>
 
+<!-- Filtros de Tiempo -->
+<div class="card shadow-sm border-0 mb-4 animate-fade-in-up">
+    <div class="card-body p-2">
+        <nav class="nav nav-pills nav-fill">
+            <a class="nav-link {% if rango_actual == 'hoy' %}active bg-success{% endif %}" href="?rango=hoy">Hoy</a>
+            <a class="nav-link {% if rango_actual == 'semana' %}active bg-success{% endif %}" href="?rango=semana">Esta Semana</a>
+            <a class="nav-link {% if rango_actual == 'mes' %}active bg-success{% endif %}" href="?rango=mes">Este Mes</a>
+            <a class="nav-link {% if rango_actual == 'mes_anterior' %}active bg-success{% endif %}" href="?rango=mes_anterior">Mes Anterior</a>
+            <a class="nav-link {% if rango_actual == 'anio' %}active bg-success{% endif %}" href="?rango=anio">Este Año</a>
+            <a class="nav-link {% if rango_actual == 'todos' %}active bg-success{% endif %}" href="?rango=todos">Histórico</a>
+        </nav>
+    </div>
+</div>
+
 <div class="card shadow-sm border-0 animate-fade-in-up" style="animation-delay: 0.1s;">
-    <div class="card-header bg-white py-3">
-        <h5 class="mb-0 fw-bold text-success">Últimos Pagos Registrados</h5>
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 fw-bold text-success">{{ titulo_filtro }}</h5>
+        <span class="badge bg-success fs-6">Total: S/ {{ total_periodo|floatformat:2 }}</span>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">

@@ -17,13 +17,26 @@
     </a>
 </div>
 
+<!-- Filtros de Estado -->
+<div class="card shadow-sm border-0 mb-4 animate-fade-in-up">
+    <div class="card-body p-2">
+        <nav class="nav nav-pills nav-fill">
+            <a class="nav-link {% if filtro_actual == 'todos' %}active bg-primary{% endif %}" href="?filtro=todos">Todos</a>
+            <a class="nav-link {% if filtro_actual == 'prioridad' %}active bg-danger{% endif %}" href="?filtro=prioridad">
+                <i class="bi bi-exclamation-triangle-fill me-1"></i> Prioridad Alta
+            </a>
+            <a class="nav-link {% if filtro_actual == 'antiguos' %}active bg-warning text-dark{% endif %}" href="?filtro=antiguos">
+                <i class="bi bi-clock-history me-1"></i> Antiguos (+30 días)
+            </a>
+            <a class="nav-link {% if filtro_actual == 'en_curso' %}active bg-info text-white{% endif %}" href="?filtro=en_curso">En Curso</a>
+        </nav>
+    </div>
+</div>
+
 <div class="card shadow-sm border-0 animate-fade-in-up" style="animation-delay: 0.1s;">
-    <div class="card-header bg-white py-3">
-        <div class="row align-items-center">
-            <div class="col">
-                <h5 class="mb-0 fw-bold text-primary">Deudores</h5>
-            </div>
-        </div>
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 fw-bold text-primary">Deudores Filtrados</h5>
+        <span class="badge bg-danger fs-6">Deuda Visible: S/ {{ total_deuda_vista|floatformat:2 }}</span>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">

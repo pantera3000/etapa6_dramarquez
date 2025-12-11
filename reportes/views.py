@@ -52,16 +52,40 @@ class ReporteDeudasView(FinanzasGroupRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        # Obtener tratamientos con deuda > 0
-        tratamientos = Tratamiento.objects.all()
+        
+        filtro = self.request.GET.get('filtro', 'todos')
+        tratamientos = Tratamiento.objects.all().select_related('paciente') # Optimización
         deudores = []
+        
+        today = timezone.now().date()
+        
         for t in tratamientos:
             if t.deuda > 0:
-                deudores.append(t)
+                # Aplicar filtros lógicos
+                if filtro == 'prioridad':
+                    # Solo completados con deuda (URGENTE)
+                    if t.estado == 'completado':
+                        deudores.append(t)
+                elif filtro == 'antiguos':
+                    # Deuda +30 dias (desde inicio)
+                    if (today - t.fecha_inicio).days > 30:
+                        deudores.append(t)
+                elif filtro == 'en_curso':
+                    if t.estado == 'en_progreso':
+                        deudores.append(t)
+                else:
+                    # Todos
+                    deudores.append(t)
         
-        # Ordenar por deuda descendente (opcional)
+        # Ordenar por deuda descendente
         deudores.sort(key=lambda x: x.deuda, reverse=True)
+        
+        # Calcular total acumulado de la vista actual
+        total_deuda_vista = sum(d.deuda for d in deudores)
+        
         ctx['deudores'] = deudores
+        ctx['filtro_actual'] = filtro
+        ctx['total_deuda_vista'] = total_deuda_vista
         return ctx
 
 class ReporteIngresosView(FinanzasGroupRequiredMixin, TemplateView):
@@ -69,7 +93,64 @@ class ReporteIngresosView(FinanzasGroupRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        # Por defecto últimos 30 días o mes actual
-        pagos = Pago.objects.all().order_by('-fecha_pago')[:100] # Limite inicial
+        
+        # Filtro de tiempo
+        rango = self.request.GET.get('rango', 'mes') # Por defecto: Mes Actual
+        
+        # Usamos datetime ahora mismo para evitar conversiones raras de SQLite
+        now = timezone.now() 
+        pagos = Pago.objects.all().order_by('-fecha_pago')
+
+        if rango == 'hoy':
+            # Rango: Desde las 00:00 hasta las 23:59:59 de hoy
+            start_day = now.replace(hour=0, minute=0, second=0, microsecond=0)
+            end_day = start_day + timedelta(days=1)
+            pagos = pagos.filter(fecha_pago__gte=start_day, fecha_pago__lt=end_day)
+            ctx['titulo_filtro'] = "Hoy"
+            
+        elif rango == 'semana':
+            # Rango: Desde el Lunes de esta semana hasta hoy
+            today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+            start_week = today_start - timedelta(days=today_start.weekday())
+            # Hasta el final de hoy
+            end_week = today_start + timedelta(days=1)
+            pagos = pagos.filter(fecha_pago__gte=start_week, fecha_pago__lt=end_week)
+            ctx['titulo_filtro'] = "Esta Semana"
+            
+        elif rango == 'mes':
+            # Rango: Mes actual
+            first_day = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+            if now.month == 12:
+                next_month = now.replace(year=now.year+1, month=1, day=1)
+            else:
+                next_month = now.replace(month=now.month+1, day=1)
+            pagos = pagos.filter(fecha_pago__gte=first_day, fecha_pago__lt=next_month)
+            ctx['titulo_filtro'] = "Este Mes"
+            
+        elif rango == 'mes_anterior':
+            # Rango: Mes anterior completo
+            first_day_this_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+            last_day_prev_month = first_day_this_month - timedelta(microseconds=1)
+            # Inicio del mes anterior
+            first_day_prev_month = last_day_prev_month.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+            # El fin del rango es el inicio de este mes
+            pagos = pagos.filter(fecha_pago__gte=first_day_prev_month, fecha_pago__lt=first_day_this_month)
+            ctx['titulo_filtro'] = "Mes Anterior"
+            
+        elif rango == 'anio':
+            # Rango: Año actual
+            first_day_year = now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+            next_year = now.replace(year=now.year+1, month=1, day=1)
+            pagos = pagos.filter(fecha_pago__gte=first_day_year, fecha_pago__lt=next_year)
+            ctx['titulo_filtro'] = "Este Año"
+            
+        elif rango == 'todos':
+            ctx['titulo_filtro'] = "Histórico Completo"
+        
+        # Calcular total del periodo filtrado
+        total_periodo = sum(p.monto for p in pagos)
+        
         ctx['pagos'] = pagos
+        ctx['rango_actual'] = rango
+        ctx['total_periodo'] = total_periodo
         return ctx
