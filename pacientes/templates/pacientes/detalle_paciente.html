@@ -28,6 +28,10 @@
                     </p>
                 </div>
                 <div class="d-flex gap-2 flex-wrap w-100 w-sm-auto">
+                    <button class="btn btn-success btn-sm flex-fill flex-sm-grow-0" 
+                            onclick="abrirModalWhatsApp('{{ paciente.telefono|default_if_none:''|escapejs }}', '{{ paciente.nombre_completo|escapejs }}', 'GENERAL')">
+                        <i class="bi bi-whatsapp"></i> WhatsApp
+                    </button>
                     <a href="{% url 'pacientes:editar' paciente.pk %}" class="btn btn-warning btn-sm flex-fill flex-sm-grow-0">✏️ Editar</a>
                     <a href="{% url 'pacientes:lista' %}" class="btn btn-secondary btn-sm flex-fill flex-sm-grow-0">← Lista</a>
 

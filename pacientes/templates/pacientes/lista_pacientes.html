@@ -71,9 +71,9 @@
                                     <td>{{ paciente.telefono|default:"—" }}</td>
                                     <td class="text-end" onclick="event.stopPropagation()">
                                         <button class="btn btn-sm btn-success me-1" 
-                                                onclick="abrirModalWhatsApp('{{ paciente.telefono }}', '{{ paciente.nombre_completo }}', 'GENERAL')"
+                                                onclick="event.stopPropagation(); abrirModalWhatsApp('{{ paciente.telefono|default_if_none:''|escapejs }}', '{{ paciente.nombre_completo|escapejs }}', 'GENERAL')"
                                                 title="Enviar WhatsApp">
-                                            <i class="fab fa-whatsapp"></i>
+                                            <i class="bi bi-whatsapp"></i>
                                         </button>
                                         <a href="{% url 'pacientes:editar' paciente.pk %}" class="btn btn-sm btn-warning me-1">✏️ Editar</a>
                                         <a href="{% url 'pacientes:eliminar' paciente.pk %}" 

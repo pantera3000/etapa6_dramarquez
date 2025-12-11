@@ -4,7 +4,7 @@
         <div class="modal-content">
             <div class="modal-header bg-success text-white">
                 <h5 class="modal-title">
-                    <i class="fab fa-whatsapp"></i> Enviar WhatsApp
+                    <i class="bi bi-whatsapp"></i> Enviar WhatsApp
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -35,7 +35,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-success" onclick="enviarWhatsApp()">
-                    <i class="fab fa-whatsapp"></i> Abrir WhatsApp
+                    <i class="bi bi-whatsapp"></i> Abrir WhatsApp
                 </button>
             </div>
         </div>
@@ -47,22 +47,43 @@
 
     // Función para abrir el modal desde cualquier lugar
     function abrirModalWhatsApp(telefono, nombre, tipoEvento = null) {
-        // Limpiar
-        document.getElementById('waTelefono').value = telefono || '';
-        document.getElementById('waNombrePaciente').value = nombre || '';
-        document.getElementById('waDisplayNombre').innerText = (nombre || 'Desconocido') + (telefono ? ` (${telefono})` : ' (Sin teléfono)');
-        document.getElementById('waMensaje').value = '';
-        
-        // Cargar plantillas si no están en caché
-        if (plantillasCache.length === 0) {
-            cargarPlantillas(tipoEvento);
-        } else {
-            renderizarOpcionesPlantillas(tipoEvento);
-        }
+        try {
+            // Verificar si Bootstrap está cargado
+            if (typeof bootstrap === 'undefined') {
+                 console.error("CRITICAL: Bootstrap no está definido");
+                 alert("Error: La librería visual (Bootstrap) no cargó. Refresca la página.");
+                 return;
+            }
 
-        // Mostrar modal
-        var myModal = new bootstrap.Modal(document.getElementById('modalWhatsApp'));
-        myModal.show();
+            // Verificar si el elemento modal existe
+            const modalElement = document.getElementById('modalWhatsApp');
+            if (!modalElement) {
+                console.error("CRITICAL: No se encontró #modalWhatsApp en el DOM");
+                alert("Error: No se encuentra la ventana de WhatsApp en esta página.");
+                return;
+            }
+
+            // Limpiar y setear valores
+            document.getElementById('waTelefono').value = telefono || '';
+            document.getElementById('waNombrePaciente').value = nombre || '';
+            document.getElementById('waDisplayNombre').innerText = (nombre || 'Desconocido') + (telefono ? ` (${telefono})` : ' (Sin teléfono)');
+            document.getElementById('waMensaje').value = '';
+            
+            // Cargar plantillas
+            if (plantillasCache.length === 0) {
+                cargarPlantillas(tipoEvento);
+            } else {
+                renderizarOpcionesPlantillas(tipoEvento);
+            }
+
+            // Mostrar modal
+            var myModal = new bootstrap.Modal(modalElement);
+            myModal.show();
+            
+        } catch (error) {
+            console.error("EXCEPCIÓN en abrirModalWhatsApp:", error);
+            alert("Error inesperado al abrir WhatsApp:\n" + error.message);
+        }
     }
 
     function cargarPlantillas(tipoPreseleccionado) {
@@ -106,22 +127,21 @@
         const nombre = document.getElementById('waNombrePaciente').value;
         // Reemplazo básico de variables
         let final = textoBase.replace(/{paciente}/g, nombre);
-        // Aquí podríamos reemplazar más cosas como {fecha} si las pasáramos
         document.getElementById('waMensaje').value = final;
     }
 
     function enviarWhatsApp() {
-        const telefono = document.getElementById('waTelefono').value;
+        let telefono = document.getElementById('waTelefono').value;
         if (!telefono) {
-            alert("Este paciente no tiene número de teléfono registrado.");
-            return;
+            telefono = prompt("Este paciente no tiene teléfono. Por favor ingresa el número (9 dígitos):");
+            if (!telefono) return;
         }
+        telefono = telefono.replace(/\D/g, '');
         
         const mensaje = document.getElementById('waMensaje').value;
         const mensajeEncoded = encodeURIComponent(mensaje);
         
-        // Abrir WhatsApp
-        const url = `https://wa.me/51${telefono}?text=${mensajeEncoded}`;
+        const url = `https://api.whatsapp.com/send?phone=51${telefono}&text=${mensajeEncoded}`;
         window.open(url, '_blank');
     }
 </script>
