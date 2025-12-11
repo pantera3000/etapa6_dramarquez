@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'usuarios',
     'odontograma',
     'configuracion',
+    'comunicaciones',
 ]
 
 MIDDLEWARE = [
