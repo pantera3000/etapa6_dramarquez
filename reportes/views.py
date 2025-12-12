@@ -4,7 +4,9 @@ from django.shortcuts import redirect
 from django.db.models import Sum, F, Q
 from django.utils import timezone
 from tratamientos.models import Tratamiento, Pago
+from pacientes.models import Paciente
 from datetime import timedelta
+from decimal import Decimal
 
 class FinanzasGroupRequiredMixin(UserPassesTestMixin):
     """Mixin para requerir ser superusuario o del grupo 'Finanzas'"""
@@ -21,30 +23,110 @@ class DashboardReportesView(FinanzasGroupRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         now = timezone.now()
-        # KPI 1: Ingresos Mes Actual (Por rango de fechas para evitar error SQLite)
+        
+        # === CÁLCULOS DE FECHAS ===
         first_day = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-        # Calcular primer día del próximo mes
         if now.month == 12:
             next_month = now.replace(year=now.year+1, month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
         else:
             next_month = now.replace(month=now.month+1, day=1, hour=0, minute=0, second=0, microsecond=0)
-            
+        
+        # Mes anterior
+        last_day_prev_month = first_day - timedelta(microseconds=1)
+        first_day_prev_month = last_day_prev_month.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        
+        # === KPI FINANCIEROS ===
+        # 1. Ingresos Mes Actual
         ingresos_mes = Pago.objects.filter(
             fecha_pago__gte=first_day, 
             fecha_pago__lt=next_month
         ).aggregate(total=Sum('monto'))['total'] or 0
         
-        # KPI 2: Total por Cobrar (Deuda VIVA)
-        # Iteramos en Python ya que estado_pago es una propiedad (@property)
-        tratamientos = Tratamiento.objects.all()
-        deuda_total = 0
+        # 2. Ingresos Mes Anterior
+        ingresos_mes_anterior = Pago.objects.filter(
+            fecha_pago__gte=first_day_prev_month,
+            fecha_pago__lt=first_day
+        ).aggregate(total=Sum('monto'))['total'] or 0
+        
+        # 3. Promedio Ingreso Diario (ingresos del mes / días transcurridos)
+        dias_transcurridos = now.day
+        promedio_diario = ingresos_mes / dias_transcurridos if dias_transcurridos > 0 else 0
+        
+        # 4. Comparativa con mes anterior
+        comparativa_mes = ingresos_mes - ingresos_mes_anterior
+        
+        # 5. Deuda Total y Tasa de Cobro
+        tratamientos = Tratamiento.objects.all().select_related('paciente')
+        deuda_total = Decimal('0')
+        costo_total_todos = Decimal('0')
+        total_pagado_todos = Decimal('0')
+        
+        # Contadores de tratamientos
+        tratamientos_activos = 0
+        tratamientos_completados_mes = 0
+        total_tratamientos = tratamientos.count()
+        
+        # Set para pacientes únicos
+        pacientes_con_deuda_set = set()
+        pacientes_activos_set = set()
+        
         for t in tratamientos:
-            # Opción A: Usar la propiedad deuda directamente
+            costo_total_todos += t.costo_total
+            total_pagado_todos += t.total_pagado
+            
             if t.deuda > 0:
                 deuda_total += t.deuda
-
+                pacientes_con_deuda_set.add(t.paciente.id)
+            
+            if t.estado == 'en_progreso':
+                tratamientos_activos += 1
+                pacientes_activos_set.add(t.paciente.id)
+            
+            if t.estado == 'completado' and t.fecha_fin:
+                if t.fecha_fin >= first_day.date() and t.fecha_fin < next_month.date():
+                    tratamientos_completados_mes += 1
+        
+        # Tasa de cobro (% pagado vs costo total)
+        tasa_cobro = (total_pagado_todos / costo_total_todos * 100) if costo_total_todos > 0 else 0
+        
+        # Tasa de finalización (% completados vs total)
+        tratamientos_completados_total = tratamientos.filter(estado='completado').count()
+        tasa_finalizacion = (tratamientos_completados_total / total_tratamientos * 100) if total_tratamientos > 0 else 0
+        
+        # === KPI PACIENTES ===
+        # Pacientes activos (con tratamientos en progreso)
+        pacientes_activos = len(pacientes_activos_set)
+        
+        # Pacientes con deuda
+        pacientes_con_deuda = len(pacientes_con_deuda_set)
+        
+        # Nuevos pacientes del mes
+        nuevos_pacientes_mes = Paciente.objects.filter(
+            creado_en__gte=first_day,
+            creado_en__lt=next_month
+        ).count()
+        
+        # === CONTEXTO ===
+        # KPIs Originales
         ctx['kpi_ingresos_mes'] = ingresos_mes
         ctx['kpi_deuda_total'] = deuda_total
+        
+        # KPIs Financieros Nuevos
+        ctx['kpi_promedio_diario'] = promedio_diario
+        ctx['kpi_tasa_cobro'] = round(tasa_cobro, 1)
+        ctx['kpi_ingresos_mes_anterior'] = ingresos_mes_anterior
+        ctx['kpi_comparativa_mes'] = comparativa_mes
+        
+        # KPIs Pacientes
+        ctx['kpi_pacientes_activos'] = pacientes_activos
+        ctx['kpi_nuevos_pacientes_mes'] = nuevos_pacientes_mes
+        ctx['kpi_pacientes_con_deuda'] = pacientes_con_deuda
+        
+        # KPIs Tratamientos
+        ctx['kpi_tratamientos_activos'] = tratamientos_activos
+        ctx['kpi_tratamientos_completados_mes'] = tratamientos_completados_mes
+        ctx['kpi_tasa_finalizacion'] = round(tasa_finalizacion, 1)
+        
         return ctx
 
 class ReporteDeudasView(FinanzasGroupRequiredMixin, TemplateView):
