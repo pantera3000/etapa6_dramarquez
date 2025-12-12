@@ -94,9 +94,13 @@ def preparar_datos_webhook(cita, accion, sync_anterior=None):
     Returns:
         dict: Datos formateados para el webhook
     """
+    # Usar cita_id como event_id único para Google Calendar
+    event_id = f"cita-{cita.id}"
+    
     if accion == 'crear':
         return {
             "accion": "crear_evento",
+            "event_id": event_id,  # ID único basado en cita_id
             "cita_id": cita.id,
             "titulo": f"Cita: {cita.paciente.nombre_completo}",
             "descripcion": (
@@ -111,10 +115,9 @@ def preparar_datos_webhook(cita, accion, sync_anterior=None):
         }
     
     elif accion == 'actualizar':
-        event_id = sync_anterior.google_event_id if sync_anterior else None
         return {
             "accion": "actualizar_evento",
-            "event_id": event_id,
+            "event_id": event_id,  # Mismo ID para actualizar
             "cita_id": cita.id,
             "titulo": f"Cita: {cita.paciente.nombre_completo}",
             "descripcion": (
@@ -127,10 +130,9 @@ def preparar_datos_webhook(cita, accion, sync_anterior=None):
         }
     
     elif accion == 'eliminar':
-        event_id = sync_anterior.google_event_id if sync_anterior else None
         return {
             "accion": "eliminar_evento",
-            "event_id": event_id,
+            "event_id": event_id,  # Mismo ID para eliminar
             "cita_id": cita.id
         }
     
@@ -150,6 +152,6 @@ def calcular_fecha_fin(cita):
     from datetime import datetime, timedelta
     
     inicio = datetime.combine(cita.fecha, cita.hora)
-    fin = inicio + timedelta(minutes=30)
+    fin = inicio + timedelta(minutes=getattr(cita, 'duracion_minutos', 30))
     
     return fin.strftime("%Y-%m-%dT%H:%M:00")
