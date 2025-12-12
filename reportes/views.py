@@ -64,6 +64,7 @@ class DashboardReportesView(FinanzasGroupRequiredMixin, TemplateView):
         # Contadores de tratamientos
         tratamientos_activos = 0
         tratamientos_completados_mes = 0
+        tratamientos_listos_completar = 0  # Nuevos: con deuda=0 pero no marcados como completados
         total_tratamientos = tratamientos.count()
         
         # Set para pacientes únicos
@@ -82,16 +83,14 @@ class DashboardReportesView(FinanzasGroupRequiredMixin, TemplateView):
                 tratamientos_activos += 1
                 pacientes_activos_set.add(t.paciente.id)
             
-            # Contar como completado si: estado='completado' O deuda=0 (pagado completamente)
-            if t.estado == 'completado' or t.deuda == 0:
-                # Verificar si fue completado este mes
-                if t.fecha_fin and t.fecha_fin >= first_day.date() and t.fecha_fin < next_month.date():
+            # Contar tratamientos OFICIALMENTE completados este mes
+            if t.estado == 'completado' and t.fecha_fin:
+                if t.fecha_fin >= first_day.date() and t.fecha_fin < next_month.date():
                     tratamientos_completados_mes += 1
-                # Si no tiene fecha_fin pero deuda=0, contar si el último pago fue este mes
-                elif t.deuda == 0 and not t.fecha_fin:
-                    ultimo_pago = t.pagos.order_by('-fecha_pago').first()
-                    if ultimo_pago and ultimo_pago.fecha_pago >= first_day and ultimo_pago.fecha_pago < next_month:
-                        tratamientos_completados_mes += 1
+            
+            # Contar tratamientos listos para completar (deuda=0 pero no marcados)
+            if t.deuda == 0 and t.estado != 'completado':
+                tratamientos_listos_completar += 1
         
         # Tasa de cobro (% pagado vs costo total)
         tasa_cobro = (total_pagado_todos / costo_total_todos * 100) if costo_total_todos > 0 else 0
@@ -132,6 +131,7 @@ class DashboardReportesView(FinanzasGroupRequiredMixin, TemplateView):
         # KPIs Tratamientos
         ctx['kpi_tratamientos_activos'] = tratamientos_activos
         ctx['kpi_tratamientos_completados_mes'] = tratamientos_completados_mes
+        ctx['kpi_tratamientos_listos_completar'] = tratamientos_listos_completar
         ctx['kpi_tasa_finalizacion'] = round(tasa_finalizacion, 1)
         
         return ctx

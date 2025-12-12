@@ -215,15 +215,34 @@
                 </div>
                 <h3 class="fw-bold text-success mb-0">{{ kpi_tratamientos_completados_mes }}</h3>
                 <div class="mt-2 text-muted small">
-                    <i class="bi bi-calendar-check me-1"></i> Finalizados este mes
+                    <i class="bi bi-calendar-check me-1"></i> Oficialmente finalizados
                 </div>
                 <i class="bi bi-check2-all position-absolute display-1 text-success text-opacity-10" style="bottom: -15px; right: -15px;"></i>
             </div>
         </div>
     </div>
 
-    <!-- TASA DE FINALIZACIÓN -->
+    <!-- LISTOS PARA COMPLETAR -->
     <div class="col-md-6 col-lg-4 animate-fade-in-up" style="animation-delay: 0.6s;">
+        <div class="card border-0 shadow-sm h-100 overflow-hidden">
+            <div class="card-body p-4 position-relative">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h6 class="text-uppercase text-muted small fw-bold mb-0">Listos para Completar</h6>
+                    <div class="bg-warning bg-opacity-10 text-warning p-2 rounded-circle">
+                        <i class="bi bi-exclamation-triangle fs-4"></i>
+                    </div>
+                </div>
+                <h3 class="fw-bold text-warning mb-0">{{ kpi_tratamientos_listos_completar }}</h3>
+                <div class="mt-2 text-muted small">
+                    <i class="bi bi-check-circle-fill me-1"></i> Pagados, pendientes de marcar
+                </div>
+                <i class="bi bi-clipboard-check position-absolute display-1 text-warning text-opacity-10" style="bottom: -15px; right: -15px;"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- TASA DE FINALIZACIÓN -->
+    <div class="col-md-6 col-lg-4 animate-fade-in-up" style="animation-delay: 0.65s;">
         <div class="card border-0 shadow-sm h-100 overflow-hidden">
             <div class="card-body p-4 position-relative">
                 <div class="d-flex align-items-center justify-content-between mb-3">

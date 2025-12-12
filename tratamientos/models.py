@@ -86,7 +86,19 @@ class Tratamiento(models.Model):
     # Método save sin lógica de auto-completado
     # El estado se maneja manualmente con botones
 
-
+    @property
+    def porcentaje_pagado(self):
+        """Calcula el porcentaje pagado del tratamiento"""
+        if self.costo_total > 0:
+            return int((self.total_pagado / self.costo_total) * 100)
+        return 0
+    
+    @property
+    def duracion_dias(self):
+        """Calcula la duración del tratamiento en días"""
+        if self.fecha_fin and self.fecha_inicio:
+            return (self.fecha_fin - self.fecha_inicio).days
+        return None
 
     def clase_estado_pago(self):
         if self.estado_pago == 'completado':
