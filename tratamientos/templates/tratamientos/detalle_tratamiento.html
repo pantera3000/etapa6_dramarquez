@@ -80,6 +80,10 @@
                 <a href="{% url 'tratamientos:editar' tratamiento.pk %}" class="btn btn-white border shadow-sm text-dark">
                     <i class="bi bi-pencil"></i>
                 </a>
+                <a href="{% url 'tratamientos:lista' %}" class="btn btn-light border text-muted" 
+                   onclick="if (document.referrer && document.referrer.includes(window.location.host)) { history.back(); return false; }">
+                    <i class="bi bi-arrow-left"></i> Atrás
+                </a>
             </div>
         </div>
 

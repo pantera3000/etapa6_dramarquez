@@ -258,8 +258,6 @@
                         }
                         .table-saas tbody td { vertical-align: middle; padding: 12px 16px; border-bottom: 1px solid #f1f5f9; }
                         .table-saas tbody tr:hover { background-color: #f1f5f9; cursor: pointer; }
-                        .actions-hover { opacity: 0; transition: opacity 0.2s; }
-                        .table-saas tbody tr:hover .actions-hover { opacity: 1; }
                     </style>
 
                     <div class="d-flex justify-content-between align-items-center mb-4 pt-2">
@@ -301,7 +299,7 @@
                                                 <span class="text-muted small">{{ entrada.diagnostico|truncatewords:12|default:"Sin diagnóstico" }}</span>
                                             </td>
                                             <td class="text-end">
-                                                <div class="actions-hover">
+                                                <div class="d-flex gap-1 justify-content-end">
                                                     <a href="{% url 'historias:detalle_entrada' entrada.pk %}" class="btn btn-icon btn-sm text-info bg-light rounded-circle" title="Ver Detalle">
                                                         <i class="bi bi-eye-fill"></i>
                                                     </a>
@@ -449,7 +447,10 @@
                                                 {% endif %}
                                             </td>
                                             <td class="text-end">
-                                                <div class="actions-hover">
+                                                <div class="d-flex gap-1 justify-content-end">
+                                                    <a href="{% url 'tratamientos:crear_pago' t.pk %}" class="btn btn-icon btn-sm text-success bg-light rounded-circle" title="Registrar Pago">
+                                                        <i class="bi bi-cash-coin"></i>
+                                                    </a>
                                                     <a href="{% url 'tratamientos:detalle' t.pk %}" class="btn btn-icon btn-sm text-info bg-light rounded-circle" title="Ver">
                                                         <i class="bi bi-eye-fill"></i>
                                                     </a>
@@ -576,11 +577,11 @@
                                             <td class="text-muted small">{{ nota.contenido|truncatewords:12 }}</td>
                                             <td class="text-muted small">{{ nota.creado_en|date:"d/m/Y" }}</td>
                                             <td class="text-end">
-                                                <div class="actions-hover">
-                                                    <a href="{% url 'notas:detalle' nota.pk %}" class="btn btn-icon btn-sm text-info bg-light rounded-circle"><i class="bi bi-eye-fill"></i></a>
+                                                <div class="d-flex gap-1 justify-content-end">
+                                                    <a href="{% url 'notas:detalle' nota.pk %}" class="btn btn-icon btn-sm text-info bg-light rounded-circle" title="Ver"><i class="bi bi-eye-fill"></i></a>
                                                     <a href="{% url 'notas:eliminar' nota.pk %}" 
                                                        class="btn btn-icon btn-sm text-danger bg-light rounded-circle"
-                                                       onclick="event.stopPropagation(); return confirm('¿Eliminar nota?')">
+                                                       onclick="event.stopPropagation(); return confirm('¿Eliminar nota?')" title="Eliminar">
                                                         <i class="bi bi-trash-fill"></i>
                                                     </a>
                                                 </div>
