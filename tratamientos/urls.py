@@ -14,6 +14,8 @@ urlpatterns = [
     path('<int:pk>/editar/', views.EditarTratamientoView.as_view(), name='editar'),
     path('<int:pk>/eliminar/', views.EliminarTratamientoView.as_view(), name='eliminar'),
     path('<int:pk>/eliminar/', views.EliminarTratamientoView.as_view(), name='eliminar_tratamiento'),
+    path('<int:pk>/marcar-completado/', views.marcar_completado, name='marcar_completado'),
+    path('<int:pk>/iniciar/', views.iniciar_tratamiento, name='iniciar_tratamiento'),
     
     # Pagos
     path('<int:tratamiento_id>/pago/nuevo/', views.CrearPagoView.as_view(), name='crear_pago'),

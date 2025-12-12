@@ -60,6 +60,20 @@
                 <h2 class="mb-0 fw-bold text-dark text-break">{{ tratamiento.nombre }}</h2>
             </div>
             <div class="d-flex gap-2 w-100 w-md-auto justify-content-start justify-content-md-end">
+                {% if tratamiento.estado == 'pendiente' %}
+                <a href="{% url 'tratamientos:iniciar_tratamiento' tratamiento.pk %}" 
+                   class="btn btn-info shadow-sm text-nowrap"
+                   onclick="return confirm('¿Iniciar este tratamiento?')">
+                    <i class="bi bi-play-circle me-1"></i> Iniciar Tratamiento
+                </a>
+                {% endif %}
+                {% if tratamiento.deuda == 0 and tratamiento.estado != 'completado' %}
+                <a href="{% url 'tratamientos:marcar_completado' tratamiento.pk %}" 
+                   class="btn btn-primary shadow-sm text-nowrap"
+                   onclick="return confirm('¿Marcar este tratamiento como completado?')">
+                    <i class="bi bi-check-circle me-1"></i> Marcar como Completado
+                </a>
+                {% endif %}
                 <a href="{% url 'tratamientos:crear_pago' tratamiento.pk %}" class="btn btn-success shadow-sm text-nowrap">
                     <i class="bi bi-cash-coin me-1"></i> Registrar Pago
                 </a>

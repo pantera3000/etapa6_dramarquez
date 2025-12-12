@@ -119,19 +119,6 @@ class CrearTratamientoView(LoginRequiredMixin, CreateView):
             return reverse_lazy('pacientes:detalle', kwargs={'pk': paciente_id}) + '?tratamientos_page=1'
         return reverse_lazy('tratamientos:lista')
 
-def form_valid(self, form):
-    tratamiento = form.save(commit=False)
-    # Actualizar estado basado en fecha_fin
-    if tratamiento.fecha_fin:
-        tratamiento.estado = 'completado'
-    else:
-        # Si no tiene fecha_fin, mantener o ajustar según lógica clínica
-        if tratamiento.estado == 'completado':
-            tratamiento.estado = 'en_progreso'
-    tratamiento.save()
-    messages.success(self.request, "Tratamiento actualizado exitosamente.")
-    return super().form_valid(form)
-
 class EliminarTratamientoView(LoginRequiredMixin, DeleteView):
     model = Tratamiento
     template_name = 'tratamientos/eliminar_tratamiento.html'
@@ -166,15 +153,6 @@ class EditarTratamientoView(LoginRequiredMixin, UpdateView):
         return reverse('tratamientos:detalle', kwargs={'pk': self.object.pk})
 
     def form_valid(self, form):
-        tratamiento = form.save(commit=False)
-        # Actualizar estado basado en fecha_fin
-        if tratamiento.fecha_fin:
-            tratamiento.estado = 'completado'
-        else:
-            # Si no tiene fecha_fin, no debe estar como completado
-            if tratamiento.estado == 'completado':
-                tratamiento.estado = 'en_progreso'
-        tratamiento.save()
         messages.success(self.request, "Tratamiento actualizado exitosamente.")
         return super().form_valid(form)
 
@@ -218,6 +196,39 @@ class EliminarPagoView(LoginRequiredMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         messages.success(request, "Pago eliminado exitosamente.")
         return super().delete(request, *args, **kwargs)
+
+
+# Vista para marcar tratamiento como completado manualmente
+from django.utils import timezone
+
+def marcar_completado(request, pk):
+    """Marca un tratamiento como completado si la deuda es cero"""
+    tratamiento = get_object_or_404(Tratamiento, pk=pk)
+    
+    if tratamiento.deuda == 0:
+        tratamiento.estado = 'completado'
+        if not tratamiento.fecha_fin:
+            tratamiento.fecha_fin = timezone.now().date()
+        tratamiento.save()
+        messages.success(request, f"Tratamiento '{tratamiento.nombre}' marcado como completado.")
+    else:
+        messages.error(request, "No se puede completar un tratamiento con deuda pendiente.")
+    
+    return redirect('tratamientos:detalle', pk=pk)
+
+
+def iniciar_tratamiento(request, pk):
+    """Inicia un tratamiento manualmente (pendiente → en progreso)"""
+    tratamiento = get_object_or_404(Tratamiento, pk=pk)
+    
+    if tratamiento.estado == 'pendiente':
+        tratamiento.estado = 'en_progreso'
+        tratamiento.save()
+        messages.success(request, f"Tratamiento '{tratamiento.nombre}' iniciado.")
+    else:
+        messages.info(request, "El tratamiento ya está en progreso o completado.")
+    
+    return redirect('tratamientos:detalle', pk=pk)
     
 
 

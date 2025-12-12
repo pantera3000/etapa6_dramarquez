@@ -83,11 +83,8 @@ class Tratamiento(models.Model):
         else:
             return 'parcial'
 
-    def save(self, *args, **kwargs):
-        # Actualizar estado automáticamente si se marca fecha_fin
-        if self.fecha_fin and self.estado != 'completado':
-            self.estado = 'completado'
-        super().save(*args, **kwargs)
+    # Método save sin lógica de auto-completado
+    # El estado se maneja manualmente con botones
 
 
 
@@ -156,4 +153,8 @@ class Pago(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        # Actualizar estado del tratamiento al guardar un pago
+        # Auto-cambiar tratamiento a "en progreso" al registrar primer pago
+        if self.tratamiento.estado == 'pendiente':
+            self.tratamiento.estado = 'en_progreso'
+            self.tratamiento.save()
+

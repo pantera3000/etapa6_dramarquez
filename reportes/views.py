@@ -82,9 +82,16 @@ class DashboardReportesView(FinanzasGroupRequiredMixin, TemplateView):
                 tratamientos_activos += 1
                 pacientes_activos_set.add(t.paciente.id)
             
-            if t.estado == 'completado' and t.fecha_fin:
-                if t.fecha_fin >= first_day.date() and t.fecha_fin < next_month.date():
+            # Contar como completado si: estado='completado' O deuda=0 (pagado completamente)
+            if t.estado == 'completado' or t.deuda == 0:
+                # Verificar si fue completado este mes
+                if t.fecha_fin and t.fecha_fin >= first_day.date() and t.fecha_fin < next_month.date():
                     tratamientos_completados_mes += 1
+                # Si no tiene fecha_fin pero deuda=0, contar si el último pago fue este mes
+                elif t.deuda == 0 and not t.fecha_fin:
+                    ultimo_pago = t.pagos.order_by('-fecha_pago').first()
+                    if ultimo_pago and ultimo_pago.fecha_pago >= first_day and ultimo_pago.fecha_pago < next_month:
+                        tratamientos_completados_mes += 1
         
         # Tasa de cobro (% pagado vs costo total)
         tasa_cobro = (total_pagado_todos / costo_total_todos * 100) if costo_total_todos > 0 else 0
