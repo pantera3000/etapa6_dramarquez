@@ -118,8 +118,13 @@
         /* MOBILE STYLES */
         @media (max-width: 767.98px) {
             #sidebar-wrapper {
-                margin-left: -100%; /* Oculto completamente */
-                width: 100%; /* Full width en móvil al abrir */
+                margin-left: -280px; /* Oculto completamente */
+                width: 280px; /* Ancho fijo razonable en móvil */
+                max-width: 85vw; /* Máximo 85% del viewport */
+            }
+            
+            #sidebar-wrapper .list-group {
+                width: 100%; /* Ajustar al contenedor */
             }
             
             #page-content-wrapper {
