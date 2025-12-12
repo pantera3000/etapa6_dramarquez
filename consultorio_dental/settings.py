@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'configuracion',
     'comunicaciones',
     'reportes',
+    'integraciones',  # Módulo de integraciones externas
 ]
 
 MIDDLEWARE = [
