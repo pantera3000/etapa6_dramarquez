@@ -120,6 +120,49 @@
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         max-width: 200px;
     }
+    
+    /* RESPONSIVE MOBILE - Odontograma más pequeño */
+    @media (max-width: 767.98px) {
+        .odontograma-container {
+            padding: 10px 5px;
+        }
+        
+        .tooth-container {
+            width: 32px; /* Reducido de 55px */
+            margin: 2px; /* Reducido de 4px */
+        }
+        
+        .tooth-number {
+            font-size: 8px !important; /* Números más pequeños */
+        }
+        
+        .card-body {
+            padding: 10px !important;
+        }
+        
+        /* Reducir gaps entre dientes */
+        .d-flex.gap-1 {
+            gap: 0.15rem !important;
+        }
+        
+        /* Ajustar padding de columnas */
+        .border-end {
+            padding-right: 0.5rem !important;
+        }
+        .border-start {
+            padding-left: 0.5rem !important;
+        }
+        
+        /* Sidebar panels en móvil */
+        .sidebar-content {
+            padding: 10px;
+        }
+        
+        .tool-btn {
+            padding: 6px 8px;
+            font-size: 0.85rem;
+        }
+    }
 </style>
 
 <div class="container-fluid odontograma-container">
