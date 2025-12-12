@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Detalle de Cita{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1"><i class="bi bi-calendar-check"></i> Detalle de Cita</h2>
+            <p class="text-muted mb-0">Información completa de la cita</p>
+        </div>
+        <a href="{% url 'citas:lista_citas' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- Información Principal -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <h5 class="mb-0">Información de la Cita</h5>
+                        <span class="badge bg-{{ cita.get_estado_color }} px-3 py-2">
+                            <i class="bi {{ cita.get_estado_icono }}"></i>
+                            {{ cita.get_estado_display }}
+                        </span>
+                    </div>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="text-muted small">Fecha</label>
+                            <div class="fw-bold">
+                                <i class="bi bi-calendar"></i> {{ cita.fecha|date:"d/m/Y" }}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="text-muted small">Hora</label>
+                            <div class="fw-bold">
+                                <i class="bi bi-clock"></i> {{ cita.hora|time:"H:i" }} - {{ cita.get_hora_fin|time:"H:i" }}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="text-muted small">Duración</label>
+                            <div class="fw-bold">{{ cita.duracion_minutos }} minutos</div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="text-muted small">Paciente</label>
+                            <div class="fw-bold">
+                                <a href="{% url 'pacientes:detalle' cita.paciente.pk %}" class="text-decoration-none">
+                                    {{ cita.paciente.nombre_completo }}
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label class="text-muted small">Motivo</label>
+                            <div>{{ cita.motivo|default:"Sin motivo especificado" }}</div>
+                        </div>
+                        
+                        {% if cita.notas %}
+                        <div class="col-12">
+                            <label class="text-muted small">Notas</label>
+                            <div class="bg-light p-3 rounded">{{ cita.notas }}</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Acciones -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h6 class="mb-3">Acciones</h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% if cita.estado == 'pendiente' %}
+                        <a href="{% url 'citas:confirmar_cita' cita.pk %}" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Confirmar Cita
+                        </a>
+                        {% endif %}
+                        
+                        {% if cita.estado in 'pendiente,confirmada,en_curso' %}
+                        <a href="{% url 'citas:completar_cita' cita.pk %}" class="btn btn-primary">
+                            <i class="bi bi-check-all"></i> Marcar Completada
+                        </a>
+                        {% endif %}
+                        
+                        {% if cita.puede_editar %}
+                        <a href="{% url 'citas:editar_cita' cita.pk %}" class="btn btn-warning">
+                            <i class="bi bi-pencil"></i> Editar
+                        </a>
+                        {% endif %}
+                        
+                        {% if cita.puede_cancelar %}
+                        <a href="{% url 'citas:eliminar_cita' cita.pk %}" class="btn btn-danger">
+                            <i class="bi bi-x-circle"></i> Cancelar Cita
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Información del Paciente -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h6 class="mb-3">Información del Paciente</h6>
+                    <div class="text-center mb-3">
+                        <div class="avatar-circle mx-auto mb-2" style="width: 80px; height: 80px; font-size: 2rem;">
+                            {{ cita.paciente.nombre_completo|slice:":2"|upper }}
+                        </div>
+                        <h5 class="mb-1">{{ cita.paciente.nombre_completo }}</h5>
+                    </div>
+                    
+                    <div class="mb-2">
+                        <i class="bi bi-telephone text-muted"></i>
+                        <a href="tel:{{ cita.paciente.telefono }}" class="text-decoration-none ms-2">
+                            {{ cita.paciente.telefono }}
+                        </a>
+                    </div>
+                    
+                    {% if cita.paciente.email %}
+                    <div class="mb-2">
+                        <i class="bi bi-envelope text-muted"></i>
+                        <a href="mailto:{{ cita.paciente.email }}" class="text-decoration-none ms-2">
+                            {{ cita.paciente.email }}
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mt-3">
+                        <a href="{% url 'pacientes:detalle' cita.paciente.pk %}" class="btn btn-sm btn-outline-primary w-100">
+                            Ver Perfil Completo
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Metadata -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h6 class="mb-3">Información Adicional</h6>
+                    <div class="small text-muted">
+                        <div class="mb-2">
+                            <strong>Creada:</strong><br>
+                            {{ cita.fecha_creacion|date:"d/m/Y H:i" }}
+                        </div>
+                        {% if cita.creado_por %}
+                        <div class="mb-2">
+                            <strong>Por:</strong> {{ cita.creado_por.get_full_name|default:cita.creado_por.username }}
+                        </div>
+                        {% endif %}
+                        <div>
+                            <strong>Última modificación:</strong><br>
+                            {{ cita.ultima_modificacion|date:"d/m/Y H:i" }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

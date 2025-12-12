@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Editar Cita{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1"><i class="bi bi-pencil"></i> Editar Cita</h2>
+            <p class="text-muted mb-0">{{ cita.paciente.nombre_completo }} - {{ cita.fecha|date:"d/m/Y" }}</p>
+        </div>
+        <a href="{% url 'citas:lista_citas' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver
+        </a>
+    </div>
+
+    <!-- Formulario -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        {% if form.errors %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <strong>Error:</strong> Por favor corrige los errores a continuación.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="row g-3">
+                            <!-- Paciente -->
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Paciente *</label>
+                                {{ form.paciente }}
+                                {% if form.paciente.errors %}
+                                <div class="text-danger small mt-1">{{ form.paciente.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Fecha y Hora -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Fecha *</label>
+                                {{ form.fecha }}
+                                {% if form.fecha.errors %}
+                                <div class="text-danger small mt-1">{{ form.fecha.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Hora *</label>
+                                {{ form.hora }}
+                                {% if form.hora.errors %}
+                                <div class="text-danger small mt-1">{{ form.hora.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Duración y Estado -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Duración (minutos)</label>
+                                {{ form.duracion_minutos }}
+                                {% if form.duracion_minutos.errors %}
+                                <div class="text-danger small mt-1">{{ form.duracion_minutos.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Estado</label>
+                                {{ form.estado }}
+                                {% if form.estado.errors %}
+                                <div class="text-danger small mt-1">{{ form.estado.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Motivo -->
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Motivo de la Cita</label>
+                                {{ form.motivo }}
+                                {% if form.motivo.errors %}
+                                <div class="text-danger small mt-1">{{ form.motivo.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Notas -->
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Notas Adicionales</label>
+                                {{ form.notas }}
+                                {% if form.notas.errors %}
+                                <div class="text-danger small mt-1">{{ form.notas.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger mt-3">
+                            {{ form.non_field_errors }}
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Botones -->
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Guardar Cambios
+                            </button>
+                            <a href="{% url 'citas:lista_citas' %}" class="btn btn-secondary">
+                                Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

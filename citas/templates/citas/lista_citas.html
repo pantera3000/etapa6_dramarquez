@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gestión de Citas{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    
+    <!-- Header con estadísticas -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1"><i class="bi bi-calendar-check"></i> Gestión de Citas</h2>
+            <p class="text-muted mb-0">Administra todas las citas del consultorio</p>
+        </div>
+        <a href="{% url 'citas:crear_cita' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nueva Cita
+        </a>
+    </div>
+
+    <!-- Mini-KPIs -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center py-3">
+                    <i class="bi bi-calendar3 text-primary fs-3 mb-1"></i>
+                    <h4 class="mb-0 fw-bold">{{ total_citas }}</h4>
+                    <small class="text-muted">Total Citas</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center py-3">
+                    <i class="bi bi-calendar-day text-success fs-3 mb-1"></i>
+                    <h4 class="mb-0 fw-bold text-success">{{ citas_hoy }}</h4>
+                    <small class="text-muted">Citas Hoy</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center py-3">
+                    <i class="bi bi-clock text-warning fs-3 mb-1"></i>
+                    <h4 class="mb-0 fw-bold text-warning">{{ citas_pendientes }}</h4>
+                    <small class="text-muted">Pendientes</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center py-3">
+                    <i class="bi bi-check-circle text-info fs-3 mb-1"></i>
+                    <h4 class="mb-0 fw-bold text-info">{{ citas_confirmadas }}</h4>
+                    <small class="text-muted">Confirmadas</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    {{ filtros_form.fecha_desde }}
+                </div>
+                <div class="col-md-3">
+                    {{ filtros_form.fecha_hasta }}
+                </div>
+                <div class="col-md-3">
+                    {{ filtros_form.paciente }}
+                </div>
+                <div class="col-md-2">
+                    {{ filtros_form.estado }}
+                </div>
+                <div class="col-md-1">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lista de Citas -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            
+            <!-- Desktop View -->
+            <div class="table-responsive d-none d-md-block">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 15%;">Fecha/Hora</th>
+                            <th style="width: 25%;">Paciente</th>
+                            <th style="width: 25%;">Motivo</th>
+                            <th style="width: 15%;">Estado</th>
+                            <th style="width: 10%;">Duración</th>
+                            <th class="text-end" style="width: 10%;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cita in citas %}
+                        <tr style="cursor: pointer;" onclick="window.location='{% url 'citas:detalle_cita' cita.pk %}'">
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-bold">{{ cita.fecha|date:"d/m/Y" }}</span>
+                                    <small class="text-muted">{{ cita.hora|time:"H:i" }}</small>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle avatar-circle-sm me-2" 
+                                         style="background-color: {{ cita.paciente.nombre_completo|slice:":1"|lower|default:"#6c757d" }};">
+                                        {{ cita.paciente.nombre_completo|slice:":2"|upper }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">{{ cita.paciente.nombre_completo }}</div>
+                                        <small class="text-muted">{{ cita.paciente.telefono }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span>{{ cita.motivo|default:"Sin motivo especificado" }}</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-{{ cita.get_estado_color }} px-3 py-2">
+                                    <i class="bi {{ cita.get_estado_icono }}"></i>
+                                    {{ cita.get_estado_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="text-muted">{{ cita.duracion_minutos }} min</span>
+                            </td>
+                            <td class="text-end" onclick="event.stopPropagation()">
+                                <div class="btn-group btn-group-sm">
+                                    {% if cita.estado == 'pendiente' %}
+                                    <a href="{% url 'citas:confirmar_cita' cita.pk %}" 
+                                       class="btn btn-sm btn-success" title="Confirmar">
+                                        <i class="bi bi-check"></i>
+                                    </a>
+                                    {% endif %}
+                                    {% if cita.puede_editar %}
+                                    <a href="{% url 'citas:editar_cita' cita.pk %}" 
+                                       class="btn btn-sm btn-warning" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    {% endif %}
+                                    {% if cita.puede_cancelar %}
+                                    <a href="{% url 'citas:eliminar_cita' cita.pk %}" 
+                                       class="btn btn-sm btn-danger" title="Cancelar">
+                                        <i class="bi bi-x"></i>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="bi bi-calendar-x fs-1 d-block mb-2"></i>
+                                No hay citas registradas
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Mobile View -->
+            <div class="d-md-none p-3">
+                {% for cita in citas %}
+                <div class="card mb-3 shadow-sm" onclick="window.location='{% url 'citas:detalle_cita' cita.pk %}'" style="cursor: pointer;">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="mb-0 fw-bold">{{ cita.paciente.nombre_completo }}</h6>
+                            <span class="badge bg-{{ cita.get_estado_color }}">
+                                {{ cita.get_estado_display }}
+                            </span>
+                        </div>
+                        <div class="text-muted small mb-2">
+                            <i class="bi bi-calendar"></i> {{ cita.fecha|date:"d/m/Y" }} 
+                            <i class="bi bi-clock ms-2"></i> {{ cita.hora|time:"H:i" }}
+                        </div>
+                        <div class="text-muted small">
+                            {{ cita.motivo|default:"Sin motivo" }}
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-5 text-muted">
+                    <i class="bi bi-calendar-x fs-1 d-block mb-2"></i>
+                    No hay citas registradas
+                </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Paginación -->
+    {% if is_paginated %}
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+            </li>
+            {% endif %}
+            
+            <li class="page-item active">
+                <span class="page-link">{{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+            </li>
+            
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+</div>
+{% endblock %}
