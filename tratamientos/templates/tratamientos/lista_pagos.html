@@ -52,6 +52,83 @@
             </form>
         </div>
 
+        <!-- Mini-KPIs Statistics Header -->
+        <div class="row g-3 mb-4">
+            <!-- Total Pagos -->
+            <div class="col-lg col-md-4 col-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center py-3">
+                        <i class="bi bi-receipt text-primary fs-3 mb-1"></i>
+                        <h4 class="mb-0 fw-bold">{{ total_pagos }}</h4>
+                        <small class="text-muted">Total Pagos</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Monto Este Mes -->
+            <div class="col-lg col-md-4 col-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center py-3">
+                        <i class="bi bi-calendar-check text-success fs-3 mb-1"></i>
+                        <h4 class="mb-0 fw-bold text-success">S/ {{ monto_este_mes|floatformat:2 }}</h4>
+                        <small class="text-muted">Monto Este Mes</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Promedio por Pago -->
+            <div class="col-lg col-md-4 col-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center py-3">
+                        <i class="bi bi-graph-up text-info fs-3 mb-1"></i>
+                        <h4 class="mb-0 fw-bold text-info">S/ {{ promedio_pago|floatformat:2 }}</h4>
+                        <small class="text-muted">Promedio por Pago</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Método Más Usado -->
+            <div class="col-lg col-md-6 col-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center py-3">
+                        {% if metodo_mas_usado == 'efectivo' %}
+                            <i class="bi bi-cash text-warning fs-3 mb-1"></i>
+                        {% elif metodo_mas_usado == 'yape' or metodo_mas_usado == 'plin' %}
+                            <i class="bi bi-phone text-purple fs-3 mb-1"></i>
+                        {% elif metodo_mas_usado == 'transferencia' %}
+                            <i class="bi bi-bank text-primary fs-3 mb-1"></i>
+                        {% elif metodo_mas_usado == 'tarjeta' %}
+                            <i class="bi bi-credit-card text-danger fs-3 mb-1"></i>
+                        {% else %}
+                            <i class="bi bi-wallet2 text-secondary fs-3 mb-1"></i>
+                        {% endif %}
+                        <h5 class="mb-0 fw-bold">{{ metodo_mas_usado_display }}</h5>
+                        <small class="text-muted">Método Más Usado</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- vs Mes Anterior -->
+            <div class="col-lg col-md-6 col-12">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center py-3">
+                        {% if diferencia_mes >= 0 %}
+                            <i class="bi bi-arrow-up-circle text-success fs-3 mb-1"></i>
+                            <h4 class="mb-0 fw-bold text-success">
+                                +{{ porcentaje_cambio|floatformat:1 }}%
+                            </h4>
+                        {% else %}
+                            <i class="bi bi-arrow-down-circle text-danger fs-3 mb-1"></i>
+                            <h4 class="mb-0 fw-bold text-danger">
+                                {{ porcentaje_cambio|floatformat:1 }}%
+                            </h4>
+                        {% endif %}
+                        <small class="text-muted">vs Mes Anterior</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Lista de pagos - Responsive (Rediseño SaaS) -->
         <div class="bg-white rounded-3 shadow-sm border overflow-hidden">
             <!-- Estilos Inline (Consistente para evitar caché) -->
@@ -72,10 +149,12 @@
                 .table-saas tbody td {
                     vertical-align: middle; padding: 12px 16px; border-bottom: 1px solid #f1f5f9;
                 }
-                .table-saas tbody tr { transition: background-color 0.15s ease-in-out; }
+                .table-saas tbody tr { transition: all 0.2s ease-in-out; }
                 .table-saas tbody tr:hover {
-                    background-color: #cbd5e1 !important; /* Gris oscuro para hover visible */
+                    background-color: #f8fafc !important;
                     cursor: pointer;
+                    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+                    transform: translateY(-2px);
                 }
                 
                 /* --- Typography --- */
@@ -84,8 +163,7 @@
                 .text-meta { font-size: 0.85rem; color: #64748b; }
                 
                 /* --- Actions --- */
-                .actions-group { opacity: 0.4; transition: opacity 0.2s; }
-                .table-saas tbody tr:hover .actions-group { opacity: 1; }
+                .actions-group { opacity: 1; display: flex; gap: 0.25rem; justify-content: flex-end; }
 
                 /* --- Mobile Cards --- */
                 .card-mobile-saas {
@@ -103,10 +181,10 @@
                         <table class="table table-saas mb-0">
                             <thead>
                                 <tr>
-                                    <th>Paciente / Tratamiento</th>
-                                    <th>Monto / Método</th>
-                                    <th>Fecha</th>
-                                    <th class="text-end">Acciones</th>
+                                    <th style="width: 45%;">Paciente / Tratamiento</th>
+                                    <th style="width: 25%;">Monto / Método</th>
+                                    <th style="width: 15%;">Fecha</th>
+                                    <th class="text-end" style="width: 15%;">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -132,8 +210,21 @@
                                     <!-- Monto & Método -->
                                     <td>
                                         <div class="d-flex flex-column">
-                                            <span class="text-amount-lg">S/ {{ pago.monto }}</span>
-                                            <span class="badge bg-light text-dark border align-self-start">{{ pago.get_metodo_pago_display }}</span>
+                                            <span class="text-amount-lg">S/ {{ pago.monto|floatformat:2 }}</span>
+                                            <span class="badge bg-light text-dark border align-self-start mt-1">
+                                                {% if pago.metodo_pago == 'efectivo' %}
+                                                    <i class="bi bi-cash"></i>
+                                                {% elif pago.metodo_pago == 'yape' or pago.metodo_pago == 'plin' %}
+                                                    <i class="bi bi-phone"></i>
+                                                {% elif pago.metodo_pago == 'transferencia' %}
+                                                    <i class="bi bi-bank"></i>
+                                                {% elif pago.metodo_pago == 'tarjeta' %}
+                                                    <i class="bi bi-credit-card"></i>
+                                                {% else %}
+                                                    <i class="bi bi-wallet2"></i>
+                                                {% endif %}
+                                                {{ pago.get_metodo_pago_display }}
+                                            </span>
                                         </div>
                                     </td>
                                     

@@ -103,6 +103,46 @@
             {% endif %}
         </div>
 
+        <!-- Mini-KPIs Statistics Header -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3 col-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-clipboard2-pulse text-primary fs-2 mb-2"></i>
+                        <h3 class="mb-0 fw-bold">{{ total_tratamientos }}</h3>
+                        <small class="text-muted">Total Tratamientos</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-arrow-repeat text-info fs-2 mb-2"></i>
+                        <h3 class="mb-0 fw-bold text-info">{{ tratamientos_activos }}</h3>
+                        <small class="text-muted">En Progreso</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-check-circle-fill text-success fs-2 mb-2"></i>
+                        <h3 class="mb-0 fw-bold text-success">{{ tratamientos_completados }}</h3>
+                        <small class="text-muted">Completados</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-exclamation-circle text-danger fs-2 mb-2"></i>
+                        <h3 class="mb-0 fw-bold text-danger">S/ {{ deuda_total|floatformat:2 }}</h3>
+                        <small class="text-muted">Deuda Total</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Tarjeta de tabla -->
         <!-- Lista de tratamientos - Responsive (Rediseño SaaS) -->
         <div class="bg-white rounded-3 shadow-sm border overflow-hidden">
@@ -124,10 +164,12 @@
                 .table-saas tbody td {
                     vertical-align: middle; padding: 12px 16px; border-bottom: 1px solid #f1f5f9;
                 }
-                .table-saas tbody tr { transition: background-color 0.15s ease-in-out; }
+                .table-saas tbody tr { transition: all 0.2s ease-in-out; }
                 .table-saas tbody tr:hover {
-                    background-color: #cbd5e1 !important; /* Gris más fuerte para feedback visual claro */
+                    background-color: #f8fafc !important;
                     cursor: pointer;
+                    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+                    transform: translateY(-2px);
                 }
                 
                 /* --- Typography --- */
@@ -139,8 +181,7 @@
                 .badge-saas { font-weight: 500; padding: 0.35em 0.65em; font-size: 0.75em; border-radius: 6px; }
                 
                 /* --- Actions --- */
-                .actions-group { opacity: 0.4; transition: opacity 0.2s; }
-                .table-saas tbody tr:hover .actions-group { opacity: 1; }
+                .actions-group { opacity: 1; display: flex; gap: 0.25rem; justify-content: flex-end; }
 
                 /* --- Mobile Cards --- */
                 .card-mobile-saas {
@@ -158,11 +199,11 @@
                         <table class="table table-saas mb-0">
                             <thead>
                                 <tr>
-                                    <th>Tratamiento / Paciente</th>
-                                    <th>Fechas</th>
-                                    <th>Estado</th>
-                                    <th>Finanzas</th>
-                                    <th class="text-end">Acciones</th>
+                                    <th style="width: 30%;">Tratamiento / Paciente</th>
+                                    <th style="width: 15%;">Fechas</th>
+                                    <th style="width: 15%;">Estado</th>
+                                    <th style="width: 25%;">Progreso de Pago</th>
+                                    <th class="text-end" style="width: 15%;">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -202,30 +243,56 @@
                                     <!-- Estado -->
                                     <td>
                                         <div class="d-flex flex-column align-items-start">
-                                            <span class="badge bg-{{ t.clase_estado_pago }} badge-saas mb-1">
-                                                {% if t.estado_pago == 'completado' %}Pagado
-                                                {% elif t.estado_pago == 'parcial' %}Parcial
-                                                {% else %}Sin pago{% endif %}
+                                            <span class="badge bg-{{ t.clase_estado }} badge-saas mb-1 px-3 py-2">
+                                                {% if t.estado == 'pendiente' %}
+                                                    <i class="bi bi-hourglass"></i>
+                                                {% elif t.estado == 'en_progreso' %}
+                                                    <i class="bi bi-arrow-repeat"></i>
+                                                {% else %}
+                                                    <i class="bi bi-check-circle-fill"></i>
+                                                {% endif %}
+                                                {{ t.get_estado_display }}
                                             </span>
-                                            <small class="text-muted" style="font-size: 0.75rem;">{{ t.get_estado_display }}</small>
+                                            {% if t.deuda == 0 and t.estado != 'completado' %}
+                                                <small class="badge bg-warning bg-opacity-10 text-warning border border-warning mt-1">
+                                                    <i class="bi bi-exclamation-triangle"></i> Listo
+                                                </small>
+                                            {% endif %}
                                         </div>
                                     </td>
                                     
-                                    <!-- Finanzas -->
+                                    <!-- Progreso de Pago -->
                                     <td>
-                                        <div class="d-flex flex-column text-end" style="width: fit-content;">
-                                            <span class="text-amount">S/ {{ t.costo_total }}</span>
-                                            {% if t.deuda > 0 %}
-                                                <small class="text-danger fw-bold" style="font-size: 0.75rem;">Debe: S/ {{ t.deuda }}</small>
-                                            {% else %}
-                                                <small class="text-success" style="font-size: 0.75rem;"><i class="bi bi-check-circle-fill"></i> Al día</small>
-                                            {% endif %}
+                                        <div class="d-flex flex-column">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <span class="fw-bold text-dark font-monospace small">S/ {{ t.total_pagado|floatformat:2 }}</span>
+                                                <span class="text-muted small">de S/ {{ t.costo_total|floatformat:2 }}</span>
+                                            </div>
+                                            <div class="progress" style="height: 6px;">
+                                                <div class="progress-bar {% if t.porcentaje_pagado >= 100 %}bg-success{% elif t.porcentaje_pagado >= 50 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                                     role="progressbar" 
+                                                     style="width: {{ t.porcentaje_pagado }}%;">
+                                                </div>
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center mt-1">
+                                                <small class="{% if t.deuda > 0 %}text-danger fw-bold{% else %}text-success{% endif %}">
+                                                    {% if t.deuda > 0 %}
+                                                        <i class="bi bi-exclamation-circle"></i> Debe: S/ {{ t.deuda|floatformat:2 }}
+                                                    {% else %}
+                                                        <i class="bi bi-check-circle-fill"></i> Pagado
+                                                    {% endif %}
+                                                </small>
+                                                <small class="text-muted">{{ t.porcentaje_pagado }}%</small>
+                                            </div>
                                         </div>
                                     </td>
                                     
                                     <!-- Acciones -->
                                     <td class="text-end" onclick="event.stopPropagation()">
                                         <div class="actions-group">
+                                            <a href="{% url 'tratamientos:crear_pago' t.pk %}" class="btn btn-icon btn-sm text-success bg-light rounded-circle" title="Registrar Pago">
+                                                <i class="bi bi-cash-coin"></i>
+                                            </a>
                                             <a href="{% url 'tratamientos:detalle' t.pk %}" class="btn btn-icon btn-sm text-info btn-light rounded-circle" title="Ver Detalle">
                                                 <i class="bi bi-eye-fill"></i>
                                             </a>

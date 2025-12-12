@@ -83,6 +83,13 @@ class ListaTratamientosView(LoginRequiredMixin, ListView):
         context['this_month_start'] = hoy.replace(day=1).strftime('%Y-%m-%d')
         context['this_month_end'] = hoy.strftime('%Y-%m-%d')
         
+        # Estadísticas para mini-KPIs
+        queryset = self.get_queryset()
+        context['total_tratamientos'] = queryset.count()
+        context['tratamientos_activos'] = queryset.filter(estado='en_progreso').count()
+        context['tratamientos_completados'] = queryset.filter(estado='completado').count()
+        context['deuda_total'] = sum(t.deuda for t in queryset)
+        
         return context
 
 
@@ -273,5 +280,71 @@ class ListaPagosView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Para el filtro por paciente (opcional: podrías usar un select con pacientes)
+        
+        # Estadísticas para mini-KPIs
+        from datetime import date
+        import calendar
+        from collections import Counter
+        
+        queryset = self.get_queryset()
+        hoy = date.today()
+        
+        # Total pagos
+        context['total_pagos'] = queryset.count()
+        
+        # Monto total
+        context['monto_total'] = sum(p.monto for p in queryset)
+        
+        # Promedio por pago
+        context['promedio_pago'] = context['monto_total'] / context['total_pagos'] if context['total_pagos'] > 0 else 0
+        
+        # Monto este mes
+        primer_dia_mes = hoy.replace(day=1)
+        pagos_este_mes = queryset.filter(fecha_pago__gte=primer_dia_mes)
+        context['monto_este_mes'] = sum(p.monto for p in pagos_este_mes)
+        
+        # Monto mes anterior
+        if hoy.month == 1:
+            mes_anterior = 12
+            anio_anterior = hoy.year - 1
+        else:
+            mes_anterior = hoy.month - 1
+            anio_anterior = hoy.year
+        
+        primer_dia_mes_anterior = date(anio_anterior, mes_anterior, 1)
+        ultimo_dia_mes_anterior = date(anio_anterior, mes_anterior, calendar.monthrange(anio_anterior, mes_anterior)[1])
+        pagos_mes_anterior = queryset.filter(fecha_pago__gte=primer_dia_mes_anterior, fecha_pago__lte=ultimo_dia_mes_anterior)
+        monto_mes_anterior = sum(p.monto for p in pagos_mes_anterior)
+        
+        # Comparativa vs mes anterior
+        context['monto_mes_anterior'] = monto_mes_anterior
+        if monto_mes_anterior > 0:
+            diferencia = context['monto_este_mes'] - monto_mes_anterior
+            context['diferencia_mes'] = diferencia
+            context['porcentaje_cambio'] = (diferencia / monto_mes_anterior) * 100
+        else:
+            context['diferencia_mes'] = context['monto_este_mes']
+            context['porcentaje_cambio'] = 100 if context['monto_este_mes'] > 0 else 0
+        
+        # Método más usado
+        metodos = [p.metodo_pago for p in queryset if p.metodo_pago]
+        if metodos:
+            metodo_counter = Counter(metodos)
+            metodo_mas_usado = metodo_counter.most_common(1)[0]
+            context['metodo_mas_usado'] = metodo_mas_usado[0]
+            context['metodo_mas_usado_count'] = metodo_mas_usado[1]
+            # Obtener display name
+            metodo_display = {
+                'efectivo': 'Efectivo',
+                'yape': 'Yape',
+                'plin': 'Plin',
+                'transferencia': 'Transferencia',
+                'tarjeta': 'Tarjeta',
+                'otro': 'Otro'
+            }
+            context['metodo_mas_usado_display'] = metodo_display.get(context['metodo_mas_usado'], context['metodo_mas_usado'])
+        else:
+            context['metodo_mas_usado'] = None
+            context['metodo_mas_usado_display'] = 'N/A'
+        
         return context
