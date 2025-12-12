@@ -259,7 +259,9 @@
                 <!-- VISTA MÓVIL (Compact Cards) -->
                 <div class="d-md-none p-3 bg-light">
                     {% for pago in pagos %}
-                    <div class="card-mobile-saas p-3 mb-2 d-flex align-items-center shadow-sm">
+                    <div class="card-mobile-saas p-3 mb-2 d-flex align-items-center shadow-sm"
+                         onclick="window.location='{% url 'tratamientos:detalle' pago.tratamiento.pk %}'"
+                         style="cursor: pointer;">
                         
                         <!-- Avatar -->
                         <div class="avatar-circle avatar-circle-sm me-3" style="background-color: {{ pago.tratamiento.paciente.nombre_completo|avatar_color }};">
@@ -284,7 +286,7 @@
                         <div class="ms-3 d-flex flex-column gap-2">
                              <a href="{% url 'tratamientos:eliminar_pago' pago.pk %}" 
                                 class="text-danger"
-                                onclick="return confirm('¿Eliminar este pago?')">
+                                onclick="event.stopPropagation(); return confirm('¿Eliminar este pago?')">
                                  <i class="bi bi-trash"></i>
                              </a>
                         </div>
