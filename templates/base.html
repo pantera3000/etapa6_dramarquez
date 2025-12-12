@@ -22,19 +22,23 @@
             background-color: #f8f9fa;
         }
 
-        /* SIDEBAR STYLES */
+        /* SIDEBAR STYLES - OPTIMIZADO CON HARDWARE ACCELERATION */
         #sidebar-wrapper {
             min-height: 100vh;
-            margin-left: -var(--sidebar-width);
             width: var(--sidebar-width);
             position: fixed;
             z-index: 1000;
-            transition: margin 0.25s ease-out, width 0.25s ease-out;
             top: 0;
             bottom: 0;
             left: 0;
             display: flex;
             flex-direction: column;
+            /* Hardware acceleration */
+            transform: translateX(-100%);
+            will-change: transform;
+            transition: transform 0.15s ease-out, width 0.15s ease-out;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
         }
 
         #sidebar-wrapper .sidebar-heading {
@@ -45,34 +49,36 @@
 
         #sidebar-wrapper .list-group {
             width: var(--sidebar-width);
+            transition: width 0.15s ease-out;
         }
 
-        /* CONTENIDO PRINCIPAL */
+        /* CONTENIDO PRINCIPAL - OPTIMIZADO */
         #page-content-wrapper {
             width: 100%;
-            transition: margin 0.25s ease-out;
             margin-left: 0;
-            padding-top: var(--topbar-height); /* Espacio para el topbar móvil */
+            padding-top: var(--topbar-height);
+            transition: margin-left 0.15s ease-out;
+            will-change: margin-left;
         }
 
         /* DESKTOP TOGGLED (EXPANDIDO) */
         body.sb-sidenav-toggled #sidebar-wrapper {
-            margin-left: 0;
+            transform: translateX(0);
         }
         
         body.sb-sidenav-toggled #page-content-wrapper {
             margin-left: var(--sidebar-width);
         }
 
-        /* DESKTOP COLLAPSED (SOLO ICONOS) - Nueva lógica 'mini-sidebar' */
+        /* DESKTOP COLLAPSED (SOLO ICONOS) */
         @media (min-width: 768px) {
             #sidebar-wrapper {
-                margin-left: 0; /* Siempre visible en desktop */
+                transform: translateX(0); /* Siempre visible en desktop */
             }
 
             #page-content-wrapper {
                 margin-left: var(--sidebar-width);
-                padding-top: 0; /* No necesitamos padding top en desktop si no hay navbar fija arriba del todo */
+                padding-top: 0;
             }
 
             /* Clase para colapsar a mini-sidebar */
@@ -111,36 +117,51 @@
                 margin-right: 0 !important;
                 font-size: 1.5rem;
             }
-            
-            /* Tooltip on hover para items colapsados (opcional, avanzado) */
         }
         
-        /* MOBILE STYLES */
+        /* MOBILE STYLES - SIN TRANSICIONES PARA VELOCIDAD MÁXIMA */
         @media (max-width: 767.98px) {
             #sidebar-wrapper {
-                margin-left: -280px; /* Oculto completamente */
-                width: 280px; /* Ancho fijo razonable en móvil */
-                max-width: 85vw; /* Máximo 85% del viewport */
+                width: 280px;
+                max-width: 85vw;
+                /* Eliminar transiciones en móvil para respuesta instantánea */
+                transition: none !important;
             }
             
             #sidebar-wrapper .list-group {
-                width: 100%; /* Ajustar al contenedor */
+                width: 100%;
+                transition: none !important;
             }
             
             #page-content-wrapper {
                 min-width: 100vw;
                 margin-left: 0;
+                padding-top: 16px; /* Reducir espacio superior en móvil */
+                transition: none !important;
             }
             
             body.sb-sidenav-toggled #sidebar-wrapper {
-                margin-left: 0;
+                transform: translateX(0);
+            }
+            
+            /* Simplificar estilos en móvil */
+            .sidebar-heading,
+            .list-group-item {
+                -webkit-tap-highlight-color: transparent;
+            }
+            
+            /* Reducir padding del navbar en móvil */
+            .navbar {
+                padding-left: 0.75rem !important;
+                padding-right: 0.75rem !important;
+                min-height: 56px;
             }
         }
 
-        /* GLOBAL STYLES IMPORTADOS */
+        /* GLOBAL STYLES */
         .toast-container { z-index: 1060; }
         
-        /* Custom Scrollbar */
+        /* Custom Scrollbar - Simplificado */
         .custom-scrollbar::-webkit-scrollbar { width: 5px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 5px; }
@@ -151,7 +172,7 @@
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
-<body class="sb-sidenav-toggled"> <!-- Clase inicial para Desktop Expandido -->
+<body> <!-- La clase inicial se establece via JavaScript según el dispositivo -->
 
     <div class="d-flex" id="wrapper">
         <!-- Sidebar -->
@@ -162,30 +183,81 @@
             
             <!-- Top Navigation (Mobile Toggle + User Menu Desktop) -->
             <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom px-3 h-100 d-flex justify-content-between align-items-center" style="max-height: var(--topbar-height);">
-                <div class="d-flex align-items-center gap-3">
-                    <!-- Toggle Mobile -->
-                    <button class="btn btn-primary d-md-none" id="sidebarToggleMobile">
-                        <i class="bi bi-list"></i>
-                    </button>
-                    <!-- Toggle Desktop (Collapse) -->
-                    <button class="btn btn-outline-secondary d-none d-md-block" id="sidebarToggleDesktop">
-                        <i class="bi bi-list"></i>
+                <!-- MOBILE LAYOUT -->
+                <div class="d-flex d-md-none align-items-center justify-content-between w-100">
+                    <!-- Left: Menu Button -->
+                    <button class="btn btn-primary" id="sidebarToggleMobile" style="padding: 0.4rem 0.6rem;">
+                        <i class="bi bi-list fs-5"></i>
                     </button>
                     
-                    <!-- Título dinámico (opcional) o Breadcrumb -->
-                    <h5 class="m-0 text-muted d-none d-md-block">{% block page_title %}{% endblock %}</h5>
+                    <!-- Center: Logo/Nombre (Ocupa todo el espacio disponible) -->
+                    <div class="d-flex align-items-center gap-2 flex-grow-1 justify-content-center px-2" style="min-width: 0;">
+                        {% if config.logo %}
+                            <img src="{{ config.logo.url }}" alt="Logo" style="height: 28px; width: auto; object-fit: contain; flex-shrink: 0;">
+                        {% else %}
+                            <span style="font-size: 1.4rem; flex-shrink: 0;">🦷</span>
+                        {% endif %}
+                        <span class="fw-bold" style="
+                            font-size: clamp(0.8rem, 4vw, 1.1rem);
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            max-width: 100%;
+                        ">{{ config.nombre_consultorio|default:"Consultorio" }}</span>
+                    </div>
+                    
+                    <!-- Right: User Icon -->
+                    <div class="d-flex align-items-center">
+                        <!-- User Dropdown -->
+                        <div class="dropdown">
+                            <button class="btn btn-link p-1 dropdown-toggle" type="button" id="dropdownUserMobile" data-bs-toggle="dropdown" aria-expanded="false" style="text-decoration: none;">
+                                <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 0.9rem;">
+                                    {{ user.username|first|upper }}
+                                </div>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownUserMobile">
+                                <li><h6 class="dropdown-header">{{ user.username }}</h6></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Perfil</a></li>
+                                <li><a class="dropdown-item" href="{% url 'usuarios:logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</a></li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
                 
-                <!-- Acciones Topbar -->
-                <div class="d-flex align-items-center">
-                    <span class="text-muted small me-2 d-none d-md-block">
-                        {% now "l, d F Y" %}
-                    </span>
+                <!-- DESKTOP LAYOUT -->
+                <div class="d-none d-md-flex align-items-center gap-3 w-100 justify-content-between">
+                    <div class="d-flex align-items-center gap-3">
+                        <!-- Toggle Desktop (Collapse) -->
+                        <button class="btn btn-outline-secondary" id="sidebarToggleDesktop">
+                            <i class="bi bi-list"></i>
+                        </button>
+                        
+                        <!-- Título dinámico (opcional) o Breadcrumb -->
+                        <h5 class="m-0 text-muted">{% block page_title %}{% endblock %}</h5>
+                    </div>
+                    
+                    <!-- Acciones Topbar Desktop -->
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="text-muted small">
+                            {% now "l, d F Y" %}
+                        </span>
+                        
+                        <!-- Birthday Badge Desktop -->
+                        {% if cumpleaneros_hoy_count > 0 %}
+                        <div class="position-relative">
+                            <span style="font-size: 1.5rem; cursor: pointer;">🎂</span>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ cumpleaneros_hoy_count }}
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
             </nav>
 
             <!-- Main Content -->
-            <main class="container-fluid p-4">
+            <main class="container-fluid p-2 p-md-4">
                 <!-- Mensajes Django -->
                 {% if messages %}
                     {% for message in messages %}
@@ -207,29 +279,29 @@
 
     <!-- Sidebar & App Logics -->
     <script>
+        // Ejecutar INMEDIATAMENTE para evitar flash visual
+        (function() {
+            const body = document.body;
+            const sidebarState = localStorage.getItem('sb|sidebar-toggle');
+            
+            if (window.innerWidth >= 768) {
+                // Desktop: mostrar sidebar (expandido o colapsado según preferencia)
+                body.classList.add('sb-sidenav-toggled');
+                if (sidebarState === 'collapsed') {
+                    body.classList.add('sb-sidenav-collapsed');
+                }
+            } else {
+                // Mobile: siempre empezar cerrado
+                body.classList.remove('sb-sidenav-toggled');
+            }
+        })();
+        
+        // Listeners de eventos
         document.addEventListener('DOMContentLoaded', event => {
             const body = document.body;
             const sidebarToggleDesktop = document.getElementById('sidebarToggleDesktop');
             const sidebarToggleMobile = document.getElementById('sidebarToggleMobile');
             const sidebarClose = document.getElementById('sidebarClose');
-
-            // --- LÓGICA PERSISTENCIA ---
-            // Revisar localStorage
-            const sidebarState = localStorage.getItem('sb|sidebar-toggle');
-            
-            if (window.innerWidth >= 768) {
-                // Desktop Logic
-                if (sidebarState === 'collapsed') {
-                    body.classList.add('sb-sidenav-collapsed');
-                } else {
-                    body.classList.remove('sb-sidenav-collapsed');
-                }
-                // Asegurar que en desktop siempre tenga la clase toggled para mostrar sidebar (o collapsed)
-                body.classList.add('sb-sidenav-toggled'); 
-            } else {
-                // Mobile Logic: siempre empezar cerrado
-                body.classList.remove('sb-sidenav-toggled');
-            }
 
             // --- LISTENERS ---
             
