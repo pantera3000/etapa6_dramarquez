@@ -183,3 +183,28 @@ class Cita(models.Model):
             return f"{horas}h {minutos}m"
         else:
             return f"{minutos}m"
+    def save(self, *args, **kwargs):
+        """Override save to trigger Google Calendar sync"""
+        is_new = self.pk is None
+        super().save(*args, **kwargs)
+        
+        # Trigger Sync
+        try:
+            from integraciones.utils import sincronizar_con_google_calendar
+            accion = 'crear' if is_new else 'actualizar'
+            print(f"--- DIRECT SAVE SYNC: {self.id} ({accion}) ---")
+            sincronizar_con_google_calendar(self, accion)
+        except Exception as e:
+            print(f"--- SYNC ERROR IN SAVE: {e} ---")
+
+    def delete(self, *args, **kwargs):
+        """Override delete to trigger Google Calendar sync"""
+        # Trigger Sync before deletion (to have access to data)
+        try:
+            from integraciones.utils import sincronizar_con_google_calendar
+            print(f"--- DIRECT DELETE SYNC: {self.id} ---")
+            sincronizar_con_google_calendar(self, 'eliminar')
+        except Exception as e:
+            print(f"--- SYNC ERROR IN DELETE: {e} ---")
+            
+        super().delete(*args, **kwargs)

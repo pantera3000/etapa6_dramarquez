@@ -69,9 +69,12 @@ class CrearCitaView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('citas:lista_citas')
     
     def form_valid(self, form):
+        print(f"--- VIEW: Creando Cita... ---")
         form.instance.creado_por = self.request.user
         messages.success(self.request, '✅ Cita creada exitosamente.')
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        print(f"--- VIEW: Cita Creada ID: {self.object.id} ---")
+        return response
     
     def form_invalid(self, form):
         messages.error(self.request, '❌ Error al crear la cita. Verifica los datos.')

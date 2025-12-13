@@ -21,7 +21,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    # Apps del sistema
     'pacientes',
     'historias',
     'tratamientos',
@@ -34,7 +33,7 @@ INSTALLED_APPS = [
     'configuracion',
     'comunicaciones',
     'reportes',
-    'integraciones',  # Módulo de integraciones externas
+    'integraciones.apps.IntegracionesConfig',  # Configuración explícita para cargar signals
 ]
 
 MIDDLEWARE = [

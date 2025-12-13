@@ -10,3 +10,4 @@ class IntegracionesConfig(AppConfig):
     def ready(self):
         # Importar signals cuando la app esté lista
         import integraciones.signals
+        print("--- APP INTEGRACIONES: SIGNALS CARGADOS EXITOSAMENTE ---")

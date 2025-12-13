@@ -3,6 +3,8 @@ from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from .utils import sincronizar_con_google_calendar
 
+print("--- LOADING SIGNALS ---")
+
 # Signals habilitados - El modelo Cita ya existe
 
 @receiver(post_save, sender='citas.Cita')
@@ -12,6 +14,8 @@ def sincronizar_cita_creada_o_modificada(sender, instance, created, **kwargs):
     
     Si la integración con Google Calendar está activa, sincroniza automáticamente
     """
+    print(f"--- SIGNAL TRIGGERED: Cita {instance.id} (Created: {created}) ---")
+    
     # Determinar la acción
     accion = 'crear' if created else 'actualizar'
     
@@ -26,5 +30,7 @@ def sincronizar_cita_eliminada(sender, instance, **kwargs):
     
     Si la integración con Google Calendar está activa, elimina el evento del calendario
     """
+    print(f"--- SIGNAL TRIGGERED: Delete Cita {instance.id} ---")
+    
     # Sincronizar eliminación con Google Calendar
     sincronizar_con_google_calendar(instance, 'eliminar')
