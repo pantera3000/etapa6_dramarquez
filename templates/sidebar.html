@@ -33,9 +33,15 @@
         <a href="{% url 'citas:calendario' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'calendario' in request.path %}active{% endif %}">
             <i class="bi bi-calendar-week fs-5 me-2 text-primary"></i> <span>Calendario</span>
         </a>
-        <a href="{% url 'citas:eventos_ics' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'lista_citas' in request.path %}active{% endif %}">
-            <i class="bi bi-list-check fs-5 me-2 text-primary"></i> <span>Lista Citas</span>
+        <a href="{% url 'citas:eventos_ics' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'eventos' in request.path %}active{% endif %}">
+            <i class="bi bi-list-check fs-5 me-2 text-primary"></i> <span>Lista Citas (ICS)</span>
         </a>
+        
+        {% if google_calendar_activo %}
+        <a href="{% url 'citas:lista_citas' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'citas/citas' in request.path %}active{% endif %}">
+            <i class="bi bi-calendar-check fs-5 me-2 text-primary"></i> <span>Gestión Citas</span>
+        </a>
+        {% endif %}
         <a href="{% url 'historias:lista' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'historias' in request.path %}active{% endif %}">
             <i class="bi bi-journal-medical fs-5 me-2 text-success"></i> <span>Historias</span>
         </a>

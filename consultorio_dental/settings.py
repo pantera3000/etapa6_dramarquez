@@ -63,6 +63,7 @@ TEMPLATES = [
                 'pacientes.context_processors.cumpleanos_hoy',
                 'citas.context_processors.citas_hoy',
                 'configuracion.context_processors.configuracion_consultorio',  # AGREGAR
+                'integraciones.context_processors.estado_integraciones',  # Estado de integraciones
             ],
         },
     },
