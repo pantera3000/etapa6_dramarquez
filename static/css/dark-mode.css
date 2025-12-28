@@ -78,10 +78,23 @@
    Aplicar Variables a Elementos
    ============================================ */
 
+/* Ensure full page coverage - NO WHITE SPACE */
+html {
+    min-height: 100%;
+    background-color: var(--bg-secondary);
+}
+
 body {
+    min-height: 100vh;
     background-color: var(--bg-secondary);
     color: var(--text-primary);
     transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Ensure main content wrapper covers full height */
+#page-content-wrapper {
+    min-height: calc(100vh - var(--topbar-height, 0px));
+    background-color: var(--bg-secondary);
 }
 
 /* Cards y Contenedores */
@@ -91,6 +104,26 @@ body {
     background-color: var(--card-bg);
     color: var(--text-primary);
     border-color: var(--border-color);
+}
+
+/* CRITICAL: Ensure ALL cards change in dark mode */
+[data-theme="dark"] .card {
+    background-color: var(--card-bg) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .card-header,
+[data-theme="dark"] .card-body,
+[data-theme="dark"] .card-footer {
+    background-color: transparent !important;
+    color: var(--text-primary) !important;
+}
+
+/* Ensure white/light backgrounds become dark */
+[data-theme="dark"] .bg-white,
+[data-theme="dark"] .card.bg-white {
+    background-color: var(--card-bg) !important;
 }
 
 /* Inputs y Forms */
@@ -114,12 +147,79 @@ body {
     border-color: var(--border-color);
 }
 
+.table thead th {
+    color: var(--text-secondary);
+    background-color: transparent;
+    border-color: var(--border-color);
+}
+
+.table tbody td {
+    color: var(--text-primary);
+    background-color: transparent;
+    border-color: var(--border-color);
+}
+
+/* Ensure ALL table text is visible - CRITICAL FIX */
+.table td,
+.table th,
+.table td *,
+.table th * {
+    color: var(--text-primary) !important;
+}
+
+/* Table headers should be slightly muted but still visible */
+.table thead th,
+.table thead th * {
+    color: var(--text-secondary) !important;
+}
+
 .table-striped > tbody > tr:nth-of-type(odd) > * {
     background-color: var(--bg-tertiary);
 }
 
 .table-hover > tbody > tr:hover > * {
     background-color: var(--bg-tertiary);
+}
+
+/* CRITICAL FIX: Prevent white background on hover in dark mode */
+[data-theme="dark"] .table > tbody > tr:hover,
+[data-theme="dark"] .table > tbody > tr:hover > *,
+[data-theme="dark"] .table-hover > tbody > tr:hover,
+[data-theme="dark"] .table-hover > tbody > tr:hover > * {
+    background-color: var(--bg-tertiary) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Ensure ALL nested elements in hovered rows stay visible */
+[data-theme="dark"] .table > tbody > tr:hover *,
+[data-theme="dark"] .table-hover > tbody > tr:hover * {
+    color: var(--text-primary) !important;
+}
+
+/* Fix for specific table cell content that might be gray */
+[data-theme="dark"] .table .text-muted,
+[data-theme="dark"] .table small,
+[data-theme="dark"] .table .small {
+    color: var(--text-secondary) !important;
+    opacity: 1;
+}
+
+/* Ensure hover doesn't make muted text invisible */
+[data-theme="dark"] .table-hover > tbody > tr:hover .text-muted,
+[data-theme="dark"] .table-hover > tbody > tr:hover small,
+[data-theme="dark"] .table-hover > tbody > tr:hover .small {
+    color: var(--text-secondary) !important;
+}
+
+/* Additional fix for card-like table rows */
+[data-theme="dark"] .list-group-item:hover,
+[data-theme="dark"] .card:hover {
+    background-color: var(--bg-tertiary) !important;
+}
+
+[data-theme="dark"] .list-group-item:hover *,
+[data-theme="dark"] .card:hover * {
+    color: var(--text-primary) !important;
 }
 
 /* Sidebar */
@@ -141,6 +241,12 @@ body {
 .list-group-item.active {
     background-color: var(--primary);
     border-color: var(--primary);
+    color: #ffffff !important;
+}
+
+/* Ensure active items have white text */
+.list-group-item.active * {
+    color: #ffffff !important;
 }
 
 /* Top Navigation */
@@ -164,6 +270,21 @@ body {
 
 [data-theme="dark"] .btn-light:hover {
     background-color: var(--bg-secondary);
+}
+
+/* Ensure button text is visible */
+[data-theme="dark"] .btn {
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .btn-outline-secondary {
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .btn-outline-secondary:hover {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
 }
 
 /* Modals */
@@ -232,6 +353,27 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--text-primary);
 }
 
+/* Large display text (like patient names) */
+.display-1, .display-2, .display-3, .display-4, .display-5, .display-6 {
+    color: var(--text-primary) !important;
+}
+
+/* Ensure ALL heading variants are visible */
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6,
+[data-theme="dark"] .h1,
+[data-theme="dark"] .h2,
+[data-theme="dark"] .h3,
+[data-theme="dark"] .h4,
+[data-theme="dark"] .h5,
+[data-theme="dark"] .h6 {
+    color: var(--text-primary) !important;
+}
+
 /* Paragraphs and text */
 p, span, div, label {
     color: var(--text-primary);
@@ -285,6 +427,85 @@ ul, ol, li {
 
 .text-muted {
     color: var(--text-secondary) !important;
+}
+
+.text-secondary {
+    color: var(--text-secondary) !important;
+}
+
+/* Small text should still be readable */
+small, .small {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] small,
+[data-theme="dark"] .small {
+    color: var(--text-secondary);
+    opacity: 1;
+}
+
+/* Ensure all text in cards is visible */
+.card-body,
+.card-header,
+.card-footer {
+    color: var(--text-primary);
+}
+
+.card-title,
+.card-subtitle {
+    color: var(--text-primary) !important;
+}
+
+.card-text {
+    color: var(--text-primary);
+}
+
+/* CRITICAL: Fix for all card content including nested elements */
+[data-theme="dark"] .card *:not(.badge):not(.btn) {
+    color: var(--text-primary);
+}
+
+/* Card text that should be muted but still visible */
+[data-theme="dark"] .card .text-muted,
+[data-theme="dark"] .card small,
+[data-theme="dark"] .card .small {
+    color: var(--text-secondary) !important;
+}
+
+/* Ensure dates and times are visible */
+[data-theme="dark"] time,
+[data-theme="dark"] .datetime,
+[data-theme="dark"] .date,
+[data-theme="dark"] .time {
+    color: var(--text-secondary) !important;
+}
+
+/* List group text */
+.list-group-item-heading,
+.list-group-item-text {
+    color: var(--text-primary);
+}
+
+/* Ensure strong and bold text is visible */
+strong, b {
+    color: var(--text-primary);
+}
+
+/* Ensure em and italic text is visible */
+em, i:not([class*="bi-"]) {
+    color: var(--text-primary);
+}
+
+/* Code blocks */
+code, pre {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+/* Blockquotes */
+blockquote {
+    color: var(--text-secondary);
+    border-left-color: var(--border-color);
 }
 
 /* Borders */
