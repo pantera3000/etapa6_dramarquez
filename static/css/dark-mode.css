@@ -142,6 +142,23 @@ body {
     border-color: var(--border-color) !important;
 }
 
+/* Protocol detail page specific classes */
+[data-theme="dark"] .seccion-titulo,
+[data-theme="dark"] .info-header,
+[data-theme="dark"] .subtitulo {
+    background-color: var(--bg-tertiary) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .opcion-row {
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .opcion-row.seleccionada {
+    color: var(--primary) !important;
+}
+
 [data-theme="dark"] .stat-label {
     color: var(--text-secondary) !important;
 }
