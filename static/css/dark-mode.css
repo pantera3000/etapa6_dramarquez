@@ -1,0 +1,478 @@
+/* ============================================
+   DARK MODE SYSTEM - Variables y Estilos
+   ============================================ */
+
+/* Variables de Color - Light Mode (Default) */
+:root {
+    /* Backgrounds */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-tertiary: #e9ecef;
+    
+    /* Text Colors */
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --text-muted: #adb5bd;
+    
+    /* Borders */
+    --border-color: #dee2e6;
+    --border-light: #e9ecef;
+    
+    /* Components */
+    --sidebar-bg: #ffffff;
+    --topbar-bg: #ffffff;
+    --card-bg: #ffffff;
+    --input-bg: #ffffff;
+    --dropdown-bg: #ffffff;
+    
+    /* Shadows */
+    --shadow-sm: 0 .125rem .25rem rgba(0,0,0,.075);
+    --shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+    --shadow-lg: 0 1rem 3rem rgba(0,0,0,.175);
+    
+    /* Brand Colors (no cambian) */
+    --primary: #0d6efd;
+    --success: #198754;
+    --warning: #ffc107;
+    --danger: #dc3545;
+    --info: #0dcaf0;
+}
+
+/* Variables de Color - Dark Mode */
+[data-theme="dark"] {
+    /* Backgrounds */
+    --bg-primary: #1a1d23;
+    --bg-secondary: #25282e;
+    --bg-tertiary: #2d3139;
+    
+    /* Text Colors */
+    --text-primary: #e9ecef;
+    --text-secondary: #adb5bd;
+    --text-muted: #6c757d;
+    
+    /* Borders */
+    --border-color: #343a40;
+    --border-light: #495057;
+    
+    /* Components */
+    --sidebar-bg: #1f2227;
+    --topbar-bg: #1f2227;
+    --card-bg: #25282e;
+    --input-bg: #2d3139;
+    --dropdown-bg: #2d3139;
+    
+    /* Shadows (más sutiles en dark) */
+    --shadow-sm: 0 .125rem .25rem rgba(0,0,0,.3);
+    --shadow: 0 .5rem 1rem rgba(0,0,0,.4);
+    --shadow-lg: 0 1rem 3rem rgba(0,0,0,.5);
+    
+    /* Brand Colors ajustados para dark */
+    --primary: #4dabf7;
+    --success: #51cf66;
+    --warning: #ffd43b;
+    --danger: #ff6b6b;
+    --info: #22b8cf;
+}
+
+/* ============================================
+   Aplicar Variables a Elementos
+   ============================================ */
+
+body {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Cards y Contenedores */
+.card,
+.modal-content,
+.dropdown-menu {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+/* Inputs y Forms */
+.form-control,
+.form-select {
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    border-color: var(--primary);
+}
+
+/* Tables */
+.table {
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: var(--bg-tertiary);
+}
+
+.table-hover > tbody > tr:hover > * {
+    background-color: var(--bg-tertiary);
+}
+
+/* Sidebar */
+#sidebar-wrapper {
+    background-color: var(--sidebar-bg);
+    border-color: var(--border-color);
+}
+
+.list-group-item {
+    background-color: transparent;
+    color: var(--text-primary);
+    border-color: var(--border-light);
+}
+
+.list-group-item:hover {
+    background-color: var(--bg-tertiary);
+}
+
+.list-group-item.active {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+/* Top Navigation */
+.top-navbar {
+    background-color: var(--topbar-bg);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Badges */
+.badge {
+    color: #fff;
+}
+
+/* Buttons - mantener colores originales pero ajustar hover */
+[data-theme="dark"] .btn-light {
+    background-color: var(--bg-tertiary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .btn-light:hover {
+    background-color: var(--bg-secondary);
+}
+
+/* Modals */
+.modal-backdrop {
+    background-color: #000;
+}
+
+[data-theme="dark"] .modal-backdrop.show {
+    opacity: 0.7;
+}
+
+/* Dropdowns */
+.dropdown-item {
+    color: var(--text-primary);
+}
+
+.dropdown-item:hover {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+/* Alerts - mantener colores pero ajustar opacidad */
+[data-theme="dark"] .alert {
+    opacity: 0.95;
+}
+
+/* Breadcrumbs */
+.breadcrumb {
+    background-color: transparent;
+}
+
+.breadcrumb-item,
+.breadcrumb-item a {
+    color: var(--text-secondary);
+}
+
+/* Pagination */
+.page-link {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+.page-link:hover {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.page-item.active .page-link {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+/* ============================================
+   COMPREHENSIVE DARK MODE OVERRIDES
+   ============================================ */
+
+/* Main content area */
+#page-content-wrapper {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+/* All headings */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-primary);
+}
+
+/* Paragraphs and text */
+p, span, div, label {
+    color: var(--text-primary);
+}
+
+/* Links */
+a {
+    color: var(--primary);
+}
+
+a:hover {
+    color: var(--primary);
+    opacity: 0.8;
+}
+
+/* Lists */
+ul, ol, li {
+    color: var(--text-primary);
+}
+
+/* Sidebar footer */
+.sidebar-heading,
+#sidebar-wrapper .border-top {
+    background-color: var(--sidebar-bg) !important;
+    color: var(--text-primary);
+}
+
+/* Section titles in sidebar */
+.section-title {
+    color: var(--text-secondary) !important;
+}
+
+/* Content backgrounds */
+.container, .container-fluid {
+    background-color: transparent;
+}
+
+/* White backgrounds in light mode, dark in dark mode */
+.bg-white {
+    background-color: var(--bg-primary) !important;
+}
+
+.bg-light {
+    background-color: var(--bg-secondary) !important;
+}
+
+/* Text colors */
+.text-dark {
+    color: var(--text-primary) !important;
+}
+
+.text-muted {
+    color: var(--text-secondary) !important;
+}
+
+/* Borders */
+.border, .border-top, .border-bottom, .border-start, .border-end {
+    border-color: var(--border-color) !important;
+}
+
+/* Form labels */
+.form-label {
+    color: var(--text-primary);
+}
+
+/* Input groups */
+.input-group-text {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+/* Textarea */
+textarea.form-control {
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+/* Select options */
+option {
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+}
+
+/* List groups */
+.list-group {
+    background-color: transparent;
+}
+
+/* Nav tabs */
+.nav-tabs {
+    border-color: var(--border-color);
+}
+
+.nav-tabs .nav-link {
+    color: var(--text-secondary);
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.nav-tabs .nav-link:hover {
+    color: var(--text-primary);
+    background-color: var(--bg-tertiary);
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--text-primary);
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+}
+
+/* Progress bars */
+.progress {
+    background-color: var(--bg-tertiary);
+}
+
+/* Toasts */
+.toast {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+.toast-header {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+/* Accordion */
+.accordion-item {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+}
+
+.accordion-button {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+/* Offcanvas */
+.offcanvas {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+}
+
+
+/* Close buttons */
+.btn-close {
+    filter: var(--bs-btn-close-white-filter, none);
+}
+
+[data-theme="dark"] .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* ============================================
+   Dark Mode Toggle Button
+   ============================================ */
+
+.dark-mode-toggle {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    color: var(--text-primary);
+    position: relative;
+}
+
+.dark-mode-toggle:hover {
+    background-color: var(--bg-tertiary);
+    transform: scale(1.05);
+}
+
+.dark-mode-toggle:active {
+    transform: scale(0.95);
+}
+
+/* Icon visibility based on theme */
+.dark-mode-toggle .icon-sun,
+.dark-mode-toggle .icon-moon {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Light mode: show moon icon (to switch TO dark) */
+[data-theme="light"] .dark-mode-toggle .icon-sun,
+[data-theme="light"] .dark-mode-toggle span.icon-sun {
+    display: none;
+}
+
+[data-theme="light"] .dark-mode-toggle .icon-moon,
+[data-theme="light"] .dark-mode-toggle span.icon-moon {
+    display: inline-block;
+}
+
+/* Dark mode: show sun icon (to switch TO light) */
+[data-theme="dark"] .dark-mode-toggle .icon-moon,
+[data-theme="dark"] .dark-mode-toggle span.icon-moon {
+    display: none;
+}
+
+[data-theme="dark"] .dark-mode-toggle .icon-sun,
+[data-theme="dark"] .dark-mode-toggle span.icon-sun {
+    display: inline-block;
+}
+
+/* Button in sidebar footer */
+.dark-mode-toggle.btn-outline-secondary {
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.dark-mode-toggle.btn-outline-secondary:hover {
+    background-color: var(--bg-tertiary);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* ============================================
+   Smooth Transitions
+   ============================================ */
+
+* {
+    transition: background-color 0.3s ease, 
+                border-color 0.3s ease, 
+                color 0.3s ease;
+}
+
+/* Excepciones (no animar) */
+.btn,
+.form-control,
+.form-select,
+a {
+    transition: all 0.15s ease;
+}
