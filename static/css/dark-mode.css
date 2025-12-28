@@ -126,6 +126,45 @@ body {
     background-color: var(--card-bg) !important;
 }
 
+/* ULTRA-CRITICAL: Override inline styles in patient detail page */
+[data-theme="dark"] .hero-card,
+[data-theme="dark"] .dash-card {
+    background: var(--card-bg) !important;
+    background-color: var(--card-bg) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* Treatment detail page stat cards */
+[data-theme="dark"] .stat-card {
+    background: var(--card-bg) !important;
+    background-color: var(--card-bg) !important;
+    border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .stat-label {
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .stat-value {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .text-dark,
+[data-theme="dark"] h1.text-dark,
+[data-theme="dark"] h2.text-dark,
+[data-theme="dark"] h3.text-dark {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .info-value,
+[data-theme="dark"] .dash-header {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .info-label {
+    color: var(--text-secondary) !important;
+}
+
 /* Inputs y Forms */
 .form-control,
 .form-select {
@@ -151,6 +190,14 @@ body {
     color: var(--text-secondary);
     background-color: transparent;
     border-color: var(--border-color);
+}
+
+/* CRITICAL: Force dark background for table headers in dark mode */
+[data-theme="dark"] .table thead,
+[data-theme="dark"] .table thead th {
+    background-color: var(--bg-tertiary) !important;
+    color: var(--text-secondary) !important;
+    border-color: var(--border-color) !important;
 }
 
 .table tbody td {
@@ -309,6 +356,40 @@ body {
 /* Alerts - mantener colores pero ajustar opacidad */
 [data-theme="dark"] .alert {
     opacity: 0.95;
+}
+
+/* Specific alert colors for dark mode */
+[data-theme="dark"] .alert-info {
+    background-color: rgba(13, 202, 240, 0.15) !important;
+    border-color: rgba(13, 202, 240, 0.3) !important;
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .alert-success {
+    background-color: rgba(25, 135, 84, 0.15) !important;
+    border-color: rgba(25, 135, 84, 0.3) !important;
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .alert-warning {
+    background-color: rgba(255, 193, 7, 0.15) !important;
+    border-color: rgba(255, 193, 7, 0.3) !important;
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .alert-danger {
+    background-color: rgba(220, 53, 69, 0.15) !important;
+    border-color: rgba(220, 53, 69, 0.3) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Ensure all text inside alerts is visible */
+[data-theme="dark"] .alert * {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .alert .badge {
+    color: #fff !important;
 }
 
 /* Breadcrumbs */
