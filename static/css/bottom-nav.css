@@ -261,17 +261,23 @@
     }
 }
 
-/* Hide on desktop */
+/* Hide on desktop - FORZADO */
 @media (min-width: 768px) {
     .bottom-nav,
-    .fab-menu {
+    .fab-menu,
+    .fab-backdrop,
+    .fab-options {
         display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
     }
     
     body {
         padding-bottom: 0 !important;
     }
 }
+
 
 /* Adjust for very small screens */
 @media (max-width: 360px) {
