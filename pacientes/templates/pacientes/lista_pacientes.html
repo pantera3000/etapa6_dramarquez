@@ -191,6 +191,29 @@
                     <a href="{% url 'pacientes:lista' %}" class="btn btn-outline-secondary" title="Limpiar"><i class="bi bi-x-lg"></i></a>
                     {% endif %}
                 </form>
+                
+                <!-- Filtros Avanzados -->
+                <div class="d-flex gap-2 mt-3 flex-wrap">
+                    <select id="ageFilter" class="form-select form-select-sm" style="width: auto;">
+                        <option value="all">📅 Todas las edades</option>
+                        <option value="0-18">0-18 años</option>
+                        <option value="19-35">19-35 años</option>
+                        <option value="36-60">36-60 años</option>
+                        <option value="61-999">60+ años</option>
+                    </select>
+                    
+                    <select id="genderFilter" class="form-select form-select-sm" style="width: auto;">
+                        <option value="all">👤 Todos los géneros</option>
+                        <option value="M">Masculino</option>
+                        <option value="F">Femenino</option>
+                    </select>
+                    
+                    <select id="statusFilter" class="form-select form-select-sm" style="width: auto;">
+                        <option value="all">⚡ Todos los estados</option>
+                        <option value="activo">Activos</option>
+                        <option value="inactivo">Inactivos</option>
+                    </select>
+                </div>
             </div>
 
             {% if pacientes %}
@@ -200,15 +223,27 @@
                         <table class="table table-saas mb-0">
                             <thead class="table-light">
                                 <tr>
-                                    <th class="ps-4">Paciente</th>
-                                    <th>Edad / Cumple</th>
-                                    <th>Contacto</th>
+                                    <th class="ps-4 sortable" data-sort="nombre">
+                                        Paciente <i class="bi bi-arrow-down-up sort-icon opacity-25"></i>
+                                    </th>
+                                    <th class="sortable" data-sort="edad">
+                                        Edad / Cumple <i class="bi bi-arrow-down-up sort-icon opacity-25"></i>
+                                    </th>
+                                    <th class="sortable" data-sort="telefono">
+                                        Contacto <i class="bi bi-arrow-down-up sort-icon opacity-25"></i>
+                                    </th>
                                     <th class="text-end pe-4">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for paciente in pacientes %}
-                                <tr style="cursor: pointer;" onclick="window.location='{% url 'pacientes:detalle' paciente.pk %}'">
+                                <tr style="cursor: pointer;" 
+                                    onclick="window.location='{% url 'pacientes:detalle' paciente.pk %}'"
+                                    data-age="{{ paciente.edad|default:0 }}"
+                                    data-gender="{{ paciente.genero }}"
+                                    data-telefono="{{ paciente.telefono }}"
+                                    data-fecha="{{ paciente.creado_en|date:'Y-m-d' }}"
+                                    data-status="activo">
                                     <!-- Columna Paciente (Avatar + Nombre + DNI) -->
                                     <td class="ps-4">
                                         <div class="d-flex align-items-center">
@@ -355,6 +390,8 @@
     </div>
 </div>
 
+{% load static %}
+<script src="{% static 'js/pacientes-list.js' %}"></script>
 <script>
 function enviarLinkWhatsApp() {
     // Obtener la URL completa del formulario de registro
