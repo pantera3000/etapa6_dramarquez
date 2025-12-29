@@ -978,30 +978,46 @@ a {
    PATIENT DETAIL NOTES CARDS - MOBILE
    ============================================ */
 
-/* Prevent overflow in patient detail notes cards */
-.tab-content .card .card-body p,
-.tab-content .card .card-body h6 {
-    word-break: break-word !important;
-    overflow-wrap: break-word !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-}
+/* Prevent overflow in patient detail notes cards - ONLY mobile view */
+@media (max-width: 767.98px) {
+    #notas .card .card-body p.text-truncate {
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        max-width: 100% !important;
+    }
 
-.tab-content .card .card-body {
-    overflow: hidden !important;
+    #notas .card .card-body h6 {
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    #notas .card .card-body {
+        overflow: hidden !important;
+        max-width: 100% !important;
+    }
+
+    #notas .card {
+        max-width: 100% !important;
+        overflow: hidden !important;
+    }
 }
 
 /* Dark mode for patient detail notes */
-[data-theme="dark"] .tab-content .card {
+[data-theme="dark"] #notas .card {
     background: var(--card-bg) !important;
     border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
-[data-theme="dark"] .tab-content .card h6,
-[data-theme="dark"] .tab-content .card .text-dark {
+[data-theme="dark"] #notas .card h6,
+[data-theme="dark"] #notas .card .text-dark {
     color: var(--text-primary) !important;
 }
 
-[data-theme="dark"] .tab-content .card .text-muted {
+[data-theme="dark"] #notas .card .text-muted {
     color: var(--text-secondary) !important;
 }
