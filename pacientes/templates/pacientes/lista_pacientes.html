@@ -99,33 +99,34 @@
                 }
                 
                 /* --- Stats Cards Small --- */
+                /* --- Stats Cards Small --- */
                 .stat-card-small {
                     text-align: center;
-                    padding: 1rem;
+                    padding: 0.75rem;
                     transition: transform 0.2s;
                 }
                 .stat-card-small:hover {
                     transform: translateY(-2px);
                 }
                 .stat-icon-small {
-                    width: 48px;
-                    height: 48px;
+                    width: 42px;
+                    height: 42px;
                     border-radius: 0.75rem;
                     display: inline-flex;
                     align-items: center;
                     justify-content: center;
-                    font-size: 1.25rem;
-                    margin-bottom: 0.5rem;
+                    font-size: 1.1rem;
+                    margin-bottom: 0.25rem;
                 }
                 .stat-value-small {
-                    font-size: 1.75rem;
+                    font-size: 1.5rem;
                     font-weight: 700;
                     line-height: 1;
-                    margin-bottom: 0.25rem;
+                    margin-bottom: 0.1rem;
                 }
                 .stat-label-small {
                     color: #64748b;
-                    font-size: 0.75rem;
+                    font-size: 0.7rem;
                     font-weight: 500;
                     text-transform: uppercase;
                     letter-spacing: 0.05em;
@@ -147,9 +148,9 @@
 
                 /* --- Mobile Optimization --- */
                 @media (max-width: 767.98px) {
-                    /* Stats compactas horizontalmente */
+                    /* Stats compactas horizontalmente - Grid 2x2 */
                     .stat-card-small {
-                        padding: 1rem;
+                        padding: 0.75rem;
                         display: flex;
                         flex-direction: row;
                         align-items: center;
@@ -159,26 +160,33 @@
                         min-height: auto;
                     }
                     .stat-icon-small {
-                        width: 48px;
-                        height: 48px;
-                        font-size: 1.25rem;
+                        width: 36px;
+                        height: 36px;
+                        font-size: 1rem;
                         margin-bottom: 0;
-                        margin-right: 1rem;
+                        margin-right: 0.5rem;
                         flex-shrink: 0;
+                        border-radius: 8px !important; /* Iconos un poco más cuadrados */
                     }
                     .stat-content {
                         display: flex;
                         flex-direction: column;
                         justify-content: center;
+                        min-width: 0; /* Permite truncar texto si es necesario */
                     }
                     .stat-value-small {
-                        font-size: 1.5rem;
+                        font-size: 1.25rem;
+                        font-weight: 700;
                         line-height: 1;
-                        margin-bottom: 0.25rem;
+                        margin-bottom: 0.1rem;
                     }
                     .stat-label-small {
-                        font-size: 0.75rem;
-                        line-height: 1.2;
+                        font-size: 0.65rem;
+                        line-height: 1.1;
+                        color: #64748b;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
                     }
                     
                     /* Contenedor de filtros con scroll seguro */
@@ -203,7 +211,7 @@
             <!-- Mini-Dashboard de Estadísticas -->
             <div class="p-4 border-bottom">
                 <div class="row g-3 mb-0">
-                    <div class="col-12 col-sm-6 col-md-3">
+                    <div class="col-6 col-md-3">
                         <div class="stat-card-small">
                             <div class="stat-icon-small" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                                 <i class="bi bi-people text-white"></i>
@@ -215,38 +223,38 @@
                         </div>
                     </div>
                     
-                    <div class="col-12 col-sm-6 col-md-3">
+                    <div class="col-6 col-md-3">
                         <div class="stat-card-small">
                             <div class="stat-icon-small" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
                                 <i class="bi bi-person-plus text-white"></i>
                             </div>
                             <div class="stat-content">
                                 <div class="stat-value-small text-dark">{{ nuevos_mes }}</div>
-                                <div class="stat-label-small">Nuevos Este Mes</div>
+                                <div class="stat-label-small">Nuevos/Mes</div>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="col-12 col-sm-6 col-md-3">
+                    <div class="col-6 col-md-3">
                         <div class="stat-card-small">
                             <div class="stat-icon-small" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
                                 <i class="bi bi-cake2 text-white"></i>
                             </div>
                             <div class="stat-content">
                                 <div class="stat-value-small text-dark">{{ proximos_cumpleanos }}</div>
-                                <div class="stat-label-small">Cumpleaños Próximos</div>
+                                <div class="stat-label-small">Cumpleaños</div>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="col-12 col-sm-6 col-md-3">
+                    <div class="col-6 col-md-3">
                         <div class="stat-card-small">
                             <div class="stat-icon-small" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
                                 <i class="bi bi-activity text-white"></i>
                             </div>
                             <div class="stat-content">
                                 <div class="stat-value-small text-dark">{{ pacientes_activos }}</div>
-                                <div class="stat-label-small">Pacientes Activos</div>
+                                <div class="stat-label-small">Activos</div>
                             </div>
                         </div>
                     </div>
