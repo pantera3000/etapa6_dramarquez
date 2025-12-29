@@ -1,28 +1,6 @@
 {% load static %}
 <div class="border-end bg-white" id="sidebar-wrapper">
-    <!-- Hide this header in mobile (< 992px) since topbar has menu and user controls -->
-    <div class="sidebar-heading border-bottom bg-primary text-white d-none d-lg-flex align-items-center justify-content-between">
-        <div class="sidebar-brand d-flex align-items-center gap-2 text-decoration-none text-white fw-bold truncate-text">
-            {% if config.logo %}
-                <img src="{{ config.logo.url }}" alt="Logo" style="height: 30px; width: auto; object-fit: contain;">
-            {% else %}
-                <div class="sidebar-icon-placeholder">🦷</div>
-            {% endif %}
-            <span class="sidebar-title">{{ config.nombre_consultorio|default:"Consultorio" }}</span>
-        </div>
-        <!-- Botones de acción (solo visible en móvil) -->
-        <div class="d-flex align-items-center gap-2">
-            <!-- Dark Mode Toggle -->
-            <button class="dark-mode-toggle btn btn-link text-white p-0" aria-label="Cambiar tema" title="Cambiar tema">
-                <i class="bi bi-sun-fill icon-sun" style="font-size: 1.2rem;"></i>
-                <i class="bi bi-moon-stars-fill icon-moon" style="font-size: 1.2rem;"></i>
-            </button>
-            <!-- Botón cerrar -->
-            <button class="btn btn-link text-white d-md-none p-0" id="sidebarClose">
-                <i class="bi bi-x-lg"></i>
-            </button>
-        </div>
-    </div>
+    <!-- Header removed - topbar provides menu toggle and user controls -->
     
     <div class="list-group list-group-flush flex-grow-1 overflow-auto custom-scrollbar">
         <!-- SECCIÓN PACIENTES -->
