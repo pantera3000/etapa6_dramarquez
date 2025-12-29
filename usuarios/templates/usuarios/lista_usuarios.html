@@ -1,151 +1,185 @@
-<!-- usuarios/templates/usuarios/lista_usuarios.html -->
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Gestión de Usuarios{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-center">
-    <div class="col-lg-10">
-        <!-- Encabezado -->
-        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-            <h2 class="mb-0">👥 Gestión de Usuarios</h2>
-            <a href="{% url 'usuarios:crear' %}" class="btn btn-success">➕ Nuevo Usuario</a>
+<div class="container-fluid px-4 py-4">
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">Gestión de Usuarios</h2>
+            <p class="text-muted mb-0">Administra el acceso y los roles del personal.</p>
         </div>
+        <a href="{% url 'usuarios:crear' %}" class="btn btn-primary d-flex align-items-center gap-2 shadow-sm">
+            <i class="bi bi-person-plus-fill"></i>
+            <span class="d-none d-md-inline">Nuevo Usuario</span>
+        </a>
+    </div>
 
-        <!-- Tarjeta principal -->
-        <div class="bg-white p-3 p-md-4 rounded shadow-sm border">
-            {% if usuarios %}
-                <!-- VISTA DE TABLA (Desktop >= 768px) -->
-                <div class="d-none d-md-block">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Usuario</th>
-                                    <th>Nombre Completo</th>
-                                    <th>Email</th>
-                                    <th>Rol</th>
-                                    <th>Estado</th>
-                                    <th class="text-end">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for usuario in usuarios %}
-                                <tr>
-                                    <td>
-                                        <strong>{{ usuario.username }}</strong>
-                                        {% if usuario.is_superuser %}
-                                            <span class="badge bg-danger ms-1">Super</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ usuario.get_full_name|default:"—" }}</td>
-                                    <td>{{ usuario.email|default:"—" }}</td>
-                                    <td>
-                                        {% for grupo in usuario.groups.all %}
-                                            {% if grupo.name == 'Administrador' %}
-                                                <span class="badge bg-danger">{{ grupo.name }}</span>
-                                            {% elif grupo.name == 'Doctor' %}
-                                                <span class="badge bg-primary">{{ grupo.name }}</span>
-                                            {% elif grupo.name == 'Asistente' %}
-                                                <span class="badge bg-info">{{ grupo.name }}</span>
-                                            {% else %}
-                                                <span class="badge bg-secondary">{{ grupo.name }}</span>
-                                            {% endif %}
-                                        {% empty %}
-                                            <span class="text-muted">Sin rol</span>
-                                        {% endfor %}
-                                    </td>
-                                    <td>
-                                        {% if usuario.is_active %}
-                                            <span class="badge bg-success">Activo</span>
-                                        {% else %}
-                                            <span class="badge bg-secondary">Inactivo</span>
-                                        {% endif %}
-                                    </td>
-                                    <td class="text-end">
-                                        <div class="btn-group btn-group-sm">
-                                            <a href="{% url 'usuarios:editar' usuario.pk %}" class="btn btn-warning" title="Editar">✏️</a>
-                                            <a href="{% url 'usuarios:cambiar_password' usuario.pk %}" class="btn btn-info" title="Cambiar contraseña">🔑</a>
-                                            {% if usuario != request.user %}
-                                                <a href="{% url 'usuarios:eliminar' usuario.pk %}" class="btn btn-danger" title="Eliminar">🗑️</a>
+    <!-- Stats Rapidas (Opcional) -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100 border-start border-4 border-primary">
+                <div class="card-body">
+                    <h6 class="text-muted text-uppercase small fw-bold mb-1">Total Usuarios</h6>
+                    <h2 class="mb-0 fw-bold text-dark">{{ usuarios.count }}</h2>
+                </div>
+            </div>
+        </div>
+        <!-- Se podrían agregar más stats aquí -->
+    </div>
+
+    <!-- Lista de Usuarios -->
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" style="min-width: 800px;">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4 py-3 text-uppercase text-muted small fw-bold border-bottom-0">Usuario</th>
+                            <th class="py-3 text-uppercase text-muted small fw-bold border-bottom-0">Rol</th>
+                            <th class="py-3 text-uppercase text-muted small fw-bold border-bottom-0">Estado</th>
+                            <th class="py-3 text-uppercase text-muted small fw-bold border-bottom-0">Último Acceso</th>
+                            <th class="pe-4 py-3 text-end text-uppercase text-muted small fw-bold border-bottom-0">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for usuario in usuarios %}
+                        <tr>
+                            <!-- Usuario info -->
+                            <td class="ps-4 py-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle me-3 d-flex align-items-center justify-content-center rounded-circle text-white fw-bold shadow-sm" 
+                                         style="width: 45px; height: 45px; font-size: 1.1rem; 
+                                         background: linear-gradient(135deg, {% cycle '#6f42c1' '#fd7e14' '#20c997' '#0d6efd' '#dc3545' %}, #ffffff);">
+                                        {{ usuario.username|slice:":1"|upper }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark">
+                                            {{ usuario.get_full_name|default:usuario.username }}
+                                            {% if usuario.is_superuser %}
+                                                <i class="bi bi-shield-check text-warning ms-1" title="Superusuario" data-bs-toggle="tooltip"></i>
                                             {% endif %}
                                         </div>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                                        <div class="text-muted small">{{ usuario.email|default:"Sin email" }}</div>
+                                    </div>
+                                </div>
+                            </td>
 
-                <!-- VISTA DE TARJETAS (Móvil < 768px) -->
-                <div class="d-md-none">
-                    {% for usuario in usuarios %}
-                    <div class="card mb-3 shadow-sm">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h5 class="card-title fw-bold mb-0">
-                                    {{ usuario.username }}
-                                    {% if usuario.is_superuser %}
-                                        <span class="badge bg-danger">Super</span>
-                                    {% endif %}
-                                </h5>
-                                {% if usuario.is_active %}
-                                    <span class="badge bg-success">Activo</span>
-                                {% else %}
-                                    <span class="badge bg-secondary">Inactivo</span>
-                                {% endif %}
-                            </div>
-                            
-                            {% if usuario.get_full_name %}
-                            <p class="mb-2">
-                                <strong>Nombre:</strong> {{ usuario.get_full_name }}
-                            </p>
-                            {% endif %}
-                            
-                            {% if usuario.email %}
-                            <p class="mb-2">
-                                <strong>Email:</strong> {{ usuario.email }}
-                            </p>
-                            {% endif %}
-                            
-                            <p class="mb-3">
-                                <strong>Rol:</strong>
+                            <!-- Rol -->
+                            <td class="py-3">
                                 {% for grupo in usuario.groups.all %}
                                     {% if grupo.name == 'Administrador' %}
-                                        <span class="badge bg-danger">{{ grupo.name }}</span>
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3">
+                                            <i class="bi bi-shield-lock me-1"></i> Admin
+                                        </span>
                                     {% elif grupo.name == 'Doctor' %}
-                                        <span class="badge bg-primary">{{ grupo.name }}</span>
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3">
+                                            <i class="bi bi-heart-pulse me-1"></i> Doctor
+                                        </span>
                                     {% elif grupo.name == 'Asistente' %}
-                                        <span class="badge bg-info">{{ grupo.name }}</span>
+                                        <span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-3">
+                                            <i class="bi bi-person-badge me-1"></i> Asistente
+                                        </span>
                                     {% else %}
-                                        <span class="badge bg-secondary">{{ grupo.name }}</span>
+                                        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-3">
+                                            {{ grupo.name }}
+                                        </span>
                                     {% endif %}
                                 {% empty %}
-                                    <span class="text-muted">Sin rol</span>
+                                    <span class="badge bg-light text-muted border rounded-pill px-3">Sin rol</span>
                                 {% endfor %}
-                            </p>
-                            
-                            <div class="d-grid gap-2">
-                                <a href="{% url 'usuarios:editar' usuario.pk %}" class="btn btn-sm btn-warning">✏️ Editar</a>
-                                <div class="btn-group">
-                                    <a href="{% url 'usuarios:cambiar_password' usuario.pk %}" class="btn btn-sm btn-info">🔑 Cambiar Contraseña</a>
-                                    {% if usuario != request.user %}
-                                        <a href="{% url 'usuarios:eliminar' usuario.pk %}" class="btn btn-sm btn-danger">🗑️ Eliminar</a>
+                            </td>
+
+                            <!-- Estado -->
+                            <td class="py-3">
+                                {% if usuario.is_active %}
+                                    <span class="d-inline-flex align-items-center text-success fw-medium px-2 py-1 rounded bg-success-subtle">
+                                        <span class="d-inline-block rounded-circle bg-success me-2" style="width: 8px; height: 8px;"></span>
+                                        Activo
+                                    </span>
+                                {% else %}
+                                    <span class="d-inline-flex align-items-center text-secondary fw-medium px-2 py-1 rounded bg-secondary-subtle">
+                                        <span class="d-inline-block rounded-circle bg-secondary me-2" style="width: 8px; height: 8px;"></span>
+                                        Inactivo
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <!-- Ultimo Acceso -->
+                            <td class="py-3">
+                                <div class="text-muted small">
+                                    {% if usuario.last_login %}
+                                        <div class="d-flex align-items-center gap-1">
+                                            <i class="bi bi-clock"></i> {{ usuario.last_login|date:"d M Y" }}
+                                        </div>
+                                        <div class="text-xs ms-3">{{ usuario.last_login|date:"H:i" }}</div>
+                                    {% else %}
+                                        <span class="text-muted fst-italic">Nunca</span>
                                     {% endif %}
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div class="text-center py-5">
-                    <p class="text-muted mb-3">No hay usuarios registrados.</p>
-                    <a href="{% url 'usuarios:crear' %}" class="btn btn-success">➕ Crear Primer Usuario</a>
-                </div>
-            {% endif %}
+                            </td>
+
+                            <!-- Acciones -->
+                            <td class="pe-4 py-3 text-end">
+                                <div class="btn-group">
+                                    <a href="{% url 'usuarios:editar' usuario.pk %}" class="btn btn-light btn-sm text-primary" title="Editar" data-bs-toggle="tooltip">
+                                        <i class="bi bi-pencil-square fs-6"></i>
+                                    </a>
+                                    <a href="{% url 'usuarios:cambiar_password' usuario.pk %}" class="btn btn-light btn-sm text-dark" title="Cambiar Contraseña" data-bs-toggle="tooltip">
+                                        <i class="bi bi-key fs-6"></i>
+                                    </a>
+                                    {% if usuario != request.user %}
+                                        <a href="{% url 'usuarios:eliminar' usuario.pk %}" class="btn btn-light btn-sm text-danger" title="Eliminar" data-bs-toggle="tooltip">
+                                            <i class="bi bi-trash fs-6"></i>
+                                        </a>
+                                    {% else %}
+                                        <button class="btn btn-light btn-sm text-muted" disabled title="No puedes eliminarte a ti mismo">
+                                            <i class="bi bi-trash fs-6"></i>
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        
+                        {% if not usuarios %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5">
+                                <div class="text-muted mb-3">
+                                    <i class="bi bi-people fs-1 d-block mb-3 opacity-50"></i>
+                                    No se encontraron usuarios.
+                                </div>
+                                <a href="{% url 'usuarios:crear' %}" class="btn btn-outline-primary btn-sm">
+                                    Crear primer usuario
+                                </a>
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
+
+<style>
+    /* Estilos adicionales para la tabla de usuarios */
+    .avatar-circle {
+        transition: transform 0.2s;
+    }
+    .table-hover tbody tr:hover .avatar-circle {
+        transform: scale(1.1);
+    }
+    .btn-group .btn {
+        border: 1px solid transparent; 
+        transition: all 0.2s;
+    }
+    .btn-group .btn:hover {
+        background-color: #e9ecef;
+        border-color: #dee2e6;
+        transform: translateY(-2px);
+    }
+</style>
 {% endblock %}
