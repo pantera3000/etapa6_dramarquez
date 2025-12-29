@@ -43,6 +43,25 @@
             background-color: #f8f9fa;
         }
         
+        }
+        
+        /* CRITICAL FIX: Ocultar menú flotante en desktop - INLINE */
+        @media (min-width: 768px) {
+            .bottom-nav,
+            .fab-menu,
+            .fab-backdrop,
+            .fab-options,
+            .bottom-nav-item,
+            .bottom-nav-fab {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                pointer-events: none !important;
+                height: 0 !important;
+                overflow: hidden !important;
+            }
+        }
+
         /* CLS OPTIMIZATION - Reservar espacio para iconos */
         .bi::before {
             display: inline-block;
