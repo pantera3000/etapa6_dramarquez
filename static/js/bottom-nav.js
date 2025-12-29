@@ -55,17 +55,72 @@
                 e.preventDefault();
                 e.stopPropagation();
                 console.log('Menu button clicked!');
-                const sidebar = document.getElementById('sidebar-wrapper');
-                console.log('Sidebar found:', sidebar);
-                if (sidebar) {
-                    sidebar.classList.add('show');
-                    console.log('Sidebar show class added');
-                } else {
-                    console.error('Sidebar not found!');
-                }
+                openSidebar();
             });
         } else {
             console.error('Menu button not found!');
+        }
+        
+        // Sidebar close button
+        const sidebarCloseBtn = document.getElementById('sidebarClose');
+        if (sidebarCloseBtn) {
+            sidebarCloseBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                closeSidebar();
+            });
+        }
+    }
+
+    /**
+     * Open sidebar with backdrop
+     */
+    function openSidebar() {
+        const sidebar = document.getElementById('sidebar-wrapper');
+        console.log('Sidebar found:', sidebar);
+        if (sidebar) {
+            sidebar.classList.add('show');
+            console.log('Sidebar show class added');
+            
+            // Create backdrop if it doesn't exist
+            let backdrop = document.getElementById('sidebar-backdrop');
+            if (!backdrop) {
+                backdrop = document.createElement('div');
+                backdrop.id = 'sidebar-backdrop';
+                backdrop.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0, 0, 0, 0.5);
+                    z-index: 999;
+                    display: none;
+                `;
+                document.body.appendChild(backdrop);
+                
+                // Close sidebar when clicking backdrop
+                backdrop.addEventListener('click', closeSidebar);
+            }
+            
+            backdrop.style.display = 'block';
+        } else {
+            console.error('Sidebar not found!');
+        }
+    }
+
+    /**
+     * Close sidebar and remove backdrop
+     */
+    function closeSidebar() {
+        const sidebar = document.getElementById('sidebar-wrapper');
+        const backdrop = document.getElementById('sidebar-backdrop');
+        
+        if (sidebar) {
+            sidebar.classList.remove('show');
+        }
+        
+        if (backdrop) {
+            backdrop.style.display = 'none';
         }
     }
 
