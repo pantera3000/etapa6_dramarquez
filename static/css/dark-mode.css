@@ -957,4 +957,19 @@ a {
 .card-mobile-saas {
     min-height: auto !important;
     max-height: 120px !important;
+    overflow: hidden !important;
+}
+
+.card-mobile-saas h6,
+.card-mobile-saas p,
+.card-mobile-saas .text-truncate {
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+}
+
+/* Ensure content doesn't overflow */
+.card-mobile-saas .flex-grow-1 {
+    min-width: 0 !important;
+    overflow: hidden !important;
 }
