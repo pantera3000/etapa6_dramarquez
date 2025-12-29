@@ -143,38 +143,69 @@ class ReporteDeudasView(FinanzasGroupRequiredMixin, TemplateView):
         ctx = super().get_context_data(**kwargs)
         
         filtro = self.request.GET.get('filtro', 'todos')
-        tratamientos = Tratamiento.objects.all().select_related('paciente') # Optimización
+        tratamientos = Tratamiento.objects.all().select_related('paciente').prefetch_related('pagos') # Optimización
         deudores = []
         
         today = timezone.now().date()
         
+        # Variables para gráfico
+        deuda_critica = 0   # Completados con deuda
+        deuda_corriente = 0 # En progreso con deuda
+        
         for t in tratamientos:
             if t.deuda > 0:
+                # Clasificación para gráfico (Global antes de filtro? No, hagámoslo del conjunto filtrado para coherencia visual)
+                # Correction: Dashboard usually shows context. But list charts usually show list summary.
+                # Let's categorize the item FIRST, then filter.
+                
+                is_critica = t.estado == 'completado'
+                current_deuda = t.deuda
+                
                 # Aplicar filtros lógicos
+                include = False
                 if filtro == 'prioridad':
-                    # Solo completados con deuda (URGENTE)
-                    if t.estado == 'completado':
-                        deudores.append(t)
+                    include = t.estado == 'completado'
                 elif filtro == 'antiguos':
-                    # Deuda +30 dias (desde inicio)
-                    if (today - t.fecha_inicio).days > 30:
-                        deudores.append(t)
+                    include = (today - t.fecha_inicio).days > 30
                 elif filtro == 'en_curso':
-                    if t.estado == 'en_progreso':
-                        deudores.append(t)
+                    include = t.estado == 'en_progreso'
                 else:
-                    # Todos
+                    include = True
+                
+                if include:
                     deudores.append(t)
+                    if is_critica:
+                        deuda_critica += current_deuda
+                    else:
+                        deuda_corriente += current_deuda
         
         # Ordenar por deuda descendente
         deudores.sort(key=lambda x: x.deuda, reverse=True)
         
-        # Calcular total acumulado de la vista actual
+        # KPIs
         total_deuda_vista = sum(d.deuda for d in deudores)
+        total_deudores = len(deudores)
+        promedio_deuda = total_deuda_vista / total_deudores if total_deudores > 0 else 0
         
         ctx['deudores'] = deudores
         ctx['filtro_actual'] = filtro
         ctx['total_deuda_vista'] = total_deuda_vista
+        ctx['total_deudores'] = total_deudores
+        ctx['promedio_deuda'] = promedio_deuda
+        
+        # Datos JSON para gráfico
+        import json
+        ctx['chart_labels'] = json.dumps(['Deuda Crítica (Terminados)', 'Deuda Corriente (En Curso)'])
+        ctx['chart_data'] = json.dumps([float(deuda_critica), float(deuda_corriente)])
+        
+        mapping_titulos = {
+            'todos': 'Cartera de Deuda Completa',
+            'prioridad': 'Deudas Prioritarias (Tratamientos Terminados)',
+            'antiguos': 'Deudas Antiguas (>30 días)',
+            'en_curso': 'Deudas en Tratamientos Activos'
+        }
+        ctx['titulo_filtro'] = mapping_titulos.get(filtro, 'Reporte de Deudas')
+        
         return ctx
 
 class ReporteIngresosView(FinanzasGroupRequiredMixin, TemplateView):
@@ -182,13 +213,14 @@ class ReporteIngresosView(FinanzasGroupRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
+        from django.db.models import Count # Importación local para asegurar
         
         # Filtro de tiempo
         rango = self.request.GET.get('rango', 'mes') # Por defecto: Mes Actual
         
         # Usamos datetime ahora mismo para evitar conversiones raras de SQLite
         now = timezone.now() 
-        pagos = Pago.objects.all().order_by('-fecha_pago')
+        pagos = Pago.objects.all().select_related('tratamiento__paciente').order_by('-fecha_pago')
 
         if rango == 'hoy':
             # Rango: Desde las 00:00 hasta las 23:59:59 de hoy
@@ -237,9 +269,37 @@ class ReporteIngresosView(FinanzasGroupRequiredMixin, TemplateView):
             ctx['titulo_filtro'] = "Histórico Completo"
         
         # Calcular total del periodo filtrado
-        total_periodo = sum(p.monto for p in pagos)
+        agg_result = pagos.aggregate(total_periodo=Sum('monto'), total_ops=Count('id'))
+        total_periodo = agg_result['total_periodo'] or 0
+        total_ops = agg_result['total_ops'] or 0
         
+        ticket_promedio = total_periodo / total_ops if total_ops > 0 else 0
+        
+        # --- DATOS PARA GRÁFICO (Agregación por método) ---
+        datos_metodo = pagos.values('metodo_pago').annotate(total=Sum('monto')).order_by('-total')
+        
+        # Mapear keys de método a nombres legibles
+        metodo_choice_dict = dict(Pago.METODO_PAGO_CHOICES)
+        
+        metodos_labels = []
+        metodos_data = []
+        # Mapa de colores sugeridos (se puede reutilizar en JS)
+        
+        for item in datos_metodo:
+            key = item['metodo_pago']
+            label = metodo_choice_dict.get(key, key.title()) # Fallback
+            metodos_labels.append(label)
+            metodos_data.append(float(item['total']))
+            
         ctx['pagos'] = pagos
         ctx['rango_actual'] = rango
         ctx['total_periodo'] = total_periodo
+        ctx['total_ops'] = total_ops
+        ctx['ticket_promedio'] = ticket_promedio
+        
+        # Datos JSON para el gráfico
+        import json
+        ctx['chart_labels'] = json.dumps(metodos_labels)
+        ctx['chart_data'] = json.dumps(metodos_data)
+        
         return ctx

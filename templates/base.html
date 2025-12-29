@@ -1,5 +1,6 @@
 <!-- templates/base.html -->
 {% load static %}
+{% load ayuda_tags %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -283,6 +284,11 @@
                             {% now "l, d F Y" %}
                         </span>
                         
+                        <!-- Botón Ayuda (Desktop) -->
+                        <a href="#" class="text-secondary position-relative me-2" data-bs-toggle="offcanvas" data-bs-target="#offcanvasAyuda" title="Centro de Ayuda">
+                            <i class="bi bi-question-circle" style="font-size: 1.35rem;"></i>
+                        </a>
+                        
                         <!-- Birthday Badge Desktop -->
                         {% if cumpleaneros_hoy_count > 0 %}
                         <div class="position-relative">
@@ -539,5 +545,25 @@
     </div>
 
     {% include 'comunicaciones/modal_whatsapp.html' %}
+    <!-- Ayuda Contextual Offcanvas -->
+    {% get_help_template as help_template %}
+    <div class="offcanvas offcanvas-end shadow-lg" tabindex="-1" id="offcanvasAyuda" aria-labelledby="offcanvasAyudaLabel" style="width: 400px;">
+        <div class="offcanvas-header border-bottom bg-light">
+            <h5 class="offcanvas-title d-flex align-items-center" id="offcanvasAyudaLabel">
+                <i class="bi bi-life-preserver text-primary me-2"></i>Centro de Ayuda
+            </h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body p-4">
+            {% include help_template %}
+            
+            <hr class="my-4">
+            
+            <div class="text-center text-muted small">
+                <p class="mb-1">¿No encuentras lo que buscas?</p>
+                <a href="#" class="text-decoration-none fw-bold">Contactar Soporte Técnico</a>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

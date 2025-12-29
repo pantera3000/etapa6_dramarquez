@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Error del servidor{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+        <div class="col-md-6 text-center">
+            <div class="mb-4">
+                <i class="bi bi-exclamation-octagon-fill text-danger" style="font-size: 5rem;"></i>
+            </div>
+            <h1 class="display-4 fw-bold text-dark mb-3">500</h1>
+            <h2 class="h4 text-muted mb-4">Error del servidor</h2>
+            <p class="text-muted mb-4">
+                Ha ocurrido un error inesperado. Nuestro equipo ha sido notificado.
+            </p>
+            
+            <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                <a href="{% url 'pacientes:lista' %}" class="btn btn-primary">
+                    <i class="bi bi-house-door me-2"></i>Ir a Inicio
+                </a>
+                <button onclick="location.reload()" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-clockwise me-2"></i>Reintentar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,133 @@
+<h5 class="mb-3 d-flex align-items-center">
+    <i class="bi bi-people text-primary me-2"></i> Gestión de Pacientes
+</h5>
+<p class="text-muted small mb-4">
+    Bienvenido al módulo principal de pacientes. Aquí podrás administrar toda la información clínica y administrativa de tus pacientes.
+</p>
+
+<!-- Navegación por Pestañas -->
+<ul class="nav nav-tabs nav-fill mb-3" id="helpTabsPacientes" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active py-1 small" id="tab-basico" data-bs-toggle="tab" data-bs-target="#content-basico" type="button" role="tab" aria-selected="true">Básico</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link py-1 small" id="tab-filtros" data-bs-toggle="tab" data-bs-target="#content-filtros" type="button" role="tab" aria-selected="false">Filtros</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link py-1 small" id="tab-iconos" data-bs-toggle="tab" data-bs-target="#content-iconos" type="button" role="tab" aria-selected="false">Íconos</button>
+    </li>
+</ul>
+
+<!-- Contenido de Pestañas -->
+<div class="tab-content" id="helpTabContentPacientes">
+    
+    <!-- TAB: BÁSICO -->
+    <div class="tab-pane fade show active" id="content-basico" role="tabpanel">
+        <div class="d-grid gap-3">
+            <!-- Crear Paciente -->
+            <div class="card border-0 bg-light shadow-sm">
+                <div class="card-body p-3">
+                    <h6 class="fw-bold text-success mb-2"><i class="bi bi-person-plus-fill me-2"></i>Nuevo Paciente</h6>
+                    <p class="small mb-0">
+                        Usa el botón <strong>"Nuevo Paciente"</strong> (arriba a la derecha) para registrar a una persona. Deberás ingresar obligatoriamente:
+                    </p>
+                    <ul class="small mb-0 mt-2 text-muted">
+                        <li>Nombres y Apellidos</li>
+                        <li>DNI (Documento de Identidad)</li>
+                        <li>Teléfono</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Acciones -->
+            <div class="card border-0 bg-light shadow-sm">
+                <div class="card-body p-3">
+                    <h6 class="fw-bold text-primary mb-2"><i class="bi bi-lightning-fill me-2"></i>Acciones Rápidas</h6>
+                    <p class="small mb-2">En cada fila, a la derecha, tienes botones:</p>
+                    <div class="d-flex flex-column gap-2 small">
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-white text-dark border me-2"><i class="bi bi-eye"></i></span> Ver historial clínico completo.
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-white text-dark border me-2"><i class="bi bi-pencil"></i></span> Editar datos personales.
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-white text-dark border me-2"><i class="bi bi-trash"></i></span> Eliminar (solo si no tiene historial).
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: FILTROS -->
+    <div class="tab-pane fade" id="content-filtros" role="tabpanel">
+        <div class="alert alert-info small border-0">
+            <i class="bi bi-search me-1"></i>
+            La barra de búsqueda superior busca simultáneamente por <strong>Nombre</strong>, <strong>Apellido</strong> o <strong>DNI</strong>.
+        </div>
+        
+        <h6 class="small fw-bold mt-3">Filtros disponibles:</h6>
+        <div class="list-group list-group-flush small">
+            <div class="list-group-item bg-transparent px-0">
+                <strong><i class="bi bi-calendar-range me-2 text-muted"></i>Edad:</strong>
+                Filtra por rangos (Niños, Adultos, Adulto Mayor) para campañas específicas.
+            </div>
+            <div class="list-group-item bg-transparent px-0">
+                <strong><i class="bi bi-gender-ambiguous me-2 text-muted"></i>Género:</strong>
+                Muestra solo Hombres o Mujeres.
+            </div>
+            <div class="list-group-item bg-transparent px-0">
+                <strong><i class="bi bi-toggle-on me-2 text-muted"></i>Estado:</strong>
+                Alterna entre activos e inactivos.
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: ICONOS -->
+    <div class="tab-pane fade" id="content-iconos" role="tabpanel">
+        <h6 class="small fw-bold mb-3">Leyenda de Indicadores Visuales</h6>
+        
+        <div class="d-flex align-items-center mb-3">
+            <div class="position-relative me-3">
+                <span class="fs-4">🎂</span>
+                <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+            </div>
+            <div class="small lh-sm">
+                <strong>Cumpleañero:</strong><br>
+                Aparece si el paciente cumple años hoy o en los próximos 7 días.
+            </div>
+        </div>
+        
+        <div class="d-flex align-items-center mb-3">
+            <div class="badge bg-success-subtle text-success border border-success-subtle me-3 rounded-pill px-3">
+                Activo
+            </div>
+            <div class="small lh-sm">
+                <strong>Paciente Activo:</strong><br>
+                Tiene citas o tratamientos recientes.
+            </div>
+        </div>
+        
+        <div class="d-flex align-items-center">
+            <div class="badge bg-secondary-subtle text-secondary border border-secondary-subtle me-3 rounded-pill px-3">
+                Inactivo
+            </div>
+            <div class="small lh-sm">
+                <strong>Paciente Inactivo:</strong><br>
+                Sin actividad reciente. Puedes usar el filtro para ocultarlos.
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr class="my-4">
+
+<div class="card bg-primary-subtle border-0">
+    <div class="card-body p-3">
+        <h6 class="fw-bold text-primary mb-1"><i class="bi bi-lightbulb me-2"></i>Tip Pro</h6>
+        <p class="small mb-0 text-dark">
+            Haz clic en los encabezados de la tabla (ej. "Nombre", "Edad") para ordenar la lista ascendente o descendentemente.
+        </p>
+    </div>
+</div>

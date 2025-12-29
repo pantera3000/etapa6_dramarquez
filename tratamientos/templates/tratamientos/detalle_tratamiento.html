@@ -76,10 +76,26 @@
                 <a href="{% url 'tratamientos:editar' tratamiento.pk %}" class="btn btn-white border shadow-sm text-dark">
                     <i class="bi bi-pencil"></i>
                 </a>
-                <a href="{% url 'tratamientos:lista' %}" class="btn btn-light border text-muted" 
-                   onclick="if (document.referrer && document.referrer.includes(window.location.host)) { history.back(); return false; }">
+                <a href="#" class="btn btn-light border text-muted" id="btnVolver">
                     <i class="bi bi-arrow-left"></i> Atrás
                 </a>
+                <script>
+                document.getElementById('btnVolver').addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const urlParams = new URLSearchParams(window.location.search);
+                    
+                    if (urlParams.get('from') === 'paciente') {
+                        // Volver al paciente con la pestaña de tratamientos activa
+                        window.location.href = '{% url "pacientes:detalle" tratamiento.paciente.pk %}?tab=tratamientos';
+                    } else if (document.referrer && document.referrer.includes(window.location.host)) {
+                        // Usar history.back si hay historial
+                        history.back();
+                    } else {
+                        // Fallback: ir a la lista de tratamientos
+                        window.location.href = '{% url "tratamientos:lista" %}';
+                    }
+                });
+                </script>
             </div>
         </div>
 

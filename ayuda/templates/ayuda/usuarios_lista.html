@@ -1,0 +1,41 @@
+<h5 class="mb-3">👥 Gestión de Usuarios</h5>
+<p>En esta sección puedes administrar el acceso del personal al sistema.</p>
+
+<div class="accordion" id="accordionHelpUsuarios">
+    <!-- Creación -->
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                ¿Cómo crear un usuario?
+            </button>
+        </h2>
+        <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionHelpUsuarios">
+            <div class="accordion-body small">
+                Has clic en el botón <strong>"Nuevo Usuario"</strong> en la parte superior derecha. Llena nombre, apellido, email y asigna un rol (Doctor, Asistente, Admin).
+            </div>
+        </div>
+    </div>
+    
+    <!-- Roles -->
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                Roles y Permisos
+            </button>
+        </h2>
+        <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionHelpUsuarios">
+            <div class="accordion-body small">
+                <ul>
+                    <li><strong>Admin:</strong> Acceso total configuración y usuarios.</li>
+                    <li><strong>Doctor:</strong> Pacientes, historias, tratamientos.</li>
+                    <li><strong>Asistente:</strong> Solo lectura de pacientes y agenda.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="alert alert-info mt-3 small">
+    <i class="bi bi-info-circle me-1"></i>
+    Los usuarios creados recibirán un correo para establecer su contraseña si el servidor de correo está configurado.
+</div>

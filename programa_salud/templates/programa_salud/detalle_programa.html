@@ -25,11 +25,25 @@
                 <div class="text-muted small">Evaluación y Prescripción</div>
             </div>
             <div class="btn-group">
-                <a href="{% url 'pacientes:detalle' paciente.pk %}" class="btn btn-outline-secondary">← Volver</a>
+                <a href="#" class="btn btn-outline-secondary" id="btnVolverPrograma">← Volver</a>
                 <a href="{% url 'programa_salud:editar' programa.pk %}" class="btn btn-warning">✏️ Editar</a>
                 <a href="{% url 'programa_salud:pdf' programa.pk %}" target="_blank" class="btn btn-danger">📄 Exportar PDF</a>
             </div>
         </div>
+        <script>
+        document.getElementById('btnVolverPrograma').addEventListener('click', function(e) {
+            e.preventDefault();
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            if (urlParams.get('from') === 'paciente') {
+                window.location.href = '{% url "pacientes:detalle" paciente.pk %}?tab=programa';
+            } else if (document.referrer && document.referrer.includes(window.location.host)) {
+                history.back();
+            } else {
+                window.location.href = '{% url "pacientes:detalle" paciente.pk %}';
+            }
+        });
+        </script>
 
         <div class="card shadow-sm mb-5">
             <div class="card-body p-4">

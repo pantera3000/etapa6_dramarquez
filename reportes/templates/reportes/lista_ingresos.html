@@ -2,89 +2,250 @@
 {% load static %}
 {% load l10n %}
 
-{% block title %}Reporte - Ingresos{% endblock %}
+{% block title %}Reporte - Ingresos Detallado{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const THEME_COLORS = {
+            light: { text: '#6c757d', grid: 'rgba(0, 0, 0, 0.05)' },
+            dark: { text: '#adb5bd', grid: 'rgba(255, 255, 255, 0.05)' }
+        };
+
+        const isDarkMode = () => document.documentElement.getAttribute('data-theme') === 'dark';
+        const getCurrentColors = () => isDarkMode() ? THEME_COLORS.dark : THEME_COLORS.light;
+
+        const ctxMetodos = document.getElementById('chartMetodos').getContext('2d');
+        const labels = JSON.parse('{{ chart_labels|safe }}');
+        const data = JSON.parse('{{ chart_data|safe }}');
+
+        // Paleta de colores consistente
+        const colors = [
+            '#198754', // Success (Verde) - Efectivo
+            '#6610f2', // Indigo - Yape
+            '#0dcaf0', // Cyan - Plin
+            '#0d6efd', // Primary - Tarjeta
+            '#fd7e14', // Orange - Transferencia
+            '#6c757d'  // Gray - Otro
+        ];
+
+        let chartMetodos = new Chart(ctxMetodos, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: colors,
+                    borderWidth: 0,
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { 
+                        position: 'right',
+                        labels: { color: getCurrentColors().text, boxWidth: 12, padding: 15 }
+                    }
+                }
+            }
+        });
+
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && (mutation.attributeName === 'data-theme' || mutation.attributeName === 'class')) {
+                    chartMetodos.options.plugins.legend.labels.color = getCurrentColors().text;
+                    chartMetodos.update();
+                }
+            });
+        });
+
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class'] });
+    });
+</script>
+
+<style>
+    [data-theme="dark"] .bg-white-dm {
+        background-color: #212529 !important;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.3) !important;
+    }
+    .filter-btn-group .btn.active {
+        background-color: #198754;
+        color: white;
+        border-color: #198754;
+    }
+    .filter-btn-group .btn:hover:not(.active) {
+        background-color: #e9ecef;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4 animate-fade-in-up">
-    <div>
-        <h1 class="h3 fw-bold text-gray-800">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 animate-fade-in-up">
+    <div class="mb-3 mb-md-0">
+        <h1 class="h3 fw-bold text-dark mb-1">
             <i class="bi bi-graph-up me-2 text-success"></i>Reporte de Ingresos
         </h1>
-        <p class="text-muted mb-0">Historial de pagos recibidos recientemente.</p>
+        <p class="text-muted mb-0">Análisis detallado de recaudación y métodos de pago.</p>
     </div>
-    <a href="{% url 'reportes:dashboard' %}" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-left me-2"></i>Volver
-    </a>
+    <div class="d-flex gap-2">
+        <a href="{% url 'reportes:dashboard' %}" class="btn btn-outline-secondary shadow-sm">
+            <i class="bi bi-arrow-left me-2"></i>Volver
+        </a>
+        <button class="btn btn-light border shadow-sm" onclick="window.print()">
+            <i class="bi bi-printer"></i>
+        </button>
+    </div>
 </div>
 
 <!-- Filtros de Tiempo -->
 <div class="card shadow-sm border-0 mb-4 animate-fade-in-up">
-    <div class="card-body p-2">
-        <nav class="nav nav-pills nav-fill">
-            <a class="nav-link {% if rango_actual == 'hoy' %}active bg-success{% endif %}" href="?rango=hoy">Hoy</a>
-            <a class="nav-link {% if rango_actual == 'semana' %}active bg-success{% endif %}" href="?rango=semana">Esta Semana</a>
-            <a class="nav-link {% if rango_actual == 'mes' %}active bg-success{% endif %}" href="?rango=mes">Este Mes</a>
-            <a class="nav-link {% if rango_actual == 'mes_anterior' %}active bg-success{% endif %}" href="?rango=mes_anterior">Mes Anterior</a>
-            <a class="nav-link {% if rango_actual == 'anio' %}active bg-success{% endif %}" href="?rango=anio">Este Año</a>
-            <a class="nav-link {% if rango_actual == 'todos' %}active bg-success{% endif %}" href="?rango=todos">Histórico</a>
-        </nav>
+    <div class="card-body p-2 filter-btn-group d-flex overflow-auto">
+        <a class="btn btn-white border-0 rounded-pill px-3 me-1 flex-shrink-0 fw-medium {% if rango_actual == 'hoy' %}active{% endif %}" href="?rango=hoy">Hoy</a>
+        <a class="btn btn-white border-0 rounded-pill px-3 me-1 flex-shrink-0 fw-medium {% if rango_actual == 'semana' %}active{% endif %}" href="?rango=semana">Esta Semana</a>
+        <a class="btn btn-white border-0 rounded-pill px-3 me-1 flex-shrink-0 fw-medium {% if rango_actual == 'mes' %}active{% endif %}" href="?rango=mes">Este Mes</a>
+        <a class="btn btn-white border-0 rounded-pill px-3 me-1 flex-shrink-0 fw-medium {% if rango_actual == 'mes_anterior' %}active{% endif %}" href="?rango=mes_anterior">Mes Anterior</a>
+        <a class="btn btn-white border-0 rounded-pill px-3 me-1 flex-shrink-0 fw-medium {% if rango_actual == 'anio' %}active{% endif %}" href="?rango=anio">Este Año</a>
+        <a class="btn btn-white border-0 rounded-pill px-3 flex-shrink-0 fw-medium {% if rango_actual == 'todos' %}active{% endif %}" href="?rango=todos">Histórico</a>
     </div>
 </div>
 
-<div class="card shadow-sm border-0 animate-fade-in-up" style="animation-delay: 0.1s;">
-    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-        <h5 class="mb-0 fw-bold text-success">{{ titulo_filtro }}</h5>
-        <span class="badge bg-success fs-6">Total: S/ {{ total_periodo|floatformat:2 }}</span>
+<div class="row g-4 mb-4">
+    <!-- Métricas Resumen -->
+    <div class="col-lg-8 animate-fade-in-up" style="animation-delay: 0.1s;">
+        <div class="row g-3 h-100">
+            <!-- Total -->
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 bg-white bg-white-dm card-gradient-success text-white" 
+                     style="background: linear-gradient(135deg, #198754 0%, #20c997 100%);">
+                    <div class="card-body p-4 text-center d-flex flex-column justify-content-center">
+                        <div class="text-white-50 small text-uppercase fw-bold mb-1">Total Recaudado</div>
+                        <h2 class="fw-bold mb-0">S/ {{ total_periodo|floatformat:2 }}</h2>
+                        <div class="small text-white-50 mt-1">{{ titulo_filtro }}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Operaciones -->
+            <div class="col-6 col-md-4">
+                <div class="card border-0 shadow-sm h-100 bg-white bg-white-dm">
+                    <div class="card-body p-4 text-center d-flex flex-column justify-content-center">
+                        <div class="text-muted small text-uppercase mb-1">Transacciones</div>
+                        <h3 class="fw-bold text-dark mb-0">{{ total_ops }}</h3>
+                        <div class="small text-success mt-1"><i class="bi bi-check-circle me-1"></i>Registradas</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Ticket Promedio -->
+            <div class="col-6 col-md-4">
+                <div class="card border-0 shadow-sm h-100 bg-white bg-white-dm">
+                    <div class="card-body p-4 text-center d-flex flex-column justify-content-center">
+                        <div class="text-muted small text-uppercase mb-1">Ticket Promedio</div>
+                        <h3 class="fw-bold text-primary mb-0">S/ {{ ticket_promedio|floatformat:0 }}</h3>
+                        <div class="small text-muted mt-1">Por paciente</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Gráfico Distribución -->
+    <div class="col-lg-4 animate-fade-in-up" style="animation-delay: 0.2s;">
+        <div class="card border-0 shadow-sm h-100 bg-white bg-white-dm">
+            <div class="card-header bg-transparent border-0 pt-3 px-3">
+                <h6 class="fw-bold text-muted mb-0 small text-uppercase">Distribución por Método</h6>
+            </div>
+            <div class="card-body p-0 d-flex align-items-center justify-content-center" style="height: 200px;">
+                {% if total_periodo > 0 %}
+                    <canvas id="chartMetodos" height="180"></canvas>
+                {% else %}
+                    <p class="text-muted small text-center px-4">No hay datos para mostrar en este periodo.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabla Detallada -->
+<div class="card shadow-sm border-0 animate-fade-in-up" style="animation-delay: 0.3s;">
+    <div class="card-header bg-white bg-white-dm py-3 border-bottom d-flex justify-content-between align-items-center">
+        <h6 class="mb-0 fw-bold text-dark">Detalle de Transacciones</h6>
+        <span class="badge bg-light text-dark border">{{ pagos|length }} registros</span>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead class="bg-light">
                     <tr>
-                        <th class="ps-4">Fecha</th>
-                        <th>Paciente</th>
-                        <th>Tratamiento</th>
-                        <th>Método</th>
-                        <th>Monto</th>
-                        <th class="text-end pe-4">Acciones</th>
+                        <th class="ps-4 text-uppercase small text-muted border-0">Fecha</th>
+                        <th class="text-uppercase small text-muted border-0">Paciente</th>
+                        <th class="text-uppercase small text-muted border-0">Tratamiento</th>
+                        <th class="text-uppercase small text-muted border-0">Método</th>
+                        <th class="text-end pe-4 text-uppercase small text-muted border-0">Monto</th>
+                        <th class="text-end pe-4 text-uppercase small text-muted border-0"></th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="border-top-0">
                     {% for pago in pagos %}
                     <tr>
-                        <td class="ps-4">{{ pago.fecha_pago|date:"d/m/Y H:i" }}</td>
-                        <td class="fw-medium">
-                            <a href="{% url 'pacientes:detalle' pago.tratamiento.paciente.pk %}" class="text-decoration-none text-dark">
-                                {{ pago.tratamiento.paciente.nombre_completo }}
-                            </a>
+                        <td class="ps-4 text-nowrap">
+                            <div class="fw-bold text-dark">{{ pago.fecha_pago|date:"d M, Y" }}</div>
+                            <small class="text-muted">{{ pago.fecha_pago|date:"H:i" }}</small>
                         </td>
-                        <td>{{ pago.tratamiento.nombre }}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px; font-size: 0.8rem; fw-bold">
+                                    {{ pago.tratamiento.paciente.nombre|slice:":1" }}{{ pago.tratamiento.paciente.apellido|slice:":1" }}
+                                </div>
+                                <a href="{% url 'pacientes:detalle' pago.tratamiento.paciente.pk %}" class="text-decoration-none text-dark fw-medium stretched-link">
+                                    {{ pago.tratamiento.paciente.nombre_completo }}
+                                </a>
+                            </div>
+                        </td>
+                        <td class="text-muted">{{ pago.tratamiento.nombre }}</td>
                         <td>
                             {% if pago.metodo_pago == 'efectivo' %}
-                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3">
+                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-10 rounded-pill px-2">
                                     <i class="bi bi-cash me-1"></i> Efectivo
                                 </span>
-                            {% elif pago.metodo_pago == 'yape' or pago.metodo_pago == 'plin' %}
-                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-3">
-                                    <i class="bi bi-phone me-1"></i> Digital
+                            {% elif pago.metodo_pago == 'yape' %}
+                                <span class="badge" style="background-color: rgba(102, 16, 242, 0.1); color: #6610f2; border: 1px solid rgba(102, 16, 242, 0.1);">
+                                    <i class="bi bi-qr-code me-1"></i> Yape
+                                </span>
+                            {% elif pago.metodo_pago == 'plin' %}
+                                <span class="badge" style="background-color: rgba(13, 202, 240, 0.1); color: #0dcaf0; border: 1px solid rgba(13, 202, 240, 0.1);">
+                                    <i class="bi bi-phone me-1"></i> Plin
+                                </span>
+                            {% elif pago.metodo_pago == 'tarjeta' %}
+                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10 rounded-pill px-2">
+                                    <i class="bi bi-credit-card me-1"></i> Tarjeta
+                                </span>
+                            {% elif pago.metodo_pago == 'transferencia' %}
+                                <span class="badge" style="background-color: rgba(253, 126, 20, 0.1); color: #fd7e14; border: 1px solid rgba(253, 126, 20, 0.1);">
+                                    <i class="bi bi-bank me-1"></i> Transf.
                                 </span>
                             {% else %}
-                                <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill px-3">
-                                    <i class="bi bi-bank me-1"></i> {{ pago.get_metodo_pago_display }}
+                                <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-10 rounded-pill px-2">
+                                    <i class="bi bi-question-circle me-1"></i> {{ pago.get_metodo_pago_display }}
                                 </span>
                             {% endif %}
                         </td>
-                        <td class="fw-bold text-success">S/ {{ pago.monto|floatformat:2 }}</td>
+                        <td class="text-end fw-bold text-dark fs-6" style="font-family: monospace;">S/ {{ pago.monto|floatformat:2 }}</td>
                         <td class="text-end pe-4">
-                            <a href="{% url 'tratamientos:detalle' pago.tratamiento.pk %}" class="btn btn-sm btn-outline-secondary">
-                                <i class="bi bi-eye"></i>
+                            <a href="{% url 'tratamientos:detalle' pago.tratamiento.pk %}" class="btn btn-sm btn-icon btn-ghost-secondary rounded-circle" data-bs-toggle="tooltip" title="Ver Tratamiento" style="position: relative; z-index: 2;">
+                                <i class="bi bi-chevron-right"></i>
                             </a>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
                         <td colspan="6" class="text-center py-5">
-                            <h5 class="text-muted">No hay registros de pagos recientes.</h5>
+                            <div class="text-muted opacity-50 display-1 mb-2"><i class="bi bi-wallet2"></i></div>
+                            <h6 class="text-muted fw-bold">Sin movimientos</h6>
+                            <p class="text-muted small">No se encontraron pagos en este periodo.</p>
                         </td>
                     </tr>
                     {% endfor %}

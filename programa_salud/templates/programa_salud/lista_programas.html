@@ -19,9 +19,9 @@
                     <td>{{ prog.fecha|date:"d/m/Y" }}</td>
                     <td>
                         {% if prog.sss_respiracion_oral or prog.sss_calidad_sueno %}
-                            <span class="badge bg-warning text-dark">SSS Detectado</span>
+                            <span class="badge bg-warning text-dark fw-semibold">SSS Detectado</span>
                         {% else %}
-                            <span class="badge bg-success">Sin SSS grave</span>
+                            <span class="badge bg-success text-white fw-semibold">Sin SSS grave</span>
                         {% endif %}
                         <small class="d-block text-muted">
                             {% if prog.placa_talla %}Placa: {{ prog.placa_talla }}{% endif %}
@@ -29,7 +29,7 @@
                     </td>
                     <td class="text-end">
                         <div class="btn-group btn-group-sm">
-                            <a href="{% url 'programa_salud:detalle' prog.pk %}" class="btn btn-info text-white" title="Ver Detalle">👁️</a>
+                            <a href="{% url 'programa_salud:detalle' prog.pk %}?from=paciente" class="btn btn-info text-white" title="Ver Detalle">👁️</a>
                             <a href="{% url 'programa_salud:editar' prog.pk %}" class="btn btn-warning" title="Editar">✏️</a>
                             <a href="{% url 'programa_salud:pdf' prog.pk %}" target="_blank" class="btn btn-danger" title="PDF">📄</a>
                             <a href="{% url 'programa_salud:eliminar' prog.pk %}" class="btn btn-danger" title="Eliminar" onclick="return confirm('¿Eliminar este programa?')">🗑️</a>

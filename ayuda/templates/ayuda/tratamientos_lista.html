@@ -1,0 +1,89 @@
+<h5 class="mb-3 d-flex align-items-center">
+    <i class="bi bi-bandaid text-danger me-2"></i> Gestión de Tratamientos
+</h5>
+<p class="text-muted small mb-4">
+    Panel de control para supervisar el avance clínico y estado financiero de los procedimientos.
+</p>
+
+<!-- Pestañas -->
+<ul class="nav nav-tabs nav-fill mb-3" id="helpTabsTratamientos" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active py-1 small" id="tab-estados" data-bs-toggle="tab" data-bs-target="#content-estados" type="button" role="tab" aria-selected="true">Estados</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link py-1 small" id="tab-financiero" data-bs-toggle="tab" data-bs-target="#content-financiero" type="button" role="tab" aria-selected="false">Finanzas</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link py-1 small" id="tab-kpis" data-bs-toggle="tab" data-bs-target="#content-kpis" type="button" role="tab" aria-selected="false">KPIs</button>
+    </li>
+</ul>
+
+<div class="tab-content" id="helpTabContentTratamientos">
+    <!-- TAB: ESTADOS CLÍNICOS -->
+    <div class="tab-pane fade show active" id="content-estados" role="tabpanel">
+        <div class="list-group list-group-flush small">
+            <div class="list-group-item bg-transparent px-0">
+                <span class="badge bg-secondary me-2">Pendiente</span>
+                Plan de tratamiento creado pero no iniciado.
+            </div>
+            <div class="list-group-item bg-transparent px-0">
+                <span class="badge bg-primary me-2">En Progreso</span>
+                El paciente ya asistió a la primera sesión.
+            </div>
+            <div class="list-group-item bg-transparent px-0">
+                <span class="badge bg-success me-2">Completado</span>
+                Alta clínica. Procedimiento finalizado exitosamente.
+            </div>
+        </div>
+        
+        <div class="mt-3 card border-success-subtle bg-success-subtle">
+            <div class="card-body p-2">
+                <small class="text-success-emphasis d-flex align-items-center">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <strong>Auto-completar:</strong> Si el saldo llega a $0 y el trabajo clínico terminó, marca el tratamiento como completado manualmente.
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: FINANCIERO -->
+    <div class="tab-pane fade" id="content-financiero" role="tabpanel">
+        <h6 class="fw-bold small mb-3">Gestión de Cobros</h6>
+        
+        <div class="timeline small border-start ps-3 ms-2">
+            <div class="mb-3 position-relative">
+                <span class="position-absolute top-0 start-0 translate-middle p-1 bg-warning rounded-circle" style="left: -1rem !important;"></span>
+                <strong>Cobrar:</strong> Haz clic en el ícono <i class="bi bi-cash-coin text-success"></i> "Registrar Pago".
+            </div>
+            <div class="mb-3 position-relative">
+                <span class="position-absolute top-0 start-0 translate-middle p-1 bg-info rounded-circle" style="left: -1rem !important;"></span>
+                <strong>Abonos:</strong> El sistema permite pagos parciales. El saldo se recalcula automáticamente.
+            </div>
+            <div class="mb-0 position-relative">
+                <span class="position-absolute top-0 start-0 translate-middle p-1 bg-danger rounded-circle" style="left: -1rem !important;"></span>
+                <strong>Deuda:</strong> Identifica rápidamente pacientes morosos con la barra de progreso roja/verde.
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: KPIs -->
+    <div class="tab-pane fade" id="content-kpis" role="tabpanel">
+        <div class="row g-2 small text-center">
+            <div class="col-6">
+                <div class="p-2 border rounded bg-white">
+                    <div class="fw-bold text-primary">Ingresos Reales</div>
+                    Dinero efectivamente cobrado.
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="p-2 border rounded bg-white">
+                    <div class="fw-bold text-danger">Deuda Total</div>
+                    Dinero pendiente por cobrar.
+                </div>
+            </div>
+        </div>
+        <p class="mt-3 small text-muted text-center">
+            Estas tarjetas superiores se actualizan en tiempo real con cada pago registrado.
+        </p>
+    </div>
+</div>

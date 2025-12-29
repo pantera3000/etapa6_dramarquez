@@ -56,11 +56,25 @@
                 <div class="text-muted small">Cuestionario completo y respuestas</div>
             </div>
             <div class="btn-group">
-                <a href="{% url 'pacientes:detalle' paciente.id %}" class="btn btn-outline-secondary">← Volver</a>
+                <a href="#" class="btn btn-outline-secondary" id="btnVolverProtocolo">← Volver</a>
                 <a href="{% url 'protocolos:editar' protocolo.id %}" class="btn btn-warning">✏️ Editar</a>
                 <a href="{% url 'protocolos:pdf' protocolo.id %}" target="_blank" class="btn btn-danger">📄 Exportar PDF</a>
             </div>
         </div>
+        <script>
+        document.getElementById('btnVolverProtocolo').addEventListener('click', function(e) {
+            e.preventDefault();
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            if (urlParams.get('from') === 'paciente') {
+                window.location.href = '{% url "pacientes:detalle" paciente.id %}?tab=protocolos';
+            } else if (document.referrer && document.referrer.includes(window.location.host)) {
+                history.back();
+            } else {
+                window.location.href = '{% url "pacientes:detalle" paciente.id %}';
+            }
+        });
+        </script>
 
         <div class="card shadow-sm mb-5">
             <div class="card-body p-4">

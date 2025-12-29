@@ -30,6 +30,10 @@ urlpatterns = [
     path('reportes/', include('reportes.urls')),
 ]
 
+# Handlers de errores personalizados
+handler404 = 'consultorio_dental.views.custom_404'
+handler500 = 'consultorio_dental.views.custom_500'
+
 # Servir archivos de medios en desarrollo
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

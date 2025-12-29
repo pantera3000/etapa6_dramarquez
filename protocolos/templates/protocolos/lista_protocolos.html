@@ -25,18 +25,18 @@
                         <td>{{ protocolo.edad_protocolo }} años</td>
                         <td>
                             {% if protocolo.estado_satisfactorio %}
-                                <span class="badge bg-success">Satisfactorio</span>
+                                <span class="badge bg-success text-white fw-semibold">Satisfactorio</span>
                             {% elif protocolo.estado_mejorable %}
-                                <span class="badge bg-warning text-dark">Mejorable</span>
+                                <span class="badge bg-warning text-dark fw-semibold">Mejorable</span>
                             {% elif protocolo.estado_muy_mejorable %}
-                                <span class="badge bg-danger">Muy Mejorable</span>
+                                <span class="badge bg-danger text-white fw-semibold">Muy Mejorable</span>
                             {% else %}
-                                <span class="badge bg-secondary">Sin evaluar</span>
+                                <span class="badge bg-secondary text-white fw-semibold">Sin evaluar</span>
                             {% endif %}
                         </td>
                         <td>
                             <div class="btn-group btn-group-sm">
-                                <a href="{% url 'protocolos:detalle' protocolo.id %}" class="btn btn-outline-primary" title="Ver detalle">
+                                <a href="{% url 'protocolos:detalle' protocolo.id %}?from=paciente" class="btn btn-outline-primary" title="Ver detalle">
                                     👁️
                                 </a>
                                 <a href="{% url 'protocolos:editar' protocolo.id %}" class="btn btn-outline-warning" title="Editar">

@@ -1,0 +1,126 @@
+<h5 class="mb-3 d-flex align-items-center">
+    <i class="bi bi-calendar4-week text-primary me-2"></i> Gestión Diaria de Citas
+</h5>
+<p class="text-muted small mb-4">
+    Esta es tu herramienta principal para controlar el flujo de pacientes del día a día en modo lista.
+</p>
+
+<!-- Navegación por Pestañas -->
+<ul class="nav nav-tabs nav-fill mb-3" id="helpTabsListaCitas" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active py-1 small" id="tab-flujo" data-bs-toggle="tab" data-bs-target="#content-flujo" type="button" role="tab" aria-selected="true">Flujo</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link py-1 small" id="tab-filtros-citas" data-bs-toggle="tab" data-bs-target="#content-filtros-citas" type="button" role="tab" aria-selected="false">Filtros</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link py-1 small" id="tab-leyenda" data-bs-toggle="tab" data-bs-target="#content-leyenda" type="button" role="tab" aria-selected="false">Leyenda</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link py-1 small" id="tab-sync" data-bs-toggle="tab" data-bs-target="#content-sync" type="button" role="tab" aria-selected="false"><i class="bi bi-google"></i></button>
+    </li>
+</ul>
+
+<div class="tab-content" id="helpTabContentListaCitas">
+    <!-- TAB: FLUJO -->
+    <div class="tab-pane fade show active" id="content-flujo" role="tabpanel">
+        <div class="alert alert-light border small mb-3">
+            <i class="bi bi-info-circle text-primary me-1"></i>
+            Usa los botones de acción en cada fila para cambiar el estado de la cita rápidamente.
+        </div>
+        
+        <div class="timeline small border-start ps-3 ms-2">
+            <div class="mb-3 position-relative">
+                <span class="position-absolute top-0 start-0 translate-middle p-1 bg-secondary rounded-circle" style="left: -1rem !important;"></span>
+                <strong>1. Pendiente:</strong> Cita creada. Esperando confirmación.
+                <br>
+                <span class="text-muted fst-italic">Acción: <i class="bi bi-check-circle text-success"></i> Confirmar</span>
+            </div>
+            <div class="mb-3 position-relative">
+                <span class="position-absolute top-0 start-0 translate-middle p-1 bg-primary rounded-circle" style="left: -1rem !important;"></span>
+                <strong>2. Confirmada:</strong> El paciente ha ratificado su asistencia.
+                <br>
+                <span class="text-muted fst-italic">Acción: <i class="bi bi-person-check-fill text-primary"></i> Completar (cuando llega)</span>
+            </div>
+            <div class="mb-0 position-relative">
+                <span class="position-absolute top-0 start-0 translate-middle p-1 bg-success rounded-circle" style="left: -1rem !important;"></span>
+                <strong>3. Completada:</strong> El paciente fue atendido.
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: FILTROS -->
+    <div class="tab-pane fade" id="content-filtros-citas" role="tabpanel">
+        <div class="card border-0 bg-light">
+            <div class="card-body p-3">
+                <h6 class="fw-bold text-dark mb-2">Búsqueda Avanzada</h6>
+                <p class="small mb-2">
+                    Usa los filtros superiores para encontrar citas específicas:
+                </p>
+                <ul class="small mb-0 text-muted">
+                    <li><strong>Rango de Fechas:</strong> "Desde" y "Hasta".</li>
+                    <li><strong>Paciente:</strong> Busca por nombre o DNI.</li>
+                    <li><strong>Estado:</strong> Filtra solo las "Pendientes" para gestionar confirmaciones.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: LEYENDA -->
+    <div class="tab-pane fade" id="content-leyenda" role="tabpanel">
+        <h6 class="small fw-bold mb-3">Estados de Cita</h6>
+        <div class="d-grid gap-2 small">
+            <div class="d-flex align-items-center justify-content-between p-2 rounded bg-light">
+                <span>Pendiente</span>
+                <span class="badge bg-secondary">Gris</span>
+            </div>
+            <div class="d-flex align-items-center justify-content-between p-2 rounded bg-light">
+                <span>Confirmada</span>
+                <span class="badge bg-primary">Azul</span>
+            </div>
+            <div class="d-flex align-items-center justify-content-between p-2 rounded bg-light">
+                <span>Completada</span>
+                <span class="badge bg-success">Verde</span>
+            </div>
+            <div class="d-flex align-items-center justify-content-between p-2 rounded bg-light">
+                <span>Cancelada / No Asistió</span>
+                <span class="badge bg-danger">Rojo</span>
+            </div>
+        </div>
+        
+        <div class="mt-3 p-2 bg-warning-subtle rounded border border-warning-subtle small">
+            <i class="bi bi-star-fill text-warning me-1"></i>
+            Las <strong>Estadísticas Superiores</strong> te muestran un resumen rápido del día actual para que sepas cuántos pacientes faltan por llegar.
+        </div>
+    </div>
+
+    <!-- TAB: SINCRONIZACIÓN -->
+    <div class="tab-pane fade" id="content-sync" role="tabpanel">
+        <div class="alert alert-info border-0 small mb-3">
+            <i class="bi bi-google me-1"></i>
+            <strong>Integración Automática:</strong> Tus citas se sincronizan con Google Calendar.
+        </div>
+        
+        <h6 class="fw-bold small mb-2 text-dark">¿Cómo funciona?</h6>
+        <div class="d-flex flex-column gap-2 small">
+            <div class="d-flex align-items-start">
+                <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                <div>
+                    <strong>Crear:</strong> Al agendar aquí, aparece automáticamente en el calendario de Google vinculado.
+                </div>
+            </div>
+            <div class="d-flex align-items-start">
+                <i class="bi bi-arrow-repeat text-primary me-2 mt-1"></i>
+                <div>
+                    <strong>Actualizar:</strong> Si cambias fecha/hora aquí, se actualiza en Google Calendar al instante.
+                </div>
+            </div>
+            <div class="d-flex align-items-start">
+                <i class="bi bi-exclamation-triangle-fill text-warning me-2 mt-1"></i>
+                <div>
+                    <strong>Borrar:</strong> Por seguridad, eliminar una cita aquí <u>NO borra</u> el evento en Google Calendar. Debes borrarlo manualmente allí.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

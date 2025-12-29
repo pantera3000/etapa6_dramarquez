@@ -1,280 +1,364 @@
 {% extends 'base.html' %}
 {% load l10n %}
+{% load static %}
 
 {% block title %}Finanzas - Dashboard{% endblock %}
 
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- COLORES ---
+        // Definimos colores explícitos para ambos modos para evitar problemas de herencia
+        const THEME_COLORS = {
+            light: {
+                text: '#6c757d', // text-secondary default
+                grid: 'rgba(0, 0, 0, 0.05)'
+            },
+            dark: {
+                text: '#adb5bd', // text-secondary dark mode (más claro)
+                grid: 'rgba(255, 255, 255, 0.05)'
+            }
+        };
+
+        // Función para detectar si estamos en modo oscuro
+        // Basada en la clase del body o atributo del html que usa tu sistema
+        const isDarkMode = () => {
+            return document.documentElement.getAttribute('data-theme') === 'dark';
+        };
+
+        const getCurrentColors = () => isDarkMode() ? THEME_COLORS.dark : THEME_COLORS.light;
+
+        // --- REFERENCIAS A DOM ---
+        const ctxFinanzas = document.getElementById('chartFinanzas').getContext('2d');
+        const ctxTratamientos = document.getElementById('chartTratamientos').getContext('2d');
+
+        // --- CONFIGURACIÓN GRÁFICOS ---
+        
+        // 1. Finanzas (Doughnut)
+        let chartFinanzas = new Chart(ctxFinanzas, {
+            type: 'doughnut',
+            data: {
+                labels: ['Cobrado (Ingresos)', 'Por Cobrar (Deuda)'],
+                datasets: [{
+                    data: [{{ kpi_ingresos_mes|stringformat:".2f" }}, {{ kpi_deuda_total|stringformat:".2f" }}],
+                    backgroundColor: [
+                        'rgba(25, 135, 84, 0.8)', // Success
+                        'rgba(220, 53, 69, 0.8)'  // Danger
+                    ],
+                    borderColor: 'transparent',
+                    borderWidth: 0,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { 
+                        position: 'bottom', 
+                        labels: { 
+                            color: getCurrentColors().text 
+                        } 
+                    }
+                }
+            }
+        });
+
+        // 2. Tratamientos (Bar)
+        let chartTratamientos = new Chart(ctxTratamientos, {
+            type: 'bar',
+            data: {
+                labels: ['Activos', 'Completados', 'Por Cerrar'],
+                datasets: [{
+                    label: 'Cantidad',
+                    data: [
+                        {{ kpi_tratamientos_activos }}, 
+                        {{ kpi_tratamientos_completados_mes }}, 
+                        {{ kpi_tratamientos_listos_completar }}
+                    ],
+                    backgroundColor: [
+                        'rgba(13, 202, 240, 0.7)', // Info
+                        'rgba(25, 135, 84, 0.7)',  // Success
+                        'rgba(255, 193, 7, 0.7)'   // Warning
+                    ],
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        grid: { 
+                            color: getCurrentColors().grid,
+                            display: true 
+                        },
+                        ticks: { 
+                            color: getCurrentColors().text 
+                        }
+                    },
+                    x: { 
+                        grid: { display: false },
+                        ticks: { 
+                            color: getCurrentColors().text 
+                        }
+                    }
+                }
+            }
+        });
+
+        // --- SISTEMA REACTIVO A CAMBIO DE TEMA ---
+        // Observa cambios en el atributo 'data-theme' del elemento <html>
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && (mutation.attributeName === 'data-theme' || mutation.attributeName === 'class')) {
+                    updateChartsTheme();
+                }
+            });
+        });
+
+        // Observamos tanto html como body por seguridad
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class'] });
+        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+        function updateChartsTheme() {
+            const colors = getCurrentColors();
+
+            // Actualizar Chart Finanzas
+            chartFinanzas.options.plugins.legend.labels.color = colors.text;
+            chartFinanzas.update();
+
+            // Actualizar Chart Tratamientos
+            chartTratamientos.options.scales.x.ticks.color = colors.text;
+            chartTratamientos.options.scales.y.ticks.color = colors.text;
+            chartTratamientos.options.scales.y.grid.color = colors.grid;
+            chartTratamientos.update();
+        }
+    });
+</script>
+
+<style>
+    /* OVERRIDES ESPECÍFICOS PARA DARK MODE EN DASHBOARD */
+    [data-theme="dark"] .card-gradient-success {
+        background: linear-gradient(135deg, #198754 0%, #0f5132 100%) !important;
+    }
+    [data-theme="dark"] .card-gradient-danger {
+        background: linear-gradient(135deg, #dc3545 0%, #842029 100%) !important;
+    }
+    [data-theme="dark"] .card-gradient-primary {
+        background: linear-gradient(135deg, #0d6efd 0%, #052c65 100%) !important;
+    }
+
+    [data-theme="dark"] .card {
+        background-color: #1f2227 !important; /* Un poco más oscuro que el fondo general para contraste */
+        border: 1px solid #343a40 !important;
+    }
+
+    /* Tarjetas blancas en modo claro, oscuras en modo oscuro pero distinguibles */
+    [data-theme="dark"] .bg-white-dm {
+        background-color: #212529 !important; /* Dark grey instead of bg-body */
+        box-shadow: 0 4px 6px rgba(0,0,0,0.3) !important;
+    }
+    
+    /* Textos en tarjetas gradientes siempre blancos */
+    .text-white-always, 
+    .text-white-always * {
+        color: #ffffff !important;
+    }
+    .text-white-always .text-white-50 {
+        color: rgba(255, 255, 255, 0.6) !important;
+    }
+    
+    /* Asegurar que el Chart js use variables CSS si es posible, o forzamos colores en JS */
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="row mb-4 animate-fade-in-up">
-    <div class="col-12">
-        <h1 class="h3 fw-bold text-gray-800">
-            <i class="bi bi-graph-up-arrow me-2 text-primary"></i>Panel Financiero
-        </h1>
-        <p class="text-muted">Resumen de la salud económica del consultorio.</p>
+    <div class="col-12 d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="h3 fw-bold text-dark">
+                <i class="bi bi-graph-up-arrow me-2 text-primary"></i>Panel Financiero
+            </h1>
+            <p class="text-muted mb-0">Resumen ejecutivo del consultorio.</p>
+        </div>
+        <div>
+            <!-- Botón de ayuda contextual ya está en la navbar, pero podemos poner acciones aquí -->
+            <button class="btn btn-light border shadow-sm" onclick="window.print()">
+                <i class="bi bi-printer me-2"></i>Imprimir
+            </button>
+        </div>
     </div>
 </div>
 
-<!-- KPI CARDS -->
+<!-- ==========================================
+     FILA 1: TARJETAS PRINCIPALES (GRADIENTES)
+     ========================================== -->
+<div class="row g-3 mb-4">
+    <!-- Ingresos -->
+    <div class="col-md-4 animate-fade-in-up" style="animation-delay: 0.1s;">
+        <div class="card card-gradient-success border-0 shadow-sm text-white-always h-100 overflow-hidden" 
+             style="background: linear-gradient(135deg, #198754 0%, #20c997 100%);">
+            <div class="card-body p-4 position-relative">
+                <h6 class="text-white-50 text-uppercase fw-bold small mb-2">Ingresos Este Mes</h6>
+                <h2 class="fw-bold mb-0">S/ {{ kpi_ingresos_mes|floatformat:2 }}</h2>
+                <div class="mt-2 text-white-50 small d-flex align-items-center">
+                    {% if kpi_comparativa_mes >= 0 %}
+                        <span class="badge bg-white bg-opacity-25 me-2"><i class="bi bi-arrow-up"></i> +{{ kpi_comparativa_mes|floatformat:0 }}</span>
+                    {% else %}
+                        <span class="badge bg-white bg-opacity-25 me-2"><i class="bi bi-arrow-down"></i> {{ kpi_comparativa_mes|floatformat:0 }}</span>
+                    {% endif %}
+                    vs mes anterior
+                </div>
+                <i class="bi bi-cash-coin position-absolute display-1 text-white text-opacity-10" style="bottom: -10px; right: -10px;"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deuda -->
+    <div class="col-md-4 animate-fade-in-up" style="animation-delay: 0.2s;">
+        <div class="card card-gradient-danger border-0 shadow-sm text-white-always h-100 overflow-hidden" 
+             style="background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);">
+            <div class="card-body p-4 position-relative">
+                <h6 class="text-white-50 text-uppercase fw-bold small mb-2">Por Cobrar (Total)</h6>
+                <h2 class="fw-bold mb-0">S/ {{ kpi_deuda_total|floatformat:2 }}</h2>
+                <div class="mt-2 text-white-50 small">
+                    {{ kpi_pacientes_con_deuda }} pacientes con deuda activa
+                </div>
+                <i class="bi bi-wallet2 position-absolute display-1 text-white text-opacity-10" style="bottom: -10px; right: -10px;"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tasa de Cobro -->
+    <div class="col-md-4 animate-fade-in-up" style="animation-delay: 0.3s;">
+        <div class="card card-gradient-primary border-0 shadow-sm text-white-always h-100 overflow-hidden" 
+             style="background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);">
+            <div class="card-body p-4 position-relative">
+                <h6 class="text-white-50 text-uppercase fw-bold small mb-2">Tasa de Efectividad</h6>
+                <h2 class="fw-bold mb-0">{{ kpi_tasa_cobro }}%</h2>
+                <div class="mt-2 text-white-50 small">
+                    Cobrado vs Total Producido
+                </div>
+                <!-- Barra de progreso visual -->
+                <div class="progress mt-3 bg-white bg-opacity-25" style="height: 6px;">
+                    <div class="progress-bar bg-white" role="progressbar" style="width: {{ kpi_tasa_cobro|stringformat:'.0f' }}%"></div>
+                </div>
+                <i class="bi bi-trophy position-absolute display-1 text-white text-opacity-10" style="bottom: -10px; right: -10px;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================
+     FILA 2: GRÁFICOS INTERACTIVOS (CHART.JS)
+     ========================================== -->
 <div class="row g-4 mb-4">
-    <!-- ========== SECCIÓN FINANCIERA ========== -->
-    <div class="col-12">
-        <h5 class="text-muted fw-bold mb-3"><i class="bi bi-cash-stack me-2"></i>Indicadores Financieros</h5>
-    </div>
-    
-    <!-- INGRESOS DEL MES -->
-    <div class="col-md-6 col-lg-4 animate-fade-in-up" style="animation-delay: 0.1s;">
-        <div class="card border-0 shadow-sm h-100 overflow-hidden">
-            <div class="card-body p-4 position-relative">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h6 class="text-uppercase text-muted small fw-bold mb-0">Ingresos Mes Actual</h6>
-                    <div class="bg-success bg-opacity-10 text-success p-2 rounded-circle">
-                        <i class="bi bi-cash-coin fs-4"></i>
-                    </div>
-                </div>
-                <h3 class="fw-bold text-success mb-0">S/ {{ kpi_ingresos_mes|floatformat:2 }}</h3>
-                <div class="mt-2 text-muted small">
-                    <i class="bi bi-calendar-check me-1"></i> Recaudado este mes
-                </div>
-                <i class="bi bi-graph-up position-absolute display-1 text-success text-opacity-10" style="bottom: -15px; right: -15px;"></i>
-            </div>
-        </div>
-    </div>
-
-    <!-- PROMEDIO INGRESO DIARIO -->
-    <div class="col-md-6 col-lg-4 animate-fade-in-up" style="animation-delay: 0.15s;">
-        <div class="card border-0 shadow-sm h-100 overflow-hidden">
-            <div class="card-body p-4 position-relative">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h6 class="text-uppercase text-muted small fw-bold mb-0">Promedio Diario</h6>
-                    <div class="bg-info bg-opacity-10 text-info p-2 rounded-circle">
-                        <i class="bi bi-calendar-day fs-4"></i>
-                    </div>
-                </div>
-                <h3 class="fw-bold text-info mb-0">S/ {{ kpi_promedio_diario|floatformat:2 }}</h3>
-                <div class="mt-2 text-muted small">
-                    <i class="bi bi-calculator me-1"></i> Ingreso promedio por día
-                </div>
-                <i class="bi bi-bar-chart position-absolute display-1 text-info text-opacity-10" style="bottom: -15px; right: -15px;"></i>
-            </div>
-        </div>
-    </div>
-
-    <!-- TASA DE COBRO -->
-    <div class="col-md-6 col-lg-4 animate-fade-in-up" style="animation-delay: 0.2s;">
-        <div class="card border-0 shadow-sm h-100 overflow-hidden">
-            <div class="card-body p-4 position-relative">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h6 class="text-uppercase text-muted small fw-bold mb-0">Tasa de Cobro</h6>
-                    <div class="bg-{% if kpi_tasa_cobro >= 80 %}success{% elif kpi_tasa_cobro >= 50 %}warning{% else %}danger{% endif %} bg-opacity-10 text-{% if kpi_tasa_cobro >= 80 %}success{% elif kpi_tasa_cobro >= 50 %}warning{% else %}danger{% endif %} p-2 rounded-circle">
-                        <i class="bi bi-percent fs-4"></i>
-                    </div>
-                </div>
-                <h3 class="fw-bold text-{% if kpi_tasa_cobro >= 80 %}success{% elif kpi_tasa_cobro >= 50 %}warning{% else %}danger{% endif %} mb-0">{{ kpi_tasa_cobro }}%</h3>
-                <div class="mt-2 text-muted small">
-                    <i class="bi bi-check-circle me-1"></i> Pagado vs Total
-                </div>
-                <i class="bi bi-pie-chart position-absolute display-1 text-{% if kpi_tasa_cobro >= 80 %}success{% elif kpi_tasa_cobro >= 50 %}warning{% else %}danger{% endif %} text-opacity-10" style="bottom: -15px; right: -15px;"></i>
-            </div>
-        </div>
-    </div>
-
-    <!-- CUENTAS POR COBRAR (DEUDA) -->
-    <div class="col-md-6 col-lg-4 animate-fade-in-up" style="animation-delay: 0.25s;">
-        <div class="card border-0 shadow-sm h-100 overflow-hidden">
-            <div class="card-body p-4 position-relative">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h6 class="text-uppercase text-muted small fw-bold mb-0">Por Cobrar (Total)</h6>
-                    <div class="bg-danger bg-opacity-10 text-danger p-2 rounded-circle">
-                        <i class="bi bi-exclamation-circle fs-4"></i>
-                    </div>
-                </div>
-                <h3 class="fw-bold text-danger mb-0">S/ {{ kpi_deuda_total|floatformat:2 }}</h3>
-                <div class="mt-2 text-muted small">
-                    <i class="bi bi-people me-1"></i> Pendiente de cobro
-                </div>
-                 <i class="bi bi-wallet2 position-absolute display-1 text-danger text-opacity-10" style="bottom: -15px; right: -15px;"></i>
-            </div>
-        </div>
-    </div>
-
-    <!-- INGRESOS VS MES ANTERIOR -->
-    <div class="col-md-6 col-lg-4 animate-fade-in-up" style="animation-delay: 0.3s;">
-        <div class="card border-0 shadow-sm h-100 overflow-hidden">
-            <div class="card-body p-4 position-relative">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h6 class="text-uppercase text-muted small fw-bold mb-0">vs Mes Anterior</h6>
-                    <div class="bg-{% if kpi_comparativa_mes >= 0 %}success{% else %}danger{% endif %} bg-opacity-10 text-{% if kpi_comparativa_mes >= 0 %}success{% else %}danger{% endif %} p-2 rounded-circle">
-                        <i class="bi bi-{% if kpi_comparativa_mes >= 0 %}arrow-up{% else %}arrow-down{% endif %}-circle fs-4"></i>
-                    </div>
-                </div>
-                <h3 class="fw-bold text-{% if kpi_comparativa_mes >= 0 %}success{% else %}danger{% endif %} mb-0">
-                    {% if kpi_comparativa_mes >= 0 %}+{% endif %}S/ {{ kpi_comparativa_mes|floatformat:2 }}
-                </h3>
-                <div class="mt-2 text-muted small">
-                    <i class="bi bi-calendar-range me-1"></i> Mes anterior: S/ {{ kpi_ingresos_mes_anterior|floatformat:2 }}
-                </div>
-                <i class="bi bi-graph-{% if kpi_comparativa_mes >= 0 %}up{% else %}down{% endif %}-arrow position-absolute display-1 text-{% if kpi_comparativa_mes >= 0 %}success{% else %}danger{% endif %} text-opacity-10" style="bottom: -15px; right: -15px;"></i>
-            </div>
-        </div>
-    </div>
-
-    <!-- ========== SECCIÓN PACIENTES ========== -->
-    <div class="col-12 mt-4">
-        <h5 class="text-muted fw-bold mb-3"><i class="bi bi-people me-2"></i>Indicadores de Pacientes</h5>
-    </div>
-
-    <!-- PACIENTES ACTIVOS -->
-    <div class="col-md-6 col-lg-4 animate-fade-in-up" style="animation-delay: 0.35s;">
-        <div class="card border-0 shadow-sm h-100 overflow-hidden">
-            <div class="card-body p-4 position-relative">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h6 class="text-uppercase text-muted small fw-bold mb-0">Pacientes Activos</h6>
-                    <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-circle">
-                        <i class="bi bi-person-check fs-4"></i>
-                    </div>
-                </div>
-                <h3 class="fw-bold text-primary mb-0">{{ kpi_pacientes_activos }}</h3>
-                <div class="mt-2 text-muted small">
-                    <i class="bi bi-activity me-1"></i> Con tratamientos en curso
-                </div>
-                <i class="bi bi-people-fill position-absolute display-1 text-primary text-opacity-10" style="bottom: -15px; right: -15px;"></i>
-            </div>
-        </div>
-    </div>
-
-    <!-- NUEVOS PACIENTES DEL MES -->
-    <div class="col-md-6 col-lg-4 animate-fade-in-up" style="animation-delay: 0.4s;">
-        <div class="card border-0 shadow-sm h-100 overflow-hidden">
-            <div class="card-body p-4 position-relative">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h6 class="text-uppercase text-muted small fw-bold mb-0">Nuevos Este Mes</h6>
-                    <div class="bg-success bg-opacity-10 text-success p-2 rounded-circle">
-                        <i class="bi bi-person-plus fs-4"></i>
-                    </div>
-                </div>
-                <h3 class="fw-bold text-success mb-0">{{ kpi_nuevos_pacientes_mes }}</h3>
-                <div class="mt-2 text-muted small">
-                    <i class="bi bi-calendar-plus me-1"></i> Registrados este mes
-                </div>
-                <i class="bi bi-person-add position-absolute display-1 text-success text-opacity-10" style="bottom: -15px; right: -15px;"></i>
-            </div>
-        </div>
-    </div>
-
-    <!-- PACIENTES CON DEUDA -->
-    <div class="col-md-6 col-lg-4 animate-fade-in-up" style="animation-delay: 0.45s;">
-        <div class="card border-0 shadow-sm h-100 overflow-hidden">
-            <div class="card-body p-4 position-relative">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h6 class="text-uppercase text-muted small fw-bold mb-0">Pacientes con Deuda</h6>
-                    <div class="bg-danger bg-opacity-10 text-danger p-2 rounded-circle">
-                        <i class="bi bi-person-x fs-4"></i>
-                    </div>
-                </div>
-                <h3 class="fw-bold text-danger mb-0">{{ kpi_pacientes_con_deuda }}</h3>
-                <div class="mt-2 text-muted small">
-                    <i class="bi bi-credit-card me-1"></i> Con saldo pendiente
-                </div>
-                <i class="bi bi-person-dash position-absolute display-1 text-danger text-opacity-10" style="bottom: -15px; right: -15px;"></i>
-            </div>
-        </div>
-    </div>
-
-    <!-- ========== SECCIÓN TRATAMIENTOS ========== -->
-    <div class="col-12 mt-4">
-        <h5 class="text-muted fw-bold mb-3"><i class="bi bi-bandaid me-2"></i>Indicadores de Tratamientos</h5>
-    </div>
-
-    <!-- TRATAMIENTOS ACTIVOS -->
-    <div class="col-md-6 col-lg-4 animate-fade-in-up" style="animation-delay: 0.5s;">
-        <div class="card border-0 shadow-sm h-100 overflow-hidden">
-            <div class="card-body p-4 position-relative">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h6 class="text-uppercase text-muted small fw-bold mb-0">Tratamientos Activos</h6>
-                    <div class="bg-info bg-opacity-10 text-info p-2 rounded-circle">
-                        <i class="bi bi-clipboard-pulse fs-4"></i>
-                    </div>
-                </div>
-                <h3 class="fw-bold text-info mb-0">{{ kpi_tratamientos_activos }}</h3>
-                <div class="mt-2 text-muted small">
-                    <i class="bi bi-hourglass-split me-1"></i> En progreso
-                </div>
-                <i class="bi bi-clipboard2-check position-absolute display-1 text-info text-opacity-10" style="bottom: -15px; right: -15px;"></i>
-            </div>
-        </div>
-    </div>
-
-    <!-- TRATAMIENTOS COMPLETADOS DEL MES -->
-    <div class="col-md-6 col-lg-4 animate-fade-in-up" style="animation-delay: 0.55s;">
-        <div class="card border-0 shadow-sm h-100 overflow-hidden">
-            <div class="card-body p-4 position-relative">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h6 class="text-uppercase text-muted small fw-bold mb-0">Completados Este Mes</h6>
-                    <div class="bg-success bg-opacity-10 text-success p-2 rounded-circle">
-                        <i class="bi bi-check-circle fs-4"></i>
-                    </div>
-                </div>
-                <h3 class="fw-bold text-success mb-0">{{ kpi_tratamientos_completados_mes }}</h3>
-                <div class="mt-2 text-muted small">
-                    <i class="bi bi-calendar-check me-1"></i> Oficialmente finalizados
-                </div>
-                <i class="bi bi-check2-all position-absolute display-1 text-success text-opacity-10" style="bottom: -15px; right: -15px;"></i>
-            </div>
-        </div>
-    </div>
-
-    <!-- LISTOS PARA COMPLETAR -->
-    <div class="col-md-6 col-lg-4 animate-fade-in-up" style="animation-delay: 0.6s;">
-        <div class="card border-0 shadow-sm h-100 overflow-hidden">
-            <div class="card-body p-4 position-relative">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h6 class="text-uppercase text-muted small fw-bold mb-0">Listos para Completar</h6>
-                    <div class="bg-warning bg-opacity-10 text-warning p-2 rounded-circle">
-                        <i class="bi bi-exclamation-triangle fs-4"></i>
-                    </div>
-                </div>
-                <h3 class="fw-bold text-warning mb-0">{{ kpi_tratamientos_listos_completar }}</h3>
-                <div class="mt-2 text-muted small">
-                    <i class="bi bi-check-circle-fill me-1"></i> Pagados, pendientes de marcar
-                </div>
-                <i class="bi bi-clipboard-check position-absolute display-1 text-warning text-opacity-10" style="bottom: -15px; right: -15px;"></i>
-            </div>
-        </div>
-    </div>
-
-    <!-- TASA DE FINALIZACIÓN -->
-    <div class="col-md-6 col-lg-4 animate-fade-in-up" style="animation-delay: 0.65s;">
-        <div class="card border-0 shadow-sm h-100 overflow-hidden">
-            <div class="card-body p-4 position-relative">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h6 class="text-uppercase text-muted small fw-bold mb-0">Tasa de Finalización</h6>
-                    <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-circle">
-                        <i class="bi bi-trophy fs-4"></i>
-                    </div>
-                </div>
-                <h3 class="fw-bold text-primary mb-0">{{ kpi_tasa_finalizacion }}%</h3>
-                <div class="mt-2 text-muted small">
-                    <i class="bi bi-graph-up me-1"></i> Completados vs Total
-                </div>
-                <i class="bi bi-award position-absolute display-1 text-primary text-opacity-10" style="bottom: -15px; right: -15px;"></i>
-            </div>
-        </div>
-    </div>
-    
-    <!-- ACCESOS RÁPIDOS -->
-    <div class="col-md-12 col-lg-4 animate-fade-in-up" style="animation-delay: 0.65s;">
+    <!-- Gráfico Ingresos vs Deuda -->
+    <div class="col-md-6 animate-fade-in-up" style="animation-delay: 0.4s;">
         <div class="card border-0 shadow-sm h-100">
-            <div class="card-header bg-white border-bottom-0 pt-4">
-                <h6 class="fw-bold mb-0 text-primary">Accesos Directos</h6>
+            <div class="card-header bg-transparent border-0 pt-4 px-4 d-flex justify-content-between">
+                <h6 class="fw-bold text-muted mb-0"><i class="bi bi-pie-chart-fill me-2"></i>Composición Financiera</h6>
+                <span class="badge bg-light text-muted border">Global</span>
             </div>
-            <div class="card-body">
-                <div class="d-grid gap-2">
-                    <a href="{% url 'reportes:deudas' %}" class="btn btn-outline-danger d-flex justify-content-between align-items-center">
-                        <span><i class="bi bi-list-columns-reverse me-2"></i>Ver Lista de Deudores</span>
-                        <i class="bi bi-chevron-right"></i>
+            <div class="card-body px-4 pb-4">
+                <div style="height: 250px;">
+                    <canvas id="chartFinanzas"></canvas>
+                </div>
+            </div>
+            <div class="card-footer bg-light border-0 small text-muted text-center">
+                Muestra cuánto has cobrado vs cuánto falta por cobrar del total producido.
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráfico Tratamientos -->
+    <div class="col-md-6 animate-fade-in-up" style="animation-delay: 0.5s;">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-transparent border-0 pt-4 px-4 d-flex justify-content-between">
+                <h6 class="fw-bold text-muted mb-0"><i class="bi bi-bar-chart-fill me-2"></i>Producción Clínica</h6>
+                <span class="badge bg-light text-muted border">Mes Actual</span>
+            </div>
+            <div class="card-body px-4 pb-4">
+                <div style="height: 250px;">
+                    <canvas id="chartTratamientos"></canvas>
+                </div>
+            </div>
+            <div class="card-footer bg-light border-0 small text-muted text-center">
+                <span class="text-success fw-bold">{{ kpi_tratamientos_completados_mes }}</span> tratamientos finalizados este mes.
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================
+     FILA 3: INDICADORES SECUNDARIOS (GRID)
+     ========================================== -->
+<div class="row g-3 mb-4">
+    <div class="col-12">
+        <h6 class="text-muted fw-bold text-uppercase small ls-1 mb-2">Métricas Operativas</h6>
+    </div>
+
+    <!-- Promedio Diario -->
+    <div class="col-6 col-md-3 animate-fade-in-up" style="animation-delay: 0.6s;">
+        <div class="p-3 bg-white bg-white-dm border rounded shadow-sm h-100 text-center">
+            <div class="text-muted small text-uppercase mb-1">Promedio Diario</div>
+            <div class="h4 fw-bold text-dark mb-0">S/ {{ kpi_promedio_diario|floatformat:0 }}</div>
+        </div>
+    </div>
+
+    <!-- Pacientes Activos -->
+    <div class="col-6 col-md-3 animate-fade-in-up" style="animation-delay: 0.7s;">
+        <div class="p-3 bg-white bg-white-dm border rounded shadow-sm h-100 text-center">
+            <div class="text-muted small text-uppercase mb-1">Pacientes Activos</div>
+            <div class="h4 fw-bold text-primary mb-0">{{ kpi_pacientes_activos }}</div>
+        </div>
+    </div>
+
+    <!-- Nuevos Pacientes -->
+    <div class="col-6 col-md-3 animate-fade-in-up" style="animation-delay: 0.8s;">
+        <div class="p-3 bg-white bg-white-dm border rounded shadow-sm h-100 text-center">
+            <div class="text-muted small text-uppercase mb-1">Nuevos (Mes)</div>
+            <div class="h4 fw-bold text-success mb-0">+{{ kpi_nuevos_pacientes_mes }}</div>
+        </div>
+    </div>
+
+    <!-- Tasa Finalización -->
+    <div class="col-6 col-md-3 animate-fade-in-up" style="animation-delay: 0.9s;">
+        <div class="p-3 bg-white bg-white-dm border rounded shadow-sm h-100 text-center">
+            <div class="text-muted small text-uppercase mb-1">Efectividad Clínica</div>
+            <div class="h4 fw-bold text-info mb-0">{{ kpi_tasa_finalizacion }}%</div>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================
+     ACCESOS DIRECTOS
+     ========================================== -->
+<div class="row animate-fade-in-up" style="animation-delay: 1s;">
+    <div class="col-12">
+        <div class="card border-0 bg-light shadow-sm">
+            <div class="card-body p-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                <div class="d-flex align-items-center">
+                    <div class="bg-white p-3 rounded-circle shadow-sm text-primary me-3">
+                        <i class="bi bi-lightning-charge-fill fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Acciones Rápidas</h6>
+                        <p class="text-muted small mb-0">Accede a los reportes detallados para auditoría.</p>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 w-100 w-md-auto">
+                    <a href="{% url 'reportes:ingresos' %}" class="btn btn-white border shadow-sm flex-grow-1 fw-bold text-dark">
+                        <i class="bi bi-table text-success me-2"></i>Ver Ingresos
                     </a>
-                    <a href="{% url 'reportes:ingresos' %}" class="btn btn-outline-success d-flex justify-content-between align-items-center">
-                        <span><i class="bi bi-table me-2"></i>Ver Reporte de Ingresos</span>
-                        <i class="bi bi-chevron-right"></i>
+                    <a href="{% url 'reportes:deudas' %}" class="btn btn-white border shadow-sm flex-grow-1 fw-bold text-dark">
+                        <i class="bi bi-list-columns-reverse text-danger me-2"></i>Ver Deudores
                     </a>
                 </div>
             </div>
@@ -282,14 +366,9 @@
     </div>
 </div>
 
-<div class="row animate-fade-in-up" style="animation-delay: 0.4s;">
-    <div class="col-12">
-        <div class="alert alert-info border-0 shadow-sm d-flex align-items-center" role="alert">
-            <i class="bi bi-info-circle-fill fs-4 me-3 text-info"></i>
-            <div>
-                <strong>Información Privada:</strong> Estos reportes son visibles únicamente para el administrador y el equipo de finanzas.
-            </div>
-        </div>
+<div class="row mt-4">
+    <div class="col-12 text-center text-muted small">
+        <i class="bi bi-lock-fill me-1"></i> Datos sensibles. Solo visible para Administración y Finanzas.
     </div>
 </div>
 {% endblock %}

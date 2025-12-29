@@ -60,3 +60,15 @@ def dashboard(request):
     }
     
     return render(request, 'dashboard.html', context)
+
+def custom_404(request, exception):
+    """
+    Vista personalizada para error 404 (Página no encontrada)
+    """
+    return render(request, '404.html', status=404)
+
+def custom_500(request):
+    """
+    Vista personalizada para error 500 (Error del servidor)
+    """
+    return render(request, '500.html', status=500)

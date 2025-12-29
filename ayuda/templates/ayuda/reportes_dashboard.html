@@ -1,0 +1,67 @@
+<h5 class="mb-3 d-flex align-items-center">
+    <i class="bi bi-graph-up-arrow text-primary me-2"></i> Dashboard Financiero
+</h5>
+<p class="text-muted small mb-4">
+    Análisis en tiempo real de la salud económica y operativa de tu consultorio.
+</p>
+
+<!-- Pestañas -->
+<ul class="nav nav-tabs nav-fill mb-3" id="helpTabsReportes" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active py-1 small" id="tab-finanzas" data-bs-toggle="tab" data-bs-target="#content-finanzas" type="button" role="tab" aria-selected="true">Finanzas</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link py-1 small" id="tab-ope" data-bs-toggle="tab" data-bs-target="#content-ope" type="button" role="tab" aria-selected="false">Operaciones</button>
+    </li>
+</ul>
+
+<div class="tab-content" id="helpTabContentReportes">
+    <!-- TAB: FINANZAS -->
+    <div class="tab-pane fade show active" id="content-finanzas" role="tabpanel">
+        <h6 class="fw-bold small mb-2 text-dark">KPIs Clave</h6>
+        <div class="list-group list-group-flush small mb-3">
+            <div class="list-group-item bg-transparent px-0">
+                <i class="bi bi-cash-coin text-success me-2"></i>
+                <strong>Ingresos Mes Actual:</strong> Suma de pagos reales (efectivo, tarjeta, etc.) recibidos desde el día 1 del mes.
+            </div>
+            <div class="list-group-item bg-transparent px-0">
+                <i class="bi bi-exclamation-circle text-danger me-2"></i>
+                <strong>Por Cobrar (Deuda):</strong> Monto total acumulado que los pacientes deben (histórico).
+            </div>
+            <div class="list-group-item bg-transparent px-0">
+                <i class="bi bi-percent text-info me-2"></i>
+                <strong>Tasa de Cobro:</strong> Porcentaje del trabajo realizado que ya ha sido pagado. Lo ideal es >90%.
+            </div>
+        </div>
+        
+        <div class="alert alert-light border small">
+            <i class="bi bi-lightbulb text-warning me-1"></i>
+            <strong>Tip:</strong> Usa los botones inferiores para ir a las listas detalladas de ingresos o deudores.
+        </div>
+    </div>
+
+    <!-- TAB: OPERACIONES -->
+    <div class="tab-pane fade" id="content-ope" role="tabpanel">
+        <h6 class="fw-bold small mb-2 text-dark">Metricas de Producción</h6>
+        <div class="row g-2 small mb-3">
+            <div class="col-6">
+                <div class="p-2 bg-light rounded border">
+                    <strong>Tratamientos Activos</strong><br>
+                    Trabajos en curso actualmente.
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="p-2 bg-light rounded border">
+                    <strong>Tasa Finalización</strong><br>
+                    % de tratamientos cerrados vs totales.
+                </div>
+            </div>
+        </div>
+
+        <h6 class="fw-bold small mb-2 text-dark">Pacientes</h6>
+        <ul class="small ps-3 text-muted">
+            <li><strong>Activos:</strong> Tienen al menos un tratamiento en curso.</li>
+            <li><strong>Nuevos:</strong> Registrados en el sistema este mes.</li>
+        </ul>
+    </div>
+</div>

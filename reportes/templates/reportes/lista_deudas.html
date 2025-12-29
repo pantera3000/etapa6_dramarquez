@@ -2,94 +2,273 @@
 {% load static %}
 {% load l10n %}
 
-{% block title %}Reporte - Cuentas por Cobrar{% endblock %}
+{% block title %}Reporte - Cartera de Deuda{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const THEME_COLORS = {
+            light: { text: '#6c757d', grid: 'rgba(0, 0, 0, 0.05)' },
+            dark: { text: '#adb5bd', grid: 'rgba(255, 255, 255, 0.05)' }
+        };
+
+        const isDarkMode = () => document.documentElement.getAttribute('data-theme') === 'dark';
+        const getCurrentColors = () => isDarkMode() ? THEME_COLORS.dark : THEME_COLORS.light;
+
+        const ctxDeuda = document.getElementById('chartDeuda').getContext('2d');
+        const labels = JSON.parse('{{ chart_labels|safe }}');
+        const data = JSON.parse('{{ chart_data|safe }}');
+
+        // Colores: Rojo fuerte para Crítica, Naranja para Corriente
+        const colors = [
+            '#dc3545', // Danger (Crítica/Vencida)
+            '#fd7e14'  // Orange (Corriente/En curso)
+        ];
+
+        let chartDeuda = new Chart(ctxDeuda, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: colors,
+                    borderWidth: 0,
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { 
+                        position: 'right',
+                        labels: { color: getCurrentColors().text, boxWidth: 12, padding: 15 }
+                    }
+                }
+            }
+        });
+
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && (mutation.attributeName === 'data-theme' || mutation.attributeName === 'class')) {
+                    chartDeuda.options.plugins.legend.labels.color = getCurrentColors().text;
+                    chartDeuda.update();
+                }
+            });
+        });
+
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class'] });
+    });
+    
+    // Función reutilizada para WhatsApp
+    function abrirModalWhatsApp(telefono, nombre, tipo, mensaje) {
+       // La función global ya debe existir en base.html o script principal, 
+       // pero si no, usaremos open directamente para asegurar funcionalidad.
+       if (!telefono || telefono.length < 9) {
+           alert('El paciente no tiene un número de teléfono válido registrado.');
+           return;
+       }
+       // Limpiar telefono
+       let fono = telefono.replace(/\D/g, '');
+       let url = `https://wa.me/51${fono}?text=${encodeURIComponent(mensaje)}`;
+       window.open(url, '_blank');
+    }
+</script>
+
+<style>
+    [data-theme="dark"] .bg-white-dm {
+        background-color: #212529 !important;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.3) !important;
+    }
+    .filter-btn-group .btn.active {
+        background-color: #dc3545; /* Red for Debt */
+        color: white;
+        border-color: #dc3545;
+    }
+    .filter-btn-group .btn:hover:not(.active) {
+        background-color: #e9ecef;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4 animate-fade-in-up">
-    <div>
-        <h1 class="h3 fw-bold text-gray-800">
-            <i class="bi bi-cash-stack me-2 text-danger"></i>Cuentas por Cobrar
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 animate-fade-in-up">
+    <div class="mb-3 mb-md-0">
+        <h1 class="h3 fw-bold text-dark mb-1">
+            <i class="bi bi-exclamation-octagon me-2 text-danger"></i>Reporte de Deudas
         </h1>
-        <p class="text-muted mb-0">Listado de pacientes con saldo pendiente.</p>
+        <p class="text-muted mb-0">Gestión de cobranzas y saldos pendientes.</p>
     </div>
-    <a href="{% url 'reportes:dashboard' %}" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-left me-2"></i>Volver
-    </a>
+    <div class="d-flex gap-2">
+        <a href="{% url 'reportes:dashboard' %}" class="btn btn-outline-secondary shadow-sm">
+            <i class="bi bi-arrow-left me-2"></i>Volver
+        </a>
+        <button class="btn btn-light border shadow-sm" onclick="window.print()">
+            <i class="bi bi-printer"></i>
+        </button>
+    </div>
 </div>
 
 <!-- Filtros de Estado -->
 <div class="card shadow-sm border-0 mb-4 animate-fade-in-up">
-    <div class="card-body p-2">
-        <nav class="nav nav-pills nav-fill">
-            <a class="nav-link {% if filtro_actual == 'todos' %}active bg-primary{% endif %}" href="?filtro=todos">Todos</a>
-            <a class="nav-link {% if filtro_actual == 'prioridad' %}active bg-danger{% endif %}" href="?filtro=prioridad">
-                <i class="bi bi-exclamation-triangle-fill me-1"></i> Prioridad Alta
-            </a>
-            <a class="nav-link {% if filtro_actual == 'antiguos' %}active bg-warning text-dark{% endif %}" href="?filtro=antiguos">
-                <i class="bi bi-clock-history me-1"></i> Antiguos (+30 días)
-            </a>
-            <a class="nav-link {% if filtro_actual == 'en_curso' %}active bg-info text-white{% endif %}" href="?filtro=en_curso">En Curso</a>
-        </nav>
+    <div class="card-body p-2 filter-btn-group d-flex overflow-auto">
+        <a class="btn btn-white border-0 rounded-pill px-3 me-1 flex-shrink-0 fw-medium {% if filtro_actual == 'todos' %}active{% endif %}" href="?filtro=todos">Ver Todos</a>
+        <a class="btn btn-white border-0 rounded-pill px-3 me-1 flex-shrink-0 fw-medium {% if filtro_actual == 'prioridad' %}active{% endif %}" href="?filtro=prioridad">
+            <i class="bi bi-exclamation-circle me-1"></i>Prioridad Alta
+        </a>
+        <a class="btn btn-white border-0 rounded-pill px-3 me-1 flex-shrink-0 fw-medium {% if filtro_actual == 'antiguos' %}active{% endif %}" href="?filtro=antiguos">
+            Antiguos (+30d)
+        </a>
+        <a class="btn btn-white border-0 rounded-pill px-3 flex-shrink-0 fw-medium {% if filtro_actual == 'en_curso' %}active{% endif %}" href="?filtro=en_curso">
+            En Curso
+        </a>
     </div>
 </div>
 
-<div class="card shadow-sm border-0 animate-fade-in-up" style="animation-delay: 0.1s;">
-    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-        <h5 class="mb-0 fw-bold text-primary">Deudores Filtrados</h5>
-        <span class="badge bg-danger fs-6">Deuda Visible: S/ {{ total_deuda_vista|floatformat:2 }}</span>
+<div class="row g-4 mb-4">
+    <!-- Métricas Resumen -->
+    <div class="col-lg-8 animate-fade-in-up" style="animation-delay: 0.1s;">
+        <div class="row g-3 h-100">
+            <!-- Total -->
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 bg-white bg-white-dm card-gradient-danger text-white" 
+                     style="background: linear-gradient(135deg, #dc3545 0%, #a71d2a 100%);">
+                    <div class="card-body p-4 text-center d-flex flex-column justify-content-center">
+                        <div class="text-white-50 small text-uppercase fw-bold mb-1">Por Cobrar Total</div>
+                        <h2 class="fw-bold mb-0">S/ {{ total_deuda_vista|floatformat:2 }}</h2>
+                        <div class="small text-white-50 mt-1">{{ titulo_filtro }}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Cantidad -->
+            <div class="col-6 col-md-4">
+                <div class="card border-0 shadow-sm h-100 bg-white bg-white-dm">
+                    <div class="card-body p-4 text-center d-flex flex-column justify-content-center">
+                        <div class="text-muted small text-uppercase mb-1">Deudores</div>
+                        <h3 class="fw-bold text-dark mb-0">{{ total_deudores }}</h3>
+                        <div class="small text-danger mt-1"><i class="bi bi-people me-1"></i>Pacientes</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Promedio -->
+            <div class="col-6 col-md-4">
+                <div class="card border-0 shadow-sm h-100 bg-white bg-white-dm">
+                    <div class="card-body p-4 text-center d-flex flex-column justify-content-center">
+                        <div class="text-muted small text-uppercase mb-1">Deuda Promedio</div>
+                        <h3 class="fw-bold text-danger mb-0">S/ {{ promedio_deuda|floatformat:0 }}</h3>
+                        <div class="small text-muted mt-1">Por paciente</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Gráfico Distribución -->
+    <div class="col-lg-4 animate-fade-in-up" style="animation-delay: 0.2s;">
+        <div class="card border-0 shadow-sm h-100 bg-white bg-white-dm">
+            <div class="card-header bg-transparent border-0 pt-3 px-3">
+                <h6 class="fw-bold text-muted mb-0 small text-uppercase">Composición de Deuda</h6>
+            </div>
+            <div class="card-body p-0 d-flex align-items-center justify-content-center" style="height: 200px;">
+                {% if total_deuda_vista > 0 %}
+                    <canvas id="chartDeuda" height="180"></canvas>
+                {% else %}
+                    <p class="text-muted small text-center px-4">¡Excelente! No hay deuda registrada en este filtro.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabla Detallada -->
+<div class="card shadow-sm border-0 animate-fade-in-up" style="animation-delay: 0.3s;">
+    <div class="card-header bg-white bg-white-dm py-3 border-bottom d-flex justify-content-between align-items-center">
+        <h6 class="mb-0 fw-bold text-dark">Listado de Deudores</h6>
+        <span class="badge bg-light text-dark border">{{ deudores|length }} pacientes</span>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead class="bg-light">
                     <tr>
-                        <th class="ps-4">Paciente</th>
-                        <th>Tratamiento</th>
-                        <th>Costo Total</th>
-                        <th>Pagado</th>
-                        <th>Saldo (Deuda)</th>
-                        <th>Estado</th>
-                        <th class="text-end pe-4">Acciones</th>
+                        <th class="ps-4 text-uppercase small text-muted border-0">Paciente</th>
+                        <th class="text-uppercase small text-muted border-0">Tratamiento</th>
+                        <th class="text-uppercase small text-muted border-0">Estado</th>
+                        <th class="text-uppercase small text-muted border-0">Avance Pago</th>
+                        <th class="text-end pe-4 text-uppercase small text-muted border-0">Deuda</th>
+                        <th class="text-end pe-4 text-uppercase small text-muted border-0"></th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="border-top-0">
                     {% for tratamiento in deudores %}
                     <tr>
-                        <td class="ps-4 fw-medium">
-                            <a href="{% url 'pacientes:detalle' tratamiento.paciente.pk %}" class="text-decoration-none text-dark">
-                                {{ tratamiento.paciente.nombre_completo }}
-                            </a>
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle bg-danger bg-opacity-10 text-danger d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px; font-size: 0.8rem; fw-bold">
+                                    {{ tratamiento.paciente.nombre|slice:":1" }}{{ tratamiento.paciente.apellido|slice:":1" }}
+                                </div>
+                                <div>
+                                    <a href="{% url 'pacientes:detalle' tratamiento.paciente.pk %}" class="text-decoration-none text-dark fw-bold stretched-link">
+                                        {{ tratamiento.paciente.nombre_completo }}
+                                    </a>
+                                    {% if tratamiento.paciente.telefono %}
+                                        <div class="small text-muted"><i class="bi bi-whatsapp me-1 text-success"></i>{{ tratamiento.paciente.telefono }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </td>
-                        <td>{{ tratamiento.nombre }}</td>
-                        <td>S/ {{ tratamiento.costo_total|floatformat:2 }}</td>
-                        <td class="text-success">S/ {{ tratamiento.total_pagado|floatformat:2 }}</td>
-                        <td class="text-danger fw-bold">S/ {{ tratamiento.deuda|floatformat:2 }}</td>
+                        <td class="text-dark">
+                            {{ tratamiento.nombre }}
+                            <div class="small text-muted">Iniciado: {{ tratamiento.fecha_inicio|date:"d M, Y" }}</div>
+                        </td>
                         <td>
-                            <span class="badge bg-warning text-dark bg-opacity-25 border border-warning">
-                                {{ tratamiento.estado_pago|title }}
-                            </span>
+                            {% if tratamiento.estado == 'completado' %}
+                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-10 rounded-pill px-2">Terminado</span>
+                            {% elif tratamiento.estado == 'en_progreso' %}
+                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10 rounded-pill px-2">En Curso</span>
+                            {% else %}
+                                <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-10 rounded-pill px-2">{{ tratamiento.get_estado_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td style="min-width: 120px;">
+                            <div class="d-flex align-items-center justify-content-between small mb-1">
+                                <span class="text-muted">{{ tratamiento.porcentaje_pagado }}%</span>
+                                <span class="text-muted">Total: S/ {{ tratamiento.costo_total|floatformat:0 }}</span>
+                            </div>
+                            <div class="progress" style="height: 4px;">
+                                <div class="progress-bar {% if tratamiento.porcentaje_pagado < 50 %}bg-danger{% else %}bg-warning{% endif %}" role="progressbar" style="width: {{ tratamiento.porcentaje_pagado }}%"></div>
+                            </div>
+                        </td>
+                        <td class="text-end fw-bold text-danger fs-6 pe-4" style="font-family: monospace;">
+                            S/ {{ tratamiento.deuda|floatformat:2 }}
                         </td>
                         <td class="text-end pe-4">
-                            <!-- Botón WhatsApp Cobranza -->
-                            <button class="btn btn-sm btn-success rounded-pill px-3" 
+                            <!-- Botón WhatsApp Discreto -->
+                            <button class="btn btn-sm btn-icon btn-ghost-success rounded-circle me-1" 
+                                    style="position: relative; z-index: 2;"
+                                    data-bs-toggle="tooltip" title="Enviar Cobro por WhatsApp"
                                     onclick="abrirModalWhatsApp(
                                         '{{ tratamiento.paciente.telefono }}', 
                                         '{{ tratamiento.paciente.nombre_completo }}', 
                                         'GENERAL', 
                                         'Hola {{ tratamiento.paciente.nombre }}, le escribimos para recordarle que tiene un saldo pendiente de S/ {{ tratamiento.deuda|floatformat:2 }} por su tratamiento de {{ tratamiento.nombre }}.'
                                     )">
-                                <i class="bi bi-whatsapp me-1"></i> Cobrar
+                                <i class="bi bi-whatsapp"></i>
                             </button>
-                            <a href="{% url 'tratamientos:detalle' tratamiento.pk %}" class="btn btn-sm btn-outline-primary ms-1" title="Ver Detalle">
-                                <i class="bi bi-eye"></i>
+                            <a href="{% url 'tratamientos:detalle' tratamiento.pk %}" class="btn btn-sm btn-icon btn-ghost-secondary rounded-circle" data-bs-toggle="tooltip" title="Ver Detalle" style="position: relative; z-index: 2;">
+                                <i class="bi bi-chevron-right"></i>
                             </a>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="7" class="text-center py-5">
-                            <i class="bi bi-check-circle fs-1 text-success d-block mb-3"></i>
-                            <h5 class="text-muted">¡Excelente! No hay deudas pendientes.</h5>
+                        <td colspan="6" class="text-center py-5">
+                            <div class="text-muted opacity-50 display-1 mb-2"><i class="bi bi-check-circle-fill text-success"></i></div>
+                            <h6 class="text-muted fw-bold">Cartera Saludable</h6>
+                            <p class="text-muted small">No se encontraron deudas con este criterio.</p>
                         </td>
                     </tr>
                     {% endfor %}

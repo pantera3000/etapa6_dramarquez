@@ -6,213 +6,293 @@
 {% block title %}{{ paciente.nombre_completo }}{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-center">
-    <div class="col-lg-10">
-        <!-- Header Hero & Dashboard - Rediseño SaaS -->
+<div class="container-fluid px-3 px-lg-4">
+    <div class="row g-4">
+        <!-- Estilos del nuevo layout -->
         <style>
-            /* --- Hero Section --- */
-            .hero-card { background: white; border-radius: 1rem; box-shadow: 0 2px 12px rgba(0,0,0,0.04); border: 1px solid #e2e8f0; }
-            .avatar-xl { 
-                width: 80px; height: 80px; font-size: 2rem; font-weight: 700; border-radius: 1rem; 
-                display: flex; align-items: center; justify-content: center; color: white;
+            .profile-sidebar {
+                position: sticky;
+                top: 80px;
+                height: fit-content;
+            }
+            .profile-card {
+                background: white;
+                border-radius: 1rem;
+                box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+                border: 1px solid #e2e8f0;
+            }
+            .avatar-profile {
+                width: 100px;
+                height: 100px;
+                font-size: 2.5rem;
+                font-weight: 700;
+                border-radius: 1rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
                 box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                margin: 0 auto;
             }
-            
-            /* --- Dashboard Cards --- */
-            .dash-card { background: white; border-radius: 0.75rem; border: 1px solid #f1f5f9; height: 100%; transition: transform 0.2s; }
-            .dash-card:hover { border-color: #cbd5e1; transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
-            .dash-header { 
-                font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; 
-                color: #64748b; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #f8fafc;
+            .info-item {
+                display: flex;
+                align-items: flex-start;
+                gap: 0.75rem;
+                padding: 0.75rem 0;
+                border-bottom: 1px solid #f1f5f9;
             }
-            .info-row { display: flex; margin-bottom: 0.75rem; font-size: 0.9rem; align-items: baseline; }
-            .info-label { width: 100px; flex-shrink: 0; color: #64748b; font-weight: 500; }
-            .info-value { color: #0f172a; font-weight: 500; }
-            
-             /* --- Utility --- */
-            .text-empty { color: #94a3b8; font-style: italic; font-size: 0.85rem; }
+            .info-item:last-child { border-bottom: none; }
+            .info-icon {
+                width: 20px;
+                flex-shrink: 0;
+                color: #64748b;
+                margin-top: 2px;
+            }
+            .info-content {
+                flex: 1;
+                min-width: 0;
+            }
+            .info-label {
+                font-size: 0.75rem;
+                color: #64748b;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                font-weight: 600;
+                margin-bottom: 0.25rem;
+            }
+            .info-value {
+                color: #0f172a;
+                font-weight: 500;
+                word-break: break-word;
+            }
+            .alert-medical {
+                background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+                border: 1px solid #fca5a5;
+                border-radius: 0.75rem;
+                padding: 1rem;
+                margin-top: 1rem;
+            }
+            [data-theme="dark"] .profile-card {
+                background-color: #1e293b !important;
+                border-color: #334155 !important;
+            }
+            [data-theme="dark"] .info-value {
+                color: #e2e8f0 !important;
+            }
+            /* Tabs activos */
+            .nav-tabs .nav-link.active {
+                background-color: #0d6efd;
+                border-bottom-color: #0d6efd;
+                font-weight: 600;
+                color: white !important;
+            }
+            [data-theme="dark"] .nav-tabs .nav-link.active {
+                background-color: #0d6efd !important;
+                border-bottom-color: #0d6efd !important;
+                color: white !important;
+            }
+            .nav-tabs .nav-link {
+                color: #6c757d;
+                transition: all 0.2s;
+            }
+            .nav-tabs .nav-link:hover:not(.active) {
+                background-color: #e9ecef;
+                color: #0d6efd;
+            }
+            [data-theme="dark"] .nav-tabs .nav-link:hover:not(.active) {
+                background-color: #374151;
+                color: #60a5fa;
+            }
+            /* Badges de estado - Forzar colores */
+            .badge.bg-secondary {
+                background-color: #6c757d !important;
+                color: white !important;
+            }
+            .badge.bg-warning {
+                background-color: #ffc107 !important;
+                color: #000 !important;
+            }
+            .badge.bg-success {
+                background-color: #198754 !important;
+                color: white !important;
+            }
+            .badge.bg-danger {
+                background-color: #dc3545 !important;
+                color: white !important;
+            }
         </style>
 
-        <!-- HERO SECTION -->
-        <div class="hero-card p-4 mb-4">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-4">
-                
-                <!-- Profile Info -->
-                <div class="d-flex align-items-center gap-4">
-                    <div class="avatar-xl flex-shrink-0" style="background-color: {{ paciente.nombre_completo|avatar_color }};">
-                        {{ paciente.nombre_completo|initials_avatar }}
-                    </div>
-                    <div>
-                        <h1 class="h3 fw-bold mb-1 text-dark">{{ paciente.nombre_completo }}</h1>
-                        <div class="d-flex flex-wrap align-items-center gap-2 text-muted small">
-                            <span><i class="bi bi-person-vcard"></i> DNI: {{ paciente.dni }}</span>
-                            <span>•</span>
-                            <span>{{ paciente.edad }} años</span>
+        <!-- COLUMNA IZQUIERDA: PERFIL STICKY -->
+        <div class="col-lg-3">
+            <div class="profile-sidebar">
+                <div class="profile-card p-4">
+                    <!-- Avatar y Nombre -->
+                    <div class="text-center mb-4">
+                        <div class="avatar-profile mb-3" style="background-color: {{ paciente.nombre_completo|avatar_color }};">
+                            {{ paciente.nombre_completo|initials_avatar }}
+                        </div>
+                        <h4 class="fw-bold mb-1">{{ paciente.nombre_completo }}</h4>
+                        <div class="text-muted small">
+                            <i class="bi bi-person-vcard"></i> DNI: {{ paciente.dni }}
+                        </div>
+                        <div class="text-muted small">
+                            {{ paciente.edad }} años
                             {% if paciente.dias_hasta_cumple == 0 %}
-                                <span class="badge bg-success bg-opacity-10 text-success border border-success px-2">🎂 Cumpleaños hoy</span>
+                                <span class="badge bg-success ms-1">🎂 Hoy</span>
                             {% endif %}
                         </div>
                     </div>
-                </div>
 
-                <!-- Actions -->
-                <div class="d-flex flex-wrap gap-2">
-                    <button class="btn btn-success btn-sm d-flex align-items-center gap-2 shadow-sm"
-                            onclick="abrirModalWhatsApp('{{ paciente.telefono|default_if_none:''|escapejs }}', '{{ paciente.nombre_completo|escapejs }}', 'GENERAL')">
-                        <i class="bi bi-whatsapp"></i> WhatsApp
-                    </button>
-                    <a href="{% url 'pacientes:editar' paciente.pk %}" class="btn btn-white border shadow-sm btn-sm text-dark">
-                        <i class="bi bi-pencil"></i> Editar
-                    </a>
-                    <a href="{% url 'pacientes:eliminar' paciente.pk %}" class="btn btn-white border shadow-sm btn-sm text-danger" onclick="return confirm('¿Eliminar paciente?')">
-                        <i class="bi bi-trash"></i>
-                    </a>
-                    <a href="{% url 'pacientes:lista' %}" class="btn btn-light border btn-sm text-muted" 
-                       onclick="if (document.referrer && document.referrer.includes(window.location.host)) { history.back(); return false; }">
-                        <i class="bi bi-arrow-left"></i> Atrás
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- DASHBOARD GRID -->
-        <div class="row g-3 mb-4">
-            <!-- 1. Datos Personales Completos -->
-            <div class="col-md-4">
-                <div class="dash-card p-3">
-                    <div class="dash-header"><i class="bi bi-person-lines-fill me-2"></i>Datos Personales</div>
-                    
-                    <div class="info-row">
-                        <span class="info-label">Teléfono:</span>
-                        <span class="info-value">
-                            {% if paciente.telefono %}
-                                <a href="tel:{{ paciente.telefono }}" class="text-decoration-none text-dark hover-link">{{ paciente.telefono }}</a>
-                            {% else %}<span class="text-muted">—</span>{% endif %}
-                        </span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Email:</span>
-                        <span class="info-value text-truncate">
-                            {% if paciente.email %}
-                            <a href="mailto:{{ paciente.email }}" class="text-decoration-none text-dark">{{ paciente.email }}</a>
-                            {% else %}<span class="text-muted">—</span>{% endif %}
-                        </span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Dirección:</span>
-                        <span class="info-value">{{ paciente.direccion|default:"—" }}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Distrito:</span>
-                        <span class="info-value">{{ paciente.distrito|default:"—" }}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Fecha Nac.:</span>
-                        <span class="info-value">{{ paciente.fecha_nacimiento|date:"d/m/Y" }}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Género:</span>
-                        <span class="info-value">{{ paciente.get_genero_display }}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Estado Civil:</span>
-                        <span class="info-value">{{ paciente.get_estado_civil_display }}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Ocupación:</span>
-                        <span class="info-value">{{ paciente.ocupacion|default:"—" }}</span>
-                    </div>
-                    <!-- Datos Tutor -->
-                    <div class="mt-3 pt-2 border-top">
-                        <div class="info-row mb-1">
-                            <span class="info-label fw-bold small text-uppercase" style="color:#94a3b8">Tutor / Apoderado</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Nombre:</span>
-                            <span class="info-value">{{ paciente.nombre_tutor|default:"—" }}</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Teléfono:</span>
-                            <span class="info-value">{{ paciente.telefono_tutor|default:"—" }}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 2. Antecedentes Clínicos -->
-            <div class="col-md-4">
-                <div class="dash-card p-3">
-                    <div class="dash-header text-danger"><i class="bi bi-heart-pulse me-2"></i>Salud General</div>
-                    
-                    <div class="info-row">
-                        <span class="info-label">Grupo Sang.:</span>
-                        <span class="info-value badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-10">
-                            {{ paciente.get_grupo_sanguineo_display|default:"—" }}
-                        </span>
-                    </div>
-
+                    <!-- Contacto -->
                     <div class="mb-3">
-                        <label class="info-label w-100 mb-1">Alergias:</label>
-                        {% if paciente.alergias %}
-                            <div class="p-2 rounded bg-danger bg-opacity-10 text-danger border border-danger border-opacity-20 small">
-                                ⚠️ {{ paciente.alergias }}
+                        {% if paciente.telefono %}
+                        <div class="info-item">
+                            <i class="bi bi-telephone-fill info-icon"></i>
+                            <div class="info-content">
+                                <div class="info-label">Teléfono</div>
+                                <a href="tel:{{ paciente.telefono }}" class="info-value text-decoration-none">{{ paciente.telefono }}</a>
                             </div>
-                        {% else %}
-                            <span class="text-muted">—</span>
+                        </div>
                         {% endif %}
+                        {% if paciente.email %}
+                        <div class="info-item">
+                            <i class="bi bi-envelope-fill info-icon"></i>
+                            <div class="info-content">
+                                <div class="info-label">Email</div>
+                                <a href="mailto:{{ paciente.email }}" class="info-value text-decoration-none text-truncate d-block">{{ paciente.email }}</a>
+                            </div>
+                        </div>
+                        {% endif %}
+                        <div class="info-item">
+                            <i class="bi bi-geo-alt-fill info-icon"></i>
+                            <div class="info-content">
+                                <div class="info-label">Ubicación</div>
+                                <div class="info-value small">
+                                    {{ paciente.direccion|default:"—" }}<br>
+                                    {{ paciente.distrito|default:"" }}
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div>
-                        <label class="info-label w-100 mb-1">Enfermedades Previas:</label>
+                    <!-- Alertas Médicas -->
+                    {% if paciente.alergias or paciente.enfermedades_previas %}
+                    <div class="alert-medical">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>
+                            <strong class="text-danger">Alertas Médicas</strong>
+                        </div>
+                        {% if paciente.alergias %}
+                        <div class="small mb-2">
+                            <strong>Alergias:</strong><br>
+                            <span class="text-danger">{{ paciente.alergias }}</span>
+                        </div>
+                        {% endif %}
                         {% if paciente.enfermedades_previas %}
-                            <span class="info-value d-block p-2 bg-light rounded border small">{{ paciente.enfermedades_previas }}</span>
-                        {% else %}
-                            <span class="text-muted">—</span>
+                        <div class="small">
+                            <strong>Enfermedades:</strong><br>
+                            {{ paciente.enfermedades_previas }}
+                        </div>
                         {% endif %}
                     </div>
-                </div>
-            </div>
+                    {% endif %}
 
-            <!-- 3. Historia Dental -->
-            <div class="col-md-4">
-                <div class="dash-card p-3">
-                    <div class="dash-header text-primary"><i class="bi bi-tooth me-2"></i>Dental</div>
-                    
-                    <div class="mb-3">
-                        <label class="info-label w-100 mb-1">Tratamientos Previos:</label>
-                        <span class="info-value d-block small">
-                            {{ paciente.tratamientos_previos|default:"—" }}
-                        </span>
+                    <!-- Datos Adicionales (Colapsable) -->
+                    <div class="mt-3 pt-3 border-top">
+                        <button class="btn btn-sm btn-outline-secondary w-100 mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#datosAdicionales">
+                            <i class="bi bi-info-circle me-1"></i> Más Información
+                        </button>
+                        <div class="collapse" id="datosAdicionales">
+                            <div class="small">
+                                <div class="info-item">
+                                    <div class="info-content">
+                                        <div class="info-label">Fecha Nac.</div>
+                                        <div class="info-value">{{ paciente.fecha_nacimiento|date:"d/m/Y" }}</div>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-content">
+                                        <div class="info-label">Género</div>
+                                        <div class="info-value">{{ paciente.get_genero_display }}</div>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-content">
+                                        <div class="info-label">Estado Civil</div>
+                                        <div class="info-value">{{ paciente.get_estado_civil_display }}</div>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-content">
+                                        <div class="info-label">Ocupación</div>
+                                        <div class="info-value">{{ paciente.ocupacion|default:"—" }}</div>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-content">
+                                        <div class="info-label">Grupo Sang.</div>
+                                        <div class="info-value">{{ paciente.get_grupo_sanguineo_display|default:"—" }}</div>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-content">
+                                        <div class="info-label">Tratamientos Previos</div>
+                                        <div class="info-value">{{ paciente.tratamientos_previos|default:"—" }}</div>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-content">
+                                        <div class="info-label">Experiencias Dentales</div>
+                                        <div class="info-value">{{ paciente.experiencias_dentales|default:"—" }}</div>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-content">
+                                        <div class="info-label">Observaciones</div>
+                                        <div class="info-value">{{ paciente.observaciones|default:"—" }}</div>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-content">
+                                        <div class="info-label">Tutor / Apoderado</div>
+                                        <div class="info-value">{{ paciente.nombre_tutor|default:"—" }}</div>
+                                        {% if paciente.telefono_tutor %}
+                                        <div class="text-muted small"><i class="bi bi-telephone"></i> {{ paciente.telefono_tutor }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="info-label w-100 mb-1">Experiencias Dentales:</label>
-                        <span class="info-value d-block small">
-                            {{ paciente.experiencias_dentales|default:"—" }}
-                        </span>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="info-label w-100 mb-1">Observaciones:</label>
-                        <span class="info-value d-block small p-2 bg-warning bg-opacity-10 border border-warning border-opacity-25 rounded text-dark">
-                             {{ paciente.observaciones|default:"Sin observaciones" }}
-                        </span>
-                    </div>
-
-                    <div class="mt-auto pt-3 border-top">
-                        <a href="{% url 'odontograma:ver_odontograma' paciente.pk %}" class="btn btn-outline-primary w-100 btn-sm">
-                            <i class="bi bi-grid-3x3"></i> Ver Odontograma
+                    <!-- Acciones -->
+                    <div class="d-grid gap-2 mt-3 pt-3 border-top">
+                        <button class="btn btn-success btn-sm" onclick="abrirModalWhatsApp('{{ paciente.telefono|default_if_none:''|escapejs }}', '{{ paciente.nombre_completo|escapejs }}', 'GENERAL')">
+                            <i class="bi bi-whatsapp me-1"></i> WhatsApp
+                        </button>
+                        <a href="{% url 'odontograma:ver_odontograma' paciente.pk %}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-grid-3x3 me-1"></i> Odontograma
                         </a>
+                        <a href="{% url 'pacientes:editar' paciente.pk %}" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-pencil me-1"></i> Editar Datos
+                        </a>
+                        <div class="btn-group btn-group-sm">
+                            <a href="{% url 'pacientes:lista' %}" class="btn btn-outline-secondary" onclick="if (document.referrer && document.referrer.includes(window.location.host)) { history.back(); return false; }">
+                                <i class="bi bi-arrow-left"></i> Volver
+                            </a>
+                            <a href="{% url 'pacientes:eliminar' paciente.pk %}" class="btn btn-outline-danger" onclick="return confirm('¿Eliminar paciente?')">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        
-        
-        <!-- Acciones movidas al Dashboard Grid y Header -->
 
-        <!-- Pestañas de información relacionada -->
-        <div class="bg-white rounded shadow-sm border">
+        <!-- COLUMNA DERECHA: CONTENIDO PRINCIPAL -->
+        <div class="col-lg-9">
+            <!-- Pestañas de información relacionada -->
+            <div class="bg-white rounded shadow-sm border">
             <ul class="nav nav-tabs" id="patientTabs" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="historias-tab" data-bs-toggle="tab" data-bs-target="#historias" type="button">
@@ -382,7 +462,7 @@
                                     </thead>
                                     <tbody>
                                         {% for t in tratamientos_paginados %}
-                                        <tr onclick="window.location='{% url 'tratamientos:detalle' t.pk %}'">
+                                        <tr onclick="window.location='{% url 'tratamientos:detalle' t.pk %}?from=paciente'">
                                             <td>
                                                 <div class="d-flex flex-column">
                                                     <span class="d-block fw-bold text-dark mb-1">{{ t.nombre }}</span>
@@ -428,16 +508,19 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <span class="badge bg-{{ t.clase_estado_pago }} rounded-pill px-3 py-2">
-                                                    {% if t.estado == 'pendiente' %}
-                                                        <i class="bi bi-hourglass"></i>
-                                                    {% elif t.estado == 'en_progreso' %}
-                                                        <i class="bi bi-arrow-repeat"></i>
-                                                    {% else %}
-                                                        <i class="bi bi-check-circle-fill"></i>
-                                                    {% endif %}
-                                                    {{ t.get_estado_display }}
-                                                </span>
+                                                {% if t.estado == 'pendiente' %}
+                                                    <span class="badge bg-secondary text-white rounded-pill px-3 py-2 fw-semibold">
+                                                        <i class="bi bi-hourglass me-1"></i> Pendiente
+                                                    </span>
+                                                {% elif t.estado == 'en_progreso' %}
+                                                    <span class="badge bg-warning text-dark rounded-pill px-3 py-2 fw-semibold">
+                                                        <i class="bi bi-arrow-repeat me-1"></i> En Progreso
+                                                    </span>
+                                                {% else %}
+                                                    <span class="badge bg-success text-white rounded-pill px-3 py-2 fw-semibold">
+                                                        <i class="bi bi-check-circle-fill me-1"></i> Completado
+                                                    </span>
+                                                {% endif %}
                                                 {% if t.deuda == 0 and t.estado != 'completado' %}
                                                     <div class="mt-1">
                                                         <small class="badge bg-warning bg-opacity-10 text-warning border border-warning">
@@ -469,15 +552,24 @@
                         <!-- VISTA MOVIL -->
                         <div class="d-md-none">
                             {% for t in tratamientos_paginados %}
-                            <div class="card mb-3 border shadow-sm" onclick="window.location='{% url 'tratamientos:detalle' t.pk %}'">
+                            <div class="card mb-3 border shadow-sm" onclick="window.location='{% url 'tratamientos:detalle' t.pk %}?from=paciente'">
                                 <div class="card-body p-3">
                                     <!-- Header -->
                                     <div class="d-flex justify-content-between align-items-start mb-2">
                                         <h6 class="fw-bold mb-0 text-dark">{{ t.nombre }}</h6>
-                                        <span class="badge bg-{{ t.clase_estado_pago }} px-2 py-1">
-                                            {% if t.estado == 'pendiente' %}⏳{% elif t.estado == 'en_progreso' %}🔄{% else %}✅{% endif %}
-                                            {{ t.get_estado_display }}
-                                        </span>
+                                        {% if t.estado == 'pendiente' %}
+                                            <span class="badge bg-secondary text-white px-2 py-1 fw-semibold">
+                                                <i class="bi bi-hourglass"></i> Pendiente
+                                            </span>
+                                        {% elif t.estado == 'en_progreso' %}
+                                            <span class="badge bg-warning text-dark px-2 py-1 fw-semibold">
+                                                <i class="bi bi-arrow-repeat"></i> En Progreso
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-success text-white px-2 py-1 fw-semibold">
+                                                <i class="bi bi-check-circle-fill"></i> Completado
+                                            </span>
+                                        {% endif %}
                                     </div>
                                     
                                     <!-- Fechas -->
@@ -648,8 +740,11 @@
 
             </div>
         </div>
+        <!-- Fin columna derecha -->
     </div>
+    <!-- Fin row -->
 </div>
+<!-- Fin container -->
 
 <!-- Script para mantener la pestaña activa -->
 {% block extra_js %}
@@ -658,7 +753,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(window.location.search);
     let activeTab = 'historias-tab'; // Por defecto
 
-    if (urlParams.has('tratamientos_page')) {
+    // Prioridad 1: Parámetro ?tab= explícito
+    if (urlParams.has('tab')) {
+        const tabName = urlParams.get('tab');
+        activeTab = tabName + '-tab';
+    }
+    // Prioridad 2: Paginación (mantiene la tab actual)
+    else if (urlParams.has('tratamientos_page')) {
         activeTab = 'tratamientos-tab';
     } else if (urlParams.has('notas_page')) {
         activeTab = 'notas-tab';

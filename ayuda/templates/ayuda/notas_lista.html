@@ -1,0 +1,59 @@
+<h5 class="mb-3 d-flex align-items-center">
+    <i class="bi bi-sticky text-warning me-2"></i> Notas Médicas
+</h5>
+<p class="text-muted small mb-4">
+    Anotaciones rápidas, recordatorios sobre pacientes o detalles no clínicos que necesitas tener a mano.
+</p>
+
+<!-- Pestañas -->
+<ul class="nav nav-tabs nav-fill mb-3" id="helpTabsNotas" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active py-1 small" id="tab-notas-uso" data-bs-toggle="tab" data-bs-target="#content-notas-uso" type="button" role="tab" aria-selected="true">Uso</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link py-1 small" id="tab-drive" data-bs-toggle="tab" data-bs-target="#content-drive" type="button" role="tab" aria-selected="false">Drive</button>
+    </li>
+</ul>
+
+<div class="tab-content" id="helpTabContentNotas">
+    <!-- TAB: USO -->
+    <div class="tab-pane fade show active" id="content-notas-uso" role="tabpanel">
+        <h6 class="fw-bold small mb-2 text-dark">¿Cuándo usar una Nota?</h6>
+        <div class="d-flex flex-column gap-2 small mb-3">
+            <div class="d-flex align-items-start">
+                <i class="bi bi-check-circle text-success me-2 mt-1"></i>
+                <div>
+                    <strong>Recordatorios:</strong> "Paciente prefiere citas por la mañana".
+                </div>
+            </div>
+            <div class="d-flex align-items-start">
+                <i class="bi bi-check-circle text-success me-2 mt-1"></i>
+                <div>
+                    <strong>Observaciones:</strong> "Traerá radiografías externas la próxima vez".
+                </div>
+            </div>
+        </div>
+        
+        <div class="alert alert-secondary border-0 small p-2">
+            <i class="bi bi-info-circle-fill me-1"></i>
+            Las notas son privadas del consultorio y no forman parte legal de la historia clínica.
+        </div>
+    </div>
+
+    <!-- TAB: DRIVE -->
+    <div class="tab-pane fade" id="content-drive" role="tabpanel">
+        <div class="alert alert-primary border-0 small mb-3">
+            <i class="bi bi-cloud-arrow-up-fill me-1"></i>
+            <strong>Integración Google Drive:</strong>
+            Puedes subir imágenes pesadas directamente a la nube para no llenar el servidor.
+        </div>
+        
+        <h6 class="fw-bold small mb-2">Pasos para subir:</h6>
+        <ol class="small ps-3 mb-0">
+            <li>Crea o edita una Nota.</li>
+            <li>En la lista, busca el botón <span class="badge bg-primary"><i class="bi bi-google"></i> Drive</span>.</li>
+            <li>Selecciona la imagen y confirma.</li>
+            <li>Se generará un enlace automático para verla.</li>
+        </ol>
+    </div>
+</div>

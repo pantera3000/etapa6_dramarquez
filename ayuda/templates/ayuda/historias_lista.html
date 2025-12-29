@@ -1,0 +1,65 @@
+<h5 class="mb-3 d-flex align-items-center">
+    <i class="bi bi-journal-medical text-primary me-2"></i> Historias Clínicas
+</h5>
+<p class="text-muted small mb-4">
+    Repositorio central de documentos clínicos, diagnósticos y evoluciones de todos los pacientes.
+</p>
+
+<!-- Pestañas -->
+<ul class="nav nav-tabs nav-fill mb-3" id="helpTabsHistorias" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active py-1 small" id="tab-concepto" data-bs-toggle="tab" data-bs-target="#content-concepto" type="button" role="tab" aria-selected="true">Conceptos</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link py-1 small" id="tab-adjuntos" data-bs-toggle="tab" data-bs-target="#content-adjuntos" type="button" role="tab" aria-selected="false">Adjuntos</button>
+    </li>
+</ul>
+
+<div class="tab-content" id="helpTabContentHistorias">
+    <!-- TAB: CONCEPTOS -->
+    <div class="tab-pane fade show active" id="content-concepto" role="tabpanel">
+        <div class="card border-0 bg-light mb-3">
+            <div class="card-body p-3">
+                <h6 class="fw-bold text-dark mb-2">¿Qué es una Entrada?</h6>
+                <p class="small mb-2">
+                    Cada registro en esta lista representa un evento clínico individual (Consulta, Evolución, Examen).
+                </p>
+                <div class="alert alert-warning border-0 small mb-0 p-2">
+                    <i class="bi bi-shield-lock-fill me-1"></i>
+                    <strong>Seguridad:</strong> Las historias clínicas son documentos legales. Solo el DOCTOR puede editar o eliminar entradas (si su rol lo permite).
+                </div>
+            </div>
+        </div>
+        
+        <h6 class="small fw-bold mb-2">Tipos de acción:</h6>
+        <div class="list-group list-group-flush small">
+            <div class="list-group-item bg-transparent px-0">
+                <i class="bi bi-eye text-primary me-2"></i><strong>Ver Detalle:</strong> Abre el documento completo.
+            </div>
+            <div class="list-group-item bg-transparent px-0">
+                <i class="bi bi-pencil text-secondary me-2"></i><strong>Editar:</strong> Modificar texto de la evolución.
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: ADJUNTOS -->
+    <div class="tab-pane fade" id="content-adjuntos" role="tabpanel">
+        <div class="d-flex align-items-center mb-3">
+            <i class="bi bi-images text-info fs-3 me-3"></i>
+            <div class="small lh-sm">
+                <strong>Imágenes y RX</strong><br>
+                Cada historia puede tener múltiples imágenes asociadas.
+            </div>
+        </div>
+
+        <div class="card bg-white border shadow-sm">
+            <div class="card-body p-3">
+                <h6 class="fw-bold small mb-2">Indicadores en la lista</h6>
+                <div class="d-flex align-items-center">
+                    <span class="badge bg-secondary me-2"><i class="bi bi-paperclip"></i> 3</span>
+                    <span class="small text-muted">Indica que la entrada tiene 3 archivos adjuntos.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
