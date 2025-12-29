@@ -508,9 +508,11 @@
     <!-- Global Search Modal -->
     {% include 'components/search_modal.html' %}
     
-    <!-- Mobile Bottom Navigation -->
-    {% include 'components/bottom_nav.html' %}
-    <script src="{% static 'js/bottom-nav.js' %}"></script>
+    <!-- Mobile Bottom Navigation - SOLO VISIBLE EN MÓVIL -->
+    <div class="d-md-none">
+        {% include 'components/bottom_nav.html' %}
+        <script src="{% static 'js/bottom-nav.js' %}"></script>
+    </div>
 
     <!-- FAB Desktop - Bootstrap Native (Robust & Reliable) -->
     <div class="position-fixed d-none d-md-block" style="bottom: 30px; right: 30px; z-index: 1050;">
