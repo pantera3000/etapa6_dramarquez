@@ -1,4 +1,27 @@
 <!-- Mobile Bottom Navigation Bar -->
+<style>
+    /* CRITICAL: Ocultar menú flotante en desktop - FORZADO */
+    @media (min-width: 768px) {
+        .bottom-nav,
+        .fab-menu,
+        .fab-backdrop,
+        .fab-options,
+        .bottom-nav-item,
+        .bottom-nav-fab,
+        #bottomNav,
+        #fabMenu {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            position: absolute !important;
+            left: -9999px !important;
+            height: 0 !important;
+            width: 0 !important;
+            overflow: hidden !important;
+        }
+    }
+</style>
 <nav class="bottom-nav" id="bottomNav">
     <button class="bottom-nav-item" data-action="home" data-url="/">
         <i class="bi bi-house-door"></i>
