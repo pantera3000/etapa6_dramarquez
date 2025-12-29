@@ -13,11 +13,17 @@
             --primary-color: #2563eb;
             --secondary-color: #0ea5e9;
             --accent-color: #3b82f6;
-            --bg-gradient: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
         }
 
         body {
-            background: var(--bg-gradient);
+            /* Fondo con imagen y superposición oscura para legibilidad.
+               Puedes cambiar la URL por una foto local: '/static/img/tu-foto.jpg' */
+            background: linear-gradient(rgba(2, 6, 23, 0.7), rgba(30, 58, 138, 0.6)), 
+                        url('https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2600&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            
             font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
             min-height: 100vh;
             display: flex;
@@ -28,29 +34,16 @@
             overflow: hidden;
         }
 
-        /* Elementos decorativos de fondo */
-        .bg-shape {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            z-index: -1;
-            opacity: 0.6;
-        }
-        .shape-1 { background: #bfdbfe; width: 400px; height: 400px; top: -100px; right: -100px; }
-        .shape-2 { background: #bae6fd; width: 300px; height: 300px; bottom: -50px; left: -50px; }
-
         .login-card {
-            background: rgba(255, 255, 255, 0.95);
-            border: 1px solid rgba(255, 255, 255, 1);
+            background: rgba(255, 255, 255, 0.92); /* Ligeramente más transparente */
+            border: 1px solid rgba(255, 255, 255, 0.8);
             border-radius: 1.5rem;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); /* Sombra más dramática */
             width: 100%;
             max-width: 440px;
             overflow: hidden;
             position: relative;
-            backdrop-filter: blur(10px);
-            transform: translateY(0);
-            transition: transform 0.3s ease;
+            backdrop-filter: blur(12px); /* Blur más fuerte */
         }
 
         .login-header {
@@ -58,7 +51,7 @@
             padding: 3rem 2rem 4rem;
             text-align: center;
             color: white;
-            clip-path: ellipse(150% 100% at 50% 0%); /* Curva suave elegante */
+            clip-path: ellipse(150% 100% at 50% 0%);
         }
         
         .brand-icon {
@@ -72,23 +65,24 @@
             margin: 0 auto 1rem;
             backdrop-filter: blur(5px);
             font-size: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
         .login-body {
             padding: 0 2.5rem 2.5rem;
-            margin-top: -2rem; /* Subir para solapar con el header curvo */
+            margin-top: -2rem;
         }
 
         .form-floating > .form-control {
             border-radius: 0.75rem;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #cbd5e1;
             background-color: #f8fafc;
         }
         
         .form-floating > .form-control:focus {
             background-color: #fff;
             border-color: var(--accent-color);
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
         }
 
         .btn-login {
@@ -99,13 +93,13 @@
             border-radius: 0.75rem;
             font-size: 1rem;
             letter-spacing: 0.5px;
-            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
-            transition: all 0.2s;
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 20px 25px -5px rgba(37, 99, 235, 0.3);
             background: linear-gradient(135deg, #1d4ed8, #2563eb);
         }
 
@@ -114,41 +108,65 @@
             border: none;
             font-size: 0.9rem;
             margin-bottom: 1.5rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
         
         .footer-text {
-            color: #64748b;
+            color: #475569;
             font-size: 0.85rem;
             text-align: center;
             margin-top: 2rem;
+            font-weight: 500;
+        }
+
+        /* Estilos Toggle Password */
+        .password-container {
+            position: relative;
+        }
+        .password-toggle-btn {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            cursor: pointer;
+            z-index: 5;
+            padding: 5px;
+            transition: color 0.2s;
+        }
+        .password-toggle-btn:hover {
+            color: var(--primary-color);
+        }
+        .password-toggle-btn:focus {
+            outline: none;
+            color: var(--primary-color);
         }
     </style>
 </head>
 <body>
-    <div class="bg-shape shape-1"></div>
-    <div class="bg-shape shape-2"></div>
-
+    
     <div class="login-card">
         <div class="login-header">
             <div class="brand-icon">
-                <i class="bi bi-hospital"></i>
+                <i class="bi bi-person-badge"></i>
             </div>
             <h4 class="fw-bold mb-1">Consultorio Dental</h4>
-            <p class="mb-0 opacity-75 small">Dra. Marquez</p>
+            <p class="mb-0 opacity-75 small">Bienvenido de nuevo</p>
         </div>
         
         <div class="login-body">
             <div class="card border-0 shadow-sm rounded-4 p-1 mb-4 bg-white" style="margin-top: -30px;">
                 <div class="card-body text-center py-2">
-                    <small class="text-muted fw-medium py-1 d-block">Iniciar Sesión</small>
+                    <small class="text-primary fw-bold text-uppercase ls-1" style="letter-spacing: 1px; font-size: 0.7rem;">Acceso Seguro</small>
                 </div>
             </div>
 
             {% if messages %}
                 {% for message in messages %}
                     <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show d-flex align-items-center" role="alert">
-                        <i class="bi bi-exclamation-circle-fill me-2 fs-5"></i>
+                        <i class="bi bi-info-circle-fill me-2 fs-5"></i>
                         <div>{{ message }}</div>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
@@ -166,22 +184,28 @@
                            placeholder="Usuario"
                            required
                            autofocus>
-                    <label for="id_username"><i class="bi bi-person me-2"></i>Usuario</label>
+                    <label for="id_username" class="text-muted"><i class="bi bi-person me-2"></i>Usuario</label>
                 </div>
 
-                <div class="form-floating mb-4">
-                    <input type="password" 
-                           name="password" 
-                           class="form-control" 
-                           id="id_password" 
-                           placeholder="Contraseña"
-                           required>
-                    <label for="id_password"><i class="bi bi-lock me-2"></i>Contraseña</label>
+                <div class="mb-4 password-container">
+                    <div class="form-floating">
+                        <input type="password" 
+                               name="password" 
+                               class="form-control" 
+                               id="id_password" 
+                               placeholder="Contraseña"
+                               style="padding-right: 45px;"
+                               required>
+                        <label for="id_password" class="text-muted"><i class="bi bi-lock me-2"></i>Contraseña</label>
+                    </div>
+                    <button type="button" class="password-toggle-btn" onclick="togglePassword()" title="Mostrar/Ocultar contraseña">
+                        <i class="bi bi-eye-fill" id="toggleIcon"></i>
+                    </button>
                 </div>
 
                 <div class="d-grid">
                     <button type="submit" class="btn btn-primary btn-login text-white">
-                        Ingresar al Sistema <i class="bi bi-arrow-right-short ms-1 fs-5 align-middle"></i>
+                        Ingresar <i class="bi bi-box-arrow-in-right ms-2"></i>
                     </button>
                 </div>
                 
@@ -193,5 +217,21 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('id_password');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('bi-eye-fill');
+                toggleIcon.classList.add('bi-eye-slash-fill');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('bi-eye-slash-fill');
+                toggleIcon.classList.add('bi-eye-fill');
+            }
+        }
+    </script>
 </body>
 </html>
