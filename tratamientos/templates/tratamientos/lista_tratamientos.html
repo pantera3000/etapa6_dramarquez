@@ -1,4 +1,3 @@
-<!-- tratamientos/templates/tratamientos/lista_tratamientos.html -->
 {% extends 'base.html' %}
 {% load static %}
 {% load paciente_tags %}
@@ -6,407 +5,291 @@
 {% block title %}Tratamientos{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-center">
-    <div class="col-lg-9">
-        <!-- Encabezado -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="mb-0">🦷 Lista de Tratamientos</h2>
-            <div>
-                <a href="{% url 'pacientes:lista' %}" class="btn btn-outline-secondary btn-sm me-2" 
-                   onclick="if (document.referrer && document.referrer.includes(window.location.host)) { history.back(); return false; }">
-                    <i class="bi bi-arrow-left"></i> Atrás
-                </a>
-                {% if paciente %}
-                    <a href="{% url 'tratamientos:crear_tratamiento' paciente.pk %}" class="btn btn-success btn-sm">
-                        ➕ Nuevo Tratamiento
-                    </a>
-                {% endif %}
-            </div>
-        </div>
-
-        <!-- Información del paciente (si aplica) -->
-        {% if paciente %}
-        <div class="alert alert-info mb-4">
-            <strong>Paciente:</strong> {{ paciente.nombre_completo }} (DNI: {{ paciente.dni }})
-        </div>
-        {% endif %}
-
-        <!-- Filtros y búsqueda -->
-        <div class="bg-white p-3 rounded shadow-sm border mb-4">
-            <form method="get" class="row g-2">
-                <!-- Búsqueda -->
-                <div class="col-md-4">
-                    <input type="text" name="q" class="form-control form-control-sm" 
-                           placeholder="Buscar tratamiento o paciente..." 
-                           value="{{ request.GET.q }}">
+<div class="container-fluid px-4 py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-11">
+            <!-- Encabezado con breadcrumbs y acciones -->
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                <div>
+                    <h2 class="fw-bold text-dark mb-1">🦷 Lista de Tratamientos</h2>
+                    <p class="text-muted mb-0">Gestiona y supervisa los procedimientos clínicos.</p>
                 </div>
-
-                <!-- Filtro por estado -->
-                <div class="col-md-3">
-                    <select name="estado" class="form-select form-select-sm">
-                        <option value="">Todos los estados</option>
-                        <option value="pendiente" {% if request.GET.estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
-                        <option value="en_progreso" {% if request.GET.estado == 'en_progreso' %}selected{% endif %}>En progreso</option>
-                        <option value="completado" {% if request.GET.estado == 'completado' %}selected{% endif %}>Completado</option>
-                    </select>
-                </div>
-
-                <!-- Filtro por rango de fechas -->
-                <div class="col-md-2">
-                    <input type="date" name="fecha_inicio" class="form-control form-control-sm" 
-                           value="{{ request.GET.fecha_inicio }}">
-                </div>
-                <div class="col-md-2">
-                    <input type="date" name="fecha_fin" class="form-control form-control-sm" 
-                           value="{{ request.GET.fecha_fin }}">
-                </div>
-
-                <!-- Botones -->
-                <div class="col-md-1 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary btn-sm w-100">🔍 Filtrar</button>
-                </div>
-            </form>
-
-
-            <!-- Filtros rápidos -->
-            <!-- Filtros rápidos -->
-            <div class="col-12 mt-2">
-                <div class="btn-group btn-group-sm" role="group">
-                    <a href="?fecha_inicio={{ this_month_start }}&fecha_fin={{ this_month_end }}" 
-                    class="btn btn-outline-primary {% if request.GET.fecha_inicio == this_month_start and request.GET.fecha_fin == this_month_end %}active{% endif %}">
-                        Este mes
+                <div class="d-flex gap-2">
+                    <a href="{% url 'pacientes:lista' %}" class="btn btn-outline-secondary d-flex align-items-center bg-white shadow-sm"
+                       onclick="if (document.referrer && document.referrer.includes(window.location.host)) { history.back(); return false; }">
+                        <i class="bi bi-arrow-left me-2"></i> Atrás
                     </a>
-                    <a href="?fecha_inicio={{ last_month_start }}&fecha_fin={{ last_month_end }}" 
-                    class="btn btn-outline-primary {% if request.GET.fecha_inicio == last_month_start and request.GET.fecha_fin == last_month_end %}active{% endif %}">
-                        Mes pasado
-                    </a>
-                    <a href="?fecha_inicio={{ this_year_start }}&fecha_fin=" 
-                    class="btn btn-outline-primary {% if request.GET.fecha_inicio == this_year_start and not request.GET.fecha_fin %}active{% endif %}">
-                        Este año
-                    </a>
-                    <a href="?fecha_inicio={{ last_year_start }}&fecha_fin={{ last_year_end }}" 
-                    class="btn btn-outline-primary {% if request.GET.fecha_inicio == last_year_start and request.GET.fecha_fin == last_year_end %}active{% endif %}">
-                        Año pasado
-                    </a>
+                    {% if paciente %}
+                        <a href="{% url 'tratamientos:crear_tratamiento' paciente.pk %}" class="btn btn-primary d-flex align-items-center shadow-sm">
+                            <i class="bi bi-plus-lg me-2"></i> Nuevo Tratamiento
+                        </a>
+                    {% endif %}
                 </div>
             </div>
 
-
-
-
-            <!-- Botón limpiar (solo si hay filtros activos) -->
-            {% if request.GET.q or request.GET.estado or request.GET.fecha_inicio or request.GET.fecha_fin %}
-            <div class="mt-2">
-                <a href="{% if paciente %}{% url 'tratamientos:lista_por_paciente' paciente.pk %}{% else %}{% url 'tratamientos:lista' %}{% endif %}" 
-                   class="btn btn-outline-secondary btn-sm">🗑️ Limpiar filtros</a>
+            <!-- Alerta de Paciente Contextual -->
+            {% if paciente %}
+            <div class="d-flex align-items-center p-3 mb-4 rounded-3 border bg-white shadow-sm border-start border-4 border-info">
+                <div class="avatar-circle me-3 bg-info text-white">
+                    <i class="bi bi-person-fill fs-5"></i>
+                </div>
+                <div>
+                    <h6 class="mb-0 fw-bold">Filtrando por Paciente: {{ paciente.nombre_completo }}</h6>
+                    <small class="text-muted">DNI: {{ paciente.dni }}</small>
+                </div>
+                <div class="ms-auto">
+                    <a href="{% url 'tratamientos:lista' %}" class="btn btn-sm btn-light text-muted">Ver todos</a>
+                </div>
             </div>
             {% endif %}
-        </div>
 
-        <!-- Mini-KPIs Statistics Header -->
-        <div class="row g-3 mb-4">
-            <div class="col-md-3 col-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body text-center">
-                        <i class="bi bi-clipboard2-pulse text-primary fs-2 mb-2"></i>
-                        <h3 class="mb-0 fw-bold">{{ total_tratamientos }}</h3>
-                        <small class="text-muted">Total Tratamientos</small>
+            <!-- Stats (KPIs) -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3 col-6">
+                    <div class="card border-0 shadow-sm h-100 border-top border-3 border-primary">
+                        <div class="card-body">
+                            <h6 class="text-uppercase text-muted fw-bold small mb-2">Total</h6>
+                            <div class="d-flex align-items-baseline">
+                                <h2 class="mb-0 fw-bold">{{ total_tratamientos }}</h2>
+                                <span class="ms-2 text-muted small">tratamientos</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card border-0 shadow-sm h-100 border-top border-3 border-info">
+                        <div class="card-body">
+                            <h6 class="text-uppercase text-muted fw-bold small mb-2">En Progreso</h6>
+                            <div class="d-flex align-items-baseline">
+                                <h2 class="mb-0 fw-bold text-info">{{ tratamientos_activos }}</h2>
+                                <span class="ms-2 text-muted small">activos</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card border-0 shadow-sm h-100 border-top border-3 border-success">
+                        <div class="card-body">
+                            <h6 class="text-uppercase text-muted fw-bold small mb-2">Completados</h6>
+                            <div class="d-flex align-items-baseline">
+                                <h2 class="mb-0 fw-bold text-success">{{ tratamientos_completados }}</h2>
+                                <span class="ms-2 text-muted small">finalizados</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card border-0 shadow-sm h-100 border-top border-3 border-danger">
+                        <div class="card-body">
+                            <h6 class="text-uppercase text-muted fw-bold small mb-2">Deuda Pendiente</h6>
+                            <div class="d-flex align-items-baseline">
+                                <h2 class="mb-0 fw-bold text-danger">S/ {{ deuda_total|floatformat:2 }}</h2>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 col-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body text-center">
-                        <i class="bi bi-arrow-repeat text-info fs-2 mb-2"></i>
-                        <h3 class="mb-0 fw-bold text-info">{{ tratamientos_activos }}</h3>
-                        <small class="text-muted">En Progreso</small>
+
+            <!-- Panel de Filtros -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-3 bg-light rounded-3">
+                    <form method="get" class="row g-2 align-items-end">
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-muted mb-1">Buscar</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                                <input type="text" name="q" class="form-control border-start-0 ps-0" 
+                                       placeholder="Tratamiento, paciente..." value="{{ request.GET.q }}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-bold text-muted mb-1">Estado</label>
+                            <select name="estado" class="form-select form-select-sm">
+                                <option value="">Todos</option>
+                                <option value="pendiente" {% if request.GET.estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+                                <option value="en_progreso" {% if request.GET.estado == 'en_progreso' %}selected{% endif %}>En Progreso</option>
+                                <option value="completado" {% if request.GET.estado == 'completado' %}selected{% endif %}>Completado</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small fw-bold text-muted mb-1">Desde</label>
+                            <input type="date" name="fecha_inicio" class="form-control form-control-sm" value="{{ request.GET.fecha_inicio }}">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small fw-bold text-muted mb-1">Hasta</label>
+                            <input type="date" name="fecha_fin" class="form-control form-control-sm" value="{{ request.GET.fecha_fin }}">
+                        </div>
+                        <div class="col-md-1">
+                            <button type="submit" class="btn btn-primary btn-sm w-100 mt-4">Filtrar</button>
+                        </div>
+                    </form>
+                    
+                    <!-- Chips de fechas rápidas -->
+                    <div class="mt-2 d-flex gap-2 flex-wrap">
+                        <a href="?fecha_inicio={{ this_month_start }}&fecha_fin={{ this_month_end }}" class="badge rounded-pill fw-normal text-decoration-none px-3 py-2 {% if request.GET.fecha_inicio == this_month_start %}bg-primary text-white{% else %}bg-white text-secondary border{% endif %}">Este Mes</a>
+                        <a href="?fecha_inicio={{ last_month_start }}&fecha_fin={{ last_month_end }}" class="badge rounded-pill fw-normal text-decoration-none px-3 py-2 {% if request.GET.fecha_inicio == last_month_start %}bg-primary text-white{% else %}bg-white text-secondary border{% endif %}">Mes Pasado</a>
+                        {% if request.GET.q or request.GET.estado or request.GET.fecha_inicio %}
+                            <a href="{% url 'tratamientos:lista' %}" class="badge rounded-pill fw-normal text-danger bg-danger-subtle text-decoration-none px-3 py-2 border border-danger-subtle ms-auto">
+                                <i class="bi bi-x-circle me-1"></i> Limpiar
+                            </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 col-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body text-center">
-                        <i class="bi bi-check-circle-fill text-success fs-2 mb-2"></i>
-                        <h3 class="mb-0 fw-bold text-success">{{ tratamientos_completados }}</h3>
-                        <small class="text-muted">Completados</small>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 col-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body text-center">
-                        <i class="bi bi-exclamation-circle text-danger fs-2 mb-2"></i>
-                        <h3 class="mb-0 fw-bold text-danger">S/ {{ deuda_total|floatformat:2 }}</h3>
-                        <small class="text-muted">Deuda Total</small>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Tarjeta de tabla -->
-        <!-- Lista de tratamientos - Responsive (Rediseño SaaS) -->
-        <div class="bg-white rounded-3 shadow-sm border overflow-hidden">
-            <!-- Estilos Inline (Consistente para evitar caché) -->
-            <style>
-                /* --- Avatar Styles --- */
-                .avatar-circle {
-                    width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-                    color: white; font-weight: 600; font-size: 0.9rem; text-transform: uppercase; flex-shrink: 0;
-                }
-                .avatar-circle-sm { width: 32px; height: 32px; font-size: 0.8rem; }
-                
-                /* --- Table Styles --- */
-                .table-saas thead th {
-                    font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;
-                    color: #64748b; background-color: #f8fafc; border-bottom: 1px solid #e2e8f0;
-                    padding: 12px 16px;
-                }
-                .table-saas tbody td {
-                    vertical-align: middle; padding: 12px 16px; border-bottom: 1px solid #f1f5f9;
-                }
-                .table-saas tbody tr { transition: all 0.2s ease-in-out; }
-                .table-saas tbody tr:hover {
-                    background-color: #f8fafc !important;
-                    cursor: pointer;
-                    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-                    transform: translateY(-2px);
-                }
-                
-                /* --- Typography --- */
-                .text-title { color: #0f172a; font-weight: 600; font-size: 0.95rem; }
-                .text-amount { font-family: 'Consolas', monospace; font-weight: 600; color: #0f172a; }
-                .text-meta { font-size: 0.85rem; color: #64748b; }
-                
-                /* --- Badges & Status --- */
-                .badge-saas { font-weight: 500; padding: 0.35em 0.65em; font-size: 0.75em; border-radius: 6px; }
-                
-                /* --- Actions --- */
-                .actions-group { opacity: 1; display: flex; gap: 0.25rem; justify-content: flex-end; }
-
-                /* --- Mobile Cards --- */
-                .card-mobile-saas {
-                    background: white; border: 1px solid #e2e8f0; border-radius: 0.75rem;
-                    transition: transform 0.2s;
-                }
-                .card-mobile-saas:active { transform: scale(0.98); }
-            </style>
-
-            {% if tratamientos %}
-                
-                <!-- VISTA TABLA (Desktop) -->
-                <div class="d-none d-md-block">
-                    <div class="table-responsive">
-                        <table class="table table-saas mb-0">
-                            <thead>
-                                <tr>
-                                    <th style="width: 30%;">Tratamiento / Paciente</th>
-                                    <th style="width: 15%;">Fechas</th>
-                                    <th style="width: 15%;">Estado</th>
-                                    <th style="width: 25%;">Progreso de Pago</th>
-                                    <th class="text-end" style="width: 15%;">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for t in tratamientos %}
-                                <tr onclick="window.location='{% url 'tratamientos:detalle' t.pk %}'">
-                                    <!-- Tratamiento & Paciente -->
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="avatar-circle me-3" style="background-color: {{ t.paciente.nombre_completo|avatar_color }};">
-                                                {{ t.paciente.nombre_completo|initials_avatar }}
-                                            </div>
-                                            <div>
-                                                <span class="d-block text-title">{{ t.nombre }}</span>
-                                                {% if not paciente %}
-                                                    <a href="{% url 'pacientes:detalle' t.paciente.pk %}" class="text-decoration-none text-meta" onclick="event.stopPropagation()">
-                                                        <i class="bi bi-person-circle mobile-label-icon"></i> {{ t.paciente.nombre_completo }}
-                                                    </a>
-                                                {% endif %}
-                                            </div>
+            <!-- Tabla Principal -->
+            <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+                <style>
+                    /* Badges sutiles para mejor contraste */
+                    .badge-subtle-warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+                    .badge-subtle-primary { background-color: #cfe2ff; color: #084298; border: 1px solid #b6d4fe; }
+                    .badge-subtle-success { background-color: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; }
+                    .badge-subtle-secondary { background-color: #e2e3e5; color: #41464b; border: 1px solid #d3d6d8; }
+                    
+                    /* Hover effect en filas */
+                    .table-hover tbody tr:hover { transform: translateY(-1px); box-shadow: 0 4px 6px rgba(0,0,0,0.05); z-index: 1; position: relative; }
+                    .action-btn { transition: all 0.2s; opacity: 0.7; }
+                    .table-hover tbody tr:hover .action-btn { opacity: 1; transform: scale(1.1); }
+                </style>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" style="min-width: 900px;">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4 py-3 text-uppercase text-muted small fw-bold border-0">Tratamiento / Paciente</th>
+                                <th class="py-3 text-uppercase text-muted small fw-bold border-0">Fecha</th>
+                                <th class="py-3 text-uppercase text-muted small fw-bold border-0">Estado</th>
+                                <th class="py-3 text-uppercase text-muted small fw-bold border-0" style="width: 25%;">Progreso Pago</th>
+                                <th class="pe-4 py-3 text-end text-uppercase text-muted small fw-bold border-0">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for t in tratamientos %}
+                            <tr class="cursor-pointer bg-white" onclick="window.location='{% url 'tratamientos:detalle' t.pk %}'">
+                                <!-- Tratamiento -->
+                                <td class="ps-4 py-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-circle me-3 flex-shrink-0" 
+                                             style="width: 45px; height: 45px; background-color: {{ t.paciente.nombre_completo|avatar_color }}; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 50%;">
+                                            {{ t.paciente.nombre_completo|initials_avatar }}
                                         </div>
-                                    </td>
-                                    
-                                    <!-- Fechas (Nueva Columna) -->
-                                    <td>
-                                        <div class="d-flex flex-column">
-                                            <span class="text-dark fw-medium" style="font-size: 0.9rem;">
-                                                <i class="bi bi-calendar-event me-1 text-muted"></i>{{ t.fecha_inicio|date:"d/m/Y" }}
-                                            </span>
-                                            {% if t.fecha_fin %}
-                                                <small class="text-muted">Fin: {{ t.fecha_fin|date:"d/m/Y" }}</small>
-                                            {% else %}
-                                                <small class="text-muted fst-italic">En curso</small>
-                                            {% endif %}
-                                        </div>
-                                    </td>
-                                    
-                                    <!-- Estado -->
-                                    <td>
-                                        <div class="d-flex flex-column align-items-start">
-                                            <span class="badge bg-{{ t.clase_estado }} badge-saas mb-1 px-3 py-2">
-                                                {% if t.estado == 'pendiente' %}
-                                                    <i class="bi bi-hourglass"></i>
-                                                {% elif t.estado == 'en_progreso' %}
-                                                    <i class="bi bi-arrow-repeat"></i>
-                                                {% else %}
-                                                    <i class="bi bi-check-circle-fill"></i>
-                                                {% endif %}
-                                                {{ t.get_estado_display }}
-                                            </span>
-                                            {% if t.deuda == 0 and t.estado != 'completado' %}
-                                                <small class="badge bg-warning bg-opacity-10 text-warning border border-warning mt-1">
-                                                    <i class="bi bi-exclamation-triangle"></i> Listo
-                                                </small>
-                                            {% endif %}
-                                        </div>
-                                    </td>
-                                    
-                                    <!-- Progreso de Pago -->
-                                    <td>
-                                        <div class="d-flex flex-column">
-                                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                                <span class="fw-bold text-dark font-monospace small">S/ {{ t.total_pagado|floatformat:2 }}</span>
-                                                <span class="text-muted small">de S/ {{ t.costo_total|floatformat:2 }}</span>
-                                            </div>
-                                            <div class="progress" style="height: 6px;">
-                                                <div class="progress-bar {% if t.porcentaje_pagado >= 100 %}bg-success{% elif t.porcentaje_pagado >= 50 %}bg-warning{% else %}bg-danger{% endif %}" 
-                                                     role="progressbar" 
-                                                     style="width: {{ t.porcentaje_pagado }}%;">
-                                                </div>
-                                            </div>
-                                            <div class="d-flex justify-content-between align-items-center mt-1">
-                                                <small class="{% if t.deuda > 0 %}text-danger fw-bold{% else %}text-success{% endif %}">
-                                                    {% if t.deuda > 0 %}
-                                                        <i class="bi bi-exclamation-circle"></i> Debe: S/ {{ t.deuda|floatformat:2 }}
-                                                    {% else %}
-                                                        <i class="bi bi-check-circle-fill"></i> Pagado
-                                                    {% endif %}
-                                                </small>
-                                                <small class="text-muted">{{ t.porcentaje_pagado }}%</small>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    
-                                    <!-- Acciones -->
-                                    <td class="text-end" onclick="event.stopPropagation()">
-                                        <div class="actions-group">
-                                            <a href="{% url 'tratamientos:crear_pago' t.pk %}" class="btn btn-icon btn-sm text-success bg-light rounded-circle" title="Registrar Pago">
-                                                <i class="bi bi-cash-coin"></i>
-                                            </a>
-                                            <a href="{% url 'tratamientos:detalle' t.pk %}" class="btn btn-icon btn-sm text-info btn-light rounded-circle" title="Ver Detalle">
-                                                <i class="bi bi-eye-fill"></i>
-                                            </a>
-                                            <a href="{% url 'tratamientos:editar' t.pk %}" class="btn btn-icon btn-sm text-warning btn-light rounded-circle" title="Editar">
-                                                <i class="bi bi-pencil-fill"></i>
-                                            </a>
-                                            {% if t.pagos.count == 0 %}
-                                                <a href="{% url 'tratamientos:eliminar_tratamiento' t.pk %}" 
-                                                   class="btn btn-icon btn-sm text-danger btn-light rounded-circle"
-                                                   onclick="return confirm('¿Eliminar el tratamiento \"{{ t.nombre }}\"?')" title="Eliminar">
-                                                    <i class="bi bi-trash-fill"></i>
+                                        <div>
+                                            <div class="fw-bold text-dark mb-0">{{ t.nombre }}</div>
+                                            {% if not paciente %}
+                                                <a href="{% url 'pacientes:detalle' t.paciente.pk %}" class="text-muted small text-decoration-none" onclick="event.stopPropagation()">
+                                                    <i class="bi bi-person me-1"></i> {{ t.paciente.nombre_completo }}
                                                 </a>
                                             {% endif %}
                                         </div>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                                    </div>
+                                </td>
+
+                                <!-- Fecha -->
+                                <td class="py-3">
+                                    <div class="text-dark small"><i class="bi bi-calendar-event opacity-50 me-1"></i> {{ t.fecha_inicio|date:"d M Y" }}</div>
+                                    {% if t.fecha_fin %}
+                                        <div class="text-muted small ms-3">Fin: {{ t.fecha_fin|date:"d M Y" }}</div>
+                                    {% else %}
+                                        <div class="text-primary small fst-italic ms-3">En curso</div>
+                                    {% endif %}
+                                </td>
+
+                                <!-- Estado (CORREGIDO: Contraste) -->
+                                <td class="py-3">
+                                    {% if t.estado == 'pendiente' %}
+                                        <span class="badge badge-subtle-secondary rounded-pill px-3 py-2">
+                                            <i class="bi bi-hourglass me-1"></i> Pendiente
+                                        </span>
+                                    {% elif t.estado == 'en_progreso' %}
+                                        <span class="badge badge-subtle-primary rounded-pill px-3 py-2">
+                                            <i class="bi bi-arrow-repeat me-1"></i> En Progreso
+                                        </span>
+                                    {% elif t.estado == 'completado' %}
+                                        <span class="badge badge-subtle-success rounded-pill px-3 py-2">
+                                            <i class="bi bi-check-circle-fill me-1"></i> Completado
+                                        </span>
+                                    {% else %}
+                                        <span class="badge badge-subtle-secondary rounded-pill px-3 py-2">
+                                            {{ t.get_estado_display }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <!-- Progreso Pago -->
+                                <td class="py-3">
+                                    <div class="d-flex justify-content-between mb-1 small">
+                                        <span class="fw-bold">S/ {{ t.total_pagado|floatformat:2 }}</span>
+                                        <span class="text-muted">de S/ {{ t.costo_total|floatformat:2 }}</span>
+                                    </div>
+                                    <div class="progress rounded-pill bg-light" style="height: 8px;">
+                                        <div class="progress-bar rounded-pill {% if t.porcentaje_pagado >= 100 %}bg-success{% elif t.porcentaje_pagado > 0 %}bg-primary{% else %}bg-secondary{% endif %}" 
+                                             role="progressbar" style="width: {{ t.porcentaje_pagado }}%"></div>
+                                    </div>
+                                    <div class="mt-1 small">
+                                        {% if t.deuda > 0 %}
+                                            <span class="text-danger fw-bold"><i class="bi bi-exclamation-circle me-1"></i>Debe S/ {{ t.deuda|floatformat:2 }}</span>
+                                        {% else %}
+                                            <span class="text-success fw-bold"><i class="bi bi-check-circle-fill me-1"></i>Pagado</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+
+                                <!-- Acciones -->
+                                <td class="pe-4 py-3 text-end" onclick="event.stopPropagation()">
+                                    <div class="d-flex justify-content-end gap-1">
+                                        <a href="{% url 'tratamientos:crear_pago' t.pk %}" class="btn btn-light btn-sm action-btn text-success" title="Registrar Pago" data-bs-toggle="tooltip">
+                                            <i class="bi bi-cash-coin"></i>
+                                        </a>
+                                        <a href="{% url 'tratamientos:detalle' t.pk %}" class="btn btn-light btn-sm action-btn text-primary" title="Ver Detalle" data-bs-toggle="tooltip">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{% url 'tratamientos:editar' t.pk %}" class="btn btn-light btn-sm action-btn text-warning" title="Editar" data-bs-toggle="tooltip">
+                                            <i class="bi bi-pencil-fill"></i>
+                                        </a>
+                                        {% if t.pagos.count == 0 %}
+                                            <a href="{% url 'tratamientos:eliminar_tratamiento' t.pk %}" 
+                                               class="btn btn-light btn-sm action-btn text-danger" 
+                                               onclick="return confirm('¿Confirma eliminar este tratamiento?')" 
+                                               title="Eliminar" data-bs-toggle="tooltip">
+                                                <i class="bi bi-trash-fill"></i>
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+
+                            {% if not tratamientos %}
+                            <tr>
+                                <td colspan="5" class="text-center py-5">
+                                    <div class="text-muted opacity-50 mb-2"><i class="bi bi-clipboard-x fs-1"></i></div>
+                                    <p class="text-muted fw-bold">No se encontraron tratamientos</p>
+                                    <small class="text-muted">Intenta ajustar los filtros o crea uno nuevo.</small>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
                 </div>
-
-                <!-- VISTA MÓVIL (Compact Cards) -->
-                <div class="d-md-none p-3 bg-light">
-                    {% for t in tratamientos %}
-                    <div class="card-mobile-saas p-3 mb-2 d-flex align-items-center shadow-sm"
-                         onclick="window.location='{% url 'tratamientos:detalle' t.pk %}'">
-                        
-                        <!-- Avatar -->
-                        <div class="avatar-circle avatar-circle-sm me-3" style="background-color: {{ t.paciente.nombre_completo|avatar_color }};">
-                            {{ t.paciente.nombre_completo|initials_avatar }}
-                        </div>
-
-                        <!-- Info -->
-                        <div class="flex-grow-1 min-w-0">
-                            <div class="d-flex justify-content-between align-items-start mb-1">
-                                <h6 class="mb-0 fw-bold text-dark text-truncate" style="max-width: 70%;">{{ t.nombre }}</h6>
-                                <span class="badge bg-{{ t.clase_estado_pago }} border" style="font-size: 0.65rem;">
-                                    {% if t.estado_pago == 'completado' %}Pagado
-                                    {% elif t.estado_pago == 'parcial' %}Parcial
-                                    {% else %}Sin pago{% endif %}
-                                </span>
-                            </div>
-                            
-                            <div class="d-flex justify-content-between align-items-center">
-                                {% if not paciente %}
-                                    <small class="text-muted text-truncate me-2">{{ t.paciente.nombre_completo }}</small>
-                                {% else %}
-                                    <small class="text-muted">{{ t.fecha_inicio|date:"d/m" }}</small>
-                                {% endif %}
-                                
-                                <span class="text-amount fs-6">S/ {{ t.costo_total }}</span>
-                            </div>
-                        </div>
-                        
-                        <!-- Flecha -->
-                        <div class="ms-2 text-muted">
-                            <i class="bi bi-chevron-right"></i>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-
+                
                 <!-- Paginación -->
                 {% if is_paginated %}
-                <div class="mt-4 pt-3 border-top">
-                    <nav aria-label="Paginación">
-                        <ul class="pagination justify-content-center mb-0">
+                <div class="border-top p-3 bg-light d-flex justify-content-center">
+                    <nav>
+                        <ul class="pagination pagination-sm m-0 shadow-sm">
                             {% if page_obj.has_previous %}
                                 <li class="page-item">
-                                    <a class="page-link" 
-                                       href="?page=1
-                                           {% if request.GET.q %}&q={{ request.GET.q }}{% endif %}
-                                           {% if request.GET.estado %}&estado={{ request.GET.estado }}{% endif %}
-                                           {% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}
-                                           {% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}">
-                                        « Primero
-                                    </a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" 
-                                       href="?page={{ page_obj.previous_page_number }}
-                                           {% if request.GET.q %}&q={{ request.GET.q }}{% endif %}
-                                           {% if request.GET.estado %}&estado={{ request.GET.estado }}{% endif %}
-                                           {% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}
-                                           {% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}">
-                                        ‹ Anterior
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ request.GET.q }}&estado={{ request.GET.estado }}&fecha_inicio={{ request.GET.fecha_inicio }}&fecha_fin={{ request.GET.fecha_fin }}">
+                                        <i class="bi bi-chevron-left"></i>
                                     </a>
                                 </li>
                             {% endif %}
-
-                            <li class="page-item active">
-                                <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
-                            </li>
-
+                            
+                            <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+                            
                             {% if page_obj.has_next %}
                                 <li class="page-item">
-                                    <a class="page-link" 
-                                       href="?page={{ page_obj.next_page_number }}
-                                           {% if request.GET.q %}&q={{ request.GET.q }}{% endif %}
-                                           {% if request.GET.estado %}&estado={{ request.GET.estado }}{% endif %}
-                                           {% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}
-                                           {% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}">
-                                        Siguiente ›
-                                    </a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" 
-                                       href="?page={{ page_obj.paginator.num_pages }}
-                                           {% if request.GET.q %}&q={{ request.GET.q }}{% endif %}
-                                           {% if request.GET.estado %}&estado={{ request.GET.estado }}{% endif %}
-                                           {% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}
-                                           {% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}">
-                                        Último »
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ request.GET.q }}&estado={{ request.GET.estado }}&fecha_inicio={{ request.GET.fecha_inicio }}&fecha_fin={{ request.GET.fecha_fin }}">
+                                        <i class="bi bi-chevron-right"></i>
                                     </a>
                                 </li>
                             {% endif %}
@@ -414,23 +297,7 @@
                     </nav>
                 </div>
                 {% endif %}
-
-            {% else %}
-                <div class="text-center py-5">
-                    <p class="text-muted mb-3">
-                        {% if paciente %}
-                            No hay tratamientos registrados para <strong>{{ paciente.nombre_completo }}</strong>.
-                        {% else %}
-                            No hay tratamientos registrados en el sistema.
-                        {% endif %}
-                    </p>
-                    {% if paciente %}
-                        <a href="{% url 'tratamientos:crear_tratamiento' paciente.pk %}" class="btn btn-success">
-                            ➕ Crear Primer Tratamiento
-                        </a>
-                    {% endif %}
-                </div>
-            {% endif %}
+            </div>
         </div>
     </div>
 </div>
