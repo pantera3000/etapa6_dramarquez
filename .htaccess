@@ -1,0 +1,35 @@
+# Servir archivos estáticos directamente desde staticfiles
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Servir archivos estáticos directamente
+    RewriteCond %{REQUEST_URI} ^/static/ [NC]
+    RewriteCond %{DOCUMENT_ROOT}/staticfiles%{REQUEST_URI} -f
+    RewriteRule ^static/(.*)$ /staticfiles/$1 [L]
+    
+    # Servir archivos media directamente
+    RewriteCond %{REQUEST_URI} ^/media/ [NC]
+    RewriteCond %{DOCUMENT_ROOT}/public/media%{REQUEST_URI} -f
+    RewriteRule ^media/(.*)$ /public/media/$1 [L]
+</IfModule>
+
+# Configurar tipos MIME correctos
+<IfModule mod_mime.c>
+    AddType text/css .css
+    AddType application/javascript .js
+    AddType image/svg+xml .svg
+    AddType font/woff2 .woff2
+</IfModule>
+
+# Habilitar compresión
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/css application/javascript text/html
+</IfModule>
+
+# Cache para archivos estáticos
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+</IfModule>
