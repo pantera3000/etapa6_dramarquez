@@ -7,7 +7,7 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: 70px;
+    height: 56px;
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -33,7 +33,7 @@
     }
     
     body {
-        padding-bottom: calc(70px + env(safe-area-inset-bottom));
+        padding-bottom: calc(56px + env(safe-area-inset-bottom));
     }
 }
 
@@ -44,24 +44,24 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 2px;
     background: none;
     border: none;
     color: var(--text-secondary);
     cursor: pointer;
-    padding: 8px;
+    padding: 6px;
     position: relative;
     transition: all 0.2s ease;
     text-decoration: none;
 }
 
 .bottom-nav-item i {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     transition: transform 0.2s ease;
 }
 
 .bottom-nav-item span {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 500;
 }
 
@@ -84,8 +84,8 @@
 }
 
 .bottom-nav-fab .fab-icon {
-    width: 56px;
-    height: 56px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     display: flex;
@@ -106,7 +106,7 @@
 }
 
 .bottom-nav-fab .fab-icon i {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
 }
 
 .bottom-nav-fab span {
@@ -172,7 +172,7 @@
 /* FAB Options */
 .fab-options {
     position: absolute;
-    bottom: calc(70px + env(safe-area-inset-bottom));
+    bottom: calc(56px + env(safe-area-inset-bottom));
     left: 50%;
     transform: translateX(-50%);
     display: flex;

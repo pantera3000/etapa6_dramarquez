@@ -15,22 +15,19 @@
      * Initialize bottom navigation
      */
     function init() {
-        // Only run on mobile
-        if (window.innerWidth >= 768) return;
-
         fabButton = document.getElementById('fabButton');
         fabMenu = document.getElementById('fabMenu');
         fabBackdrop = fabMenu?.querySelector('.fab-backdrop');
         bottomNav = document.getElementById('bottomNav');
         
-        if (!fabButton || !fabMenu) return;
-
-        // FAB button click
-        fabButton.addEventListener('click', toggleFabMenu);
-        
-        // Backdrop click to close
-        if (fabBackdrop) {
-            fabBackdrop.addEventListener('click', closeFabMenu);
+        if (fabButton && fabMenu) {
+            // FAB button click
+            fabButton.addEventListener('click', toggleFabMenu);
+            
+            // Backdrop click to close
+            if (fabBackdrop) {
+                fabBackdrop.addEventListener('click', closeFabMenu);
+            }
         }
         
         // Navigation buttons
@@ -42,7 +39,8 @@
         // Search button
         const searchBtn = document.getElementById('searchBottomNav');
         if (searchBtn) {
-            searchBtn.addEventListener('click', function() {
+            searchBtn.addEventListener('click', function(e) {
+                e.preventDefault();
                 if (window.openSearchModal) {
                     window.openSearchModal();
                 }
@@ -52,7 +50,8 @@
         // Menu button (open sidebar)
         const menuBtn = document.getElementById('menuBottomNav');
         if (menuBtn) {
-            menuBtn.addEventListener('click', function() {
+            menuBtn.addEventListener('click', function(e) {
+                e.preventDefault();
                 const sidebar = document.getElementById('sidebar-wrapper');
                 if (sidebar) {
                     sidebar.classList.add('show');
