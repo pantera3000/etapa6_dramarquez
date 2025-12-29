@@ -131,7 +131,7 @@
             <!-- Botones -->
             <div class="d-flex justify-content-end mt-4 pt-3 border-top">
                 {% if paciente %}
-                    <a href="{% url 'pacientes:detalle' paciente.pk %}" class="btn btn-secondary me-2">Cancelar</a>
+                    <a href="{% url 'pacientes:detalle' paciente.pk %}?tab=notas" class="btn btn-secondary me-2">Cancelar</a>
                 {% else %}
                     <a href="{% url 'notas:detalle' object.pk %}" class="btn btn-secondary me-2">Cancelar</a>
                 {% endif %}

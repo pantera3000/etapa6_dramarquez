@@ -16,7 +16,7 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="mb-0">📝 Nueva Nota</h2>
             {% if paciente %}
-                <a href="{% url 'pacientes:detalle' paciente.pk %}?notas_page=1" class="btn btn-outline-secondary btn-sm">← Volver al paciente</a>
+                <a href="{% url 'pacientes:detalle' paciente.pk %}?tab=notas" class="btn btn-outline-secondary btn-sm">← Volver al paciente</a>
             {% else %}
                 <a href="{% url 'notas:lista' %}" class="btn btn-outline-secondary btn-sm">← Lista de Notas</a>
             {% endif %}
@@ -151,7 +151,7 @@
             <!-- Botones -->
             <div class="d-flex justify-content-end mt-4 pt-3 border-top">
                 {% if paciente %}
-                    <a href="{% url 'pacientes:detalle' paciente.pk %}?notas_page=1" class="btn btn-secondary me-2">Cancelar</a>
+                    <a href="{% url 'pacientes:detalle' paciente.pk %}?tab=notas" class="btn btn-secondary me-2">Cancelar</a>
                 {% else %}
                     <a href="{% url 'notas:lista' %}" class="btn btn-secondary me-2">Cancelar</a>
                 {% endif %}
