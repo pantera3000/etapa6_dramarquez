@@ -18,6 +18,9 @@
     <!-- Global Search Modal CSS -->
     <link rel="stylesheet" href="{% static 'css/search-modal.css' %}">
     
+    <!-- Mobile Bottom Navigation CSS -->
+    <link rel="stylesheet" href="{% static 'css/bottom-nav.css' %}">
+    
     <!-- Aplicar tema INMEDIATAMENTE para evitar flash -->
     <script>
         (function() {
@@ -473,6 +476,10 @@
 
     <!-- Global Search Modal -->
     {% include 'components/search_modal.html' %}
+    
+    <!-- Mobile Bottom Navigation -->
+    {% include 'components/bottom_nav.html' %}
+    <script src="{% static 'js/bottom-nav.js' %}"></script>
 
     {% include 'comunicaciones/modal_whatsapp.html' %}
 </body>

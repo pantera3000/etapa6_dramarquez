@@ -1,0 +1,61 @@
+<!-- Mobile Bottom Navigation Bar -->
+<nav class="bottom-nav" id="bottomNav">
+    <button class="bottom-nav-item" data-action="home" data-url="/">
+        <i class="bi bi-house-door"></i>
+        <span>Inicio</span>
+    </button>
+    
+    <button class="bottom-nav-item" data-action="patients" data-url="{% url 'pacientes:lista' %}">
+        <i class="bi bi-people"></i>
+        <span>Pacientes</span>
+    </button>
+    
+    <!-- Botón central FAB -->
+    <button class="bottom-nav-item bottom-nav-fab" id="fabButton">
+        <div class="fab-icon">
+            <i class="bi bi-plus-lg"></i>
+        </div>
+        <span>Nuevo</span>
+    </button>
+    
+    <button class="bottom-nav-item" data-action="search" id="searchBottomNav">
+        <i class="bi bi-search"></i>
+        <span>Buscar</span>
+    </button>
+    
+    <button class="bottom-nav-item" data-action="menu" id="menuBottomNav">
+        <i class="bi bi-list"></i>
+        <span>Más</span>
+    </button>
+</nav>
+
+<!-- Menú radial del FAB -->
+<div class="fab-menu" id="fabMenu">
+    <div class="fab-backdrop"></div>
+    <div class="fab-options">
+        <a href="{% url 'pacientes:crear' %}" class="fab-option" data-index="0">
+            <div class="fab-option-icon">
+                <i class="bi bi-person-plus"></i>
+            </div>
+            <span>Nuevo Paciente</span>
+        </a>
+        <a href="{% url 'citas:calendario' %}" class="fab-option" data-index="1">
+            <div class="fab-option-icon">
+                <i class="bi bi-calendar-plus"></i>
+            </div>
+            <span>Nueva Cita</span>
+        </a>
+        <a href="{% url 'notas:crear' %}" class="fab-option" data-index="2">
+            <div class="fab-option-icon">
+                <i class="bi bi-sticky"></i>
+            </div>
+            <span>Nueva Nota</span>
+        </a>
+        <a href="{% url 'tratamientos:crear' %}" class="fab-option" data-index="3">
+            <div class="fab-option-icon">
+                <i class="bi bi-bandaid"></i>
+            </div>
+            <span>Nuevo Tratamiento</span>
+        </a>
+    </div>
+</div>
