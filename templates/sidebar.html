@@ -28,6 +28,11 @@
     </div>
     
     <div class="list-group list-group-flush flex-grow-1 overflow-auto custom-scrollbar">
+        <!-- DASHBOARD -->
+        <a href="{% url 'dashboard' %}" class="list-group-item list-group-item-action list-group-item-light p-3 border-bottom {% if request.path == '/' %}active{% endif %}" title="Dashboard" data-bs-toggle="tooltip" data-bs-placement="right">
+            <i class="bi bi-speedometer2 fs-5 me-2 text-primary"></i> <span>Dashboard</span>
+        </a>
+
         <!-- SECCIÓN PACIENTES -->
         <small class="text-muted px-3 mt-3 mb-1 text-uppercase fw-bold section-title" style="font-size: 0.7rem;">Pacientes</small>
         <a href="{% url 'pacientes:lista' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'pacientes' in request.path and 'cumpleanos' not in request.path %}active{% endif %}" title="Pacientes" data-bs-toggle="tooltip" data-bs-placement="right">
