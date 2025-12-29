@@ -30,10 +30,10 @@
     <div class="list-group list-group-flush flex-grow-1 overflow-auto custom-scrollbar">
         <!-- SECCIÓN PACIENTES -->
         <small class="text-muted px-3 mt-3 mb-1 text-uppercase fw-bold section-title" style="font-size: 0.7rem;">Pacientes</small>
-        <a href="{% url 'pacientes:lista' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'pacientes' in request.path and 'cumpleanos' not in request.path %}active{% endif %}">
+        <a href="{% url 'pacientes:lista' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'pacientes' in request.path and 'cumpleanos' not in request.path %}active{% endif %}" title="Pacientes" data-bs-toggle="tooltip" data-bs-placement="right">
             <i class="bi bi-people fs-5 me-2"></i> <span>Pacientes</span>
         </a>
-        <a href="{% url 'pacientes:cumpleanos_proximos' %}" class="list-group-item list-group-item-action list-group-item-light p-3 position-relative {% if 'cumpleanos' in request.path %}active{% endif %}">
+        <a href="{% url 'pacientes:cumpleanos_proximos' %}" class="list-group-item list-group-item-action list-group-item-light p-3 position-relative {% if 'cumpleanos' in request.path %}active{% endif %}" title="Cumpleaños" data-bs-toggle="tooltip" data-bs-placement="right">
             <i class="bi bi-cake2 fs-5 me-2 text-danger"></i> <span>Cumpleaños</span>
             {% if cumpleaneros_hoy_count > 0 %}
                 <span class="badge bg-danger rounded-pill position-absolute top-50 end-0 translate-middle-y me-3">{{ cumpleaneros_hoy_count }}</span>
@@ -42,31 +42,31 @@
 
         <!-- SECCIÓN CLINICA -->
         <small class="text-muted px-3 mt-3 mb-1 text-uppercase fw-bold section-title" style="font-size: 0.7rem;">Clínica</small>
-        <a href="{% url 'citas:calendario' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'citas/calendario' in request.path %}active{% endif %}">
+        <a href="{% url 'citas:calendario' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'citas/calendario' in request.path %}active{% endif %}" title="Calendario" data-bs-toggle="tooltip" data-bs-placement="right">
             <i class="bi bi-calendar-week fs-5 me-2 text-primary"></i> <span>Calendario</span>
         </a>
-        <a href="{% url 'citas:eventos_ics' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'citas/eventos' in request.path %}active{% endif %}">
+        <a href="{% url 'citas:eventos_ics' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'citas/eventos' in request.path %}active{% endif %}" title="Lista Citas (ICS)" data-bs-toggle="tooltip" data-bs-placement="right">
             <i class="bi bi-list-check fs-5 me-2 text-primary"></i> <span>Lista Citas (ICS)</span>
         </a>
         
         {% if google_calendar_activo %}
-        <a href="{% url 'citas:lista_citas' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'citas/citas' in request.path %}active{% endif %}">
+        <a href="{% url 'citas:lista_citas' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'citas/citas' in request.path %}active{% endif %}" title="Gestión Citas" data-bs-toggle="tooltip" data-bs-placement="right">
             <i class="bi bi-calendar-check fs-5 me-2 text-primary"></i> <span>Gestión Citas</span>
         </a>
         {% endif %}
-        <a href="{% url 'historias:lista' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'historias' in request.path %}active{% endif %}">
+        <a href="{% url 'historias:lista' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'historias' in request.path %}active{% endif %}" title="Historias" data-bs-toggle="tooltip" data-bs-placement="right">
             <i class="bi bi-journal-medical fs-5 me-2 text-success"></i> <span>Historias</span>
         </a>
-        <a href="{% url 'notas:lista' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'notas' in request.path %}active{% endif %}">
+        <a href="{% url 'notas:lista' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'notas' in request.path %}active{% endif %}" title="Notas" data-bs-toggle="tooltip" data-bs-placement="right">
             <i class="bi bi-sticky fs-5 me-2 text-warning"></i> <span>Notas</span>
         </a>
 
         <!-- SECCIÓN FINANZAS -->
         <small class="text-muted px-3 mt-3 mb-1 text-uppercase fw-bold section-title" style="font-size: 0.7rem;">Finanzas</small>
-        <a href="{% url 'tratamientos:lista' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'tratamientos' in request.path and 'pagos' not in request.path %}active{% endif %}">
+        <a href="{% url 'tratamientos:lista' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'tratamientos' in request.path and 'pagos' not in request.path %}active{% endif %}" title="Tratamientos" data-bs-toggle="tooltip" data-bs-placement="right">
             <i class="bi bi-bandaid fs-5 me-2 text-info"></i> <span>Tratamientos</span>
         </a>
-        <a href="{% url 'tratamientos:lista_pagos' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'pagos' in request.path %}active{% endif %}">
+        <a href="{% url 'tratamientos:lista_pagos' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'pagos' in request.path %}active{% endif %}" title="Pagos" data-bs-toggle="tooltip" data-bs-placement="right">
             <i class="bi bi-cash-stack fs-5 me-2 text-success"></i> <span>Pagos</span>
         </a>
 
@@ -75,7 +75,7 @@
         <div class="list-group-item list-group-item-light small text-uppercase text-muted fw-bold mt-2 section-title">
             Reportes
         </div>
-        <a href="{% url 'reportes:dashboard' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'reportes' in request.path %}active{% endif %}">
+        <a href="{% url 'reportes:dashboard' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'reportes' in request.path %}active{% endif %}" title="Finanzas" data-bs-toggle="tooltip" data-bs-placement="right">
             <i class="bi bi-graph-up-arrow fs-5 me-2 text-primary"></i> <span>Finanzas</span>
         </a>
         {% endif %}
@@ -83,10 +83,10 @@
         <!-- 5. GRUPO EXTRAS -->
         {% if user.is_superuser %}
         <small class="text-muted px-3 mt-3 mb-1 text-uppercase fw-bold section-title" style="font-size: 0.7rem;">Admin</small>
-        <a href="{% url 'configuracion:editar' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'configuracion' in request.path %}active{% endif %}">
+        <a href="{% url 'configuracion:editar' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'configuracion' in request.path %}active{% endif %}" title="Configuración" data-bs-toggle="tooltip" data-bs-placement="right">
             <i class="bi bi-gear fs-5 me-2 text-dark"></i> <span>Configuración</span>
         </a>
-        <a href="{% url 'usuarios:lista' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'usuarios' in request.path %}active{% endif %}">
+        <a href="{% url 'usuarios:lista' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'usuarios' in request.path %}active{% endif %}" title="Usuarios" data-bs-toggle="tooltip" data-bs-placement="right">
             <i class="bi bi-people-fill fs-5 me-2 text-dark"></i> <span>Usuarios</span>
         </a>
         {% endif %}
@@ -104,11 +104,11 @@
         
         <!-- Dark Mode Toggle (Desktop) -->
         <div class="d-flex justify-content-center mb-3">
-            <button class="dark-mode-toggle btn btn-outline-secondary btn-sm w-100" aria-label="Cambiar tema" title="Cambiar tema">
+            <button class="dark-mode-toggle btn btn-outline-secondary btn-sm w-100 d-flex align-items-center justify-content-center" aria-label="Cambiar tema" title="Cambiar tema" data-bs-toggle="tooltip" data-bs-placement="right">
                 <i class="bi bi-sun-fill icon-sun me-2"></i>
                 <i class="bi bi-moon-stars-fill icon-moon me-2"></i>
-                <span class="icon-sun">Modo Claro</span>
-                <span class="icon-moon">Modo Oscuro</span>
+                <span class="icon-sun sidebar-text">Modo Claro</span>
+                <span class="icon-moon sidebar-text">Modo Oscuro</span>
             </button>
         </div>
         

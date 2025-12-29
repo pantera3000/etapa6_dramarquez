@@ -136,12 +136,22 @@
     }
 
     /**
+     * Initialize tooltips
+     */
+    function initTooltips() {
+        // Initialize Bootstrap tooltips
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    }
+
+    /**
      * Initialize on DOM ready
      */
     function init() {
         generateBreadcrumbs();
         initSidebarToggle();
         initSearchTrigger();
+        initTooltips();
     }
 
     // Run on DOM ready
