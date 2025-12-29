@@ -1199,3 +1199,72 @@ a {
     background: var(--card-bg) !important;
     border-color: rgba(255, 255, 255, 0.1) !important;
 }
+
+/* ============================================
+   DASHBOARD - DARK MODE
+   ============================================ */
+
+/* Stat cards */
+[data-theme="dark"] .stat-card {
+    background: var(--card-bg) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .stat-value {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .stat-label {
+    color: var(--text-secondary) !important;
+}
+
+/* Quick actions */
+[data-theme="dark"] .quick-action {
+    background: var(--card-bg) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .quick-action:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: #3b82f6 !important;
+}
+
+[data-theme="dark"] .quick-action span {
+    color: var(--text-primary) !important;
+}
+
+/* Widget cards */
+[data-theme="dark"] .widget-card {
+    background: var(--card-bg) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .widget-header {
+    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Birthday and cita items */
+[data-theme="dark"] .birthday-item:hover,
+[data-theme="dark"] .cita-item {
+    background: rgba(255, 255, 255, 0.02) !important;
+}
+
+[data-theme="dark"] .cita-item {
+    border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+[data-theme="dark"] .birthday-item .text-dark,
+[data-theme="dark"] .cita-item .text-dark {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .birthday-item .text-muted,
+[data-theme="dark"] .cita-item .text-muted {
+    color: var(--text-secondary) !important;
+}
+
+/* Empty states */
+[data-theme="dark"] .widget-body .text-muted {
+    color: var(--text-secondary) !important;
+}

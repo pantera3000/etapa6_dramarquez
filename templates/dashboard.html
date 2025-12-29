@@ -1,0 +1,338 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load paciente_tags %}
+
+{% block title %}Dashboard - Consultorio Dental{% endblock %}
+
+{% block content %}
+<style>
+    /* Dashboard Styles */
+    .dashboard-container {
+        padding: 2rem 1rem;
+    }
+    
+    /* Stats Cards */
+    .stat-card {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        border-color: #cbd5e1;
+    }
+    
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        margin-bottom: 1rem;
+    }
+    
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        line-height: 1;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+        color: #64748b;
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    /* Quick Actions */
+    .quick-action {
+        background: white;
+        border: 2px solid #e2e8f0;
+        border-radius: 1rem;
+        padding: 1.25rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: block;
+        height: 100%;
+    }
+    
+    .quick-action:hover {
+        border-color: #3b82f6;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+    }
+    
+    .quick-action i {
+        font-size: 2rem;
+        margin-bottom: 0.75rem;
+        display: block;
+    }
+    
+    .quick-action span {
+        font-weight: 600;
+        color: #1e293b;
+        font-size: 0.875rem;
+    }
+    
+    /* Widget Cards */
+    .widget-card {
+        background: white;
+        border-radius: 1rem;
+        border: 1px solid #e2e8f0;
+        overflow: hidden;
+    }
+    
+    .widget-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+        font-weight: 600;
+        color: #1e293b;
+        display: flex;
+        justify-content: between;
+        align-items: center;
+    }
+    
+    .widget-body {
+        padding: 1.5rem;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    
+    /* Birthday Item */
+    .birthday-item {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        margin-bottom: 0.5rem;
+        transition: background 0.2s;
+    }
+    
+    .birthday-item:hover {
+        background: #f8fafc;
+    }
+    
+    .birthday-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: white;
+        margin-right: 1rem;
+        flex-shrink: 0;
+    }
+    
+    /* Cita Item */
+    .cita-item {
+        padding: 1rem;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    
+    .cita-item:last-child {
+        border-bottom: none;
+    }
+    
+    /* Responsive */
+    @media (max-width: 767.98px) {
+        .dashboard-container {
+            padding: 1rem 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+        }
+    }
+</style>
+
+<div class="dashboard-container">
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="mb-4">
+            <h1 class="h2 fw-bold text-dark mb-1">👋 Bienvenido, {{ user.username }}</h1>
+            <p class="text-muted">Aquí tienes un resumen de tu consultorio</p>
+        </div>
+        
+        <!-- Stats Grid -->
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <i class="bi bi-people text-white"></i>
+                    </div>
+                    <div class="stat-value text-dark">{{ total_pacientes }}</div>
+                    <div class="stat-label">Pacientes</div>
+                </div>
+            </div>
+            
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                        <i class="bi bi-calendar-check text-white"></i>
+                    </div>
+                    <div class="stat-value text-dark">{{ citas_hoy }}</div>
+                    <div class="stat-label">Citas Hoy</div>
+                </div>
+            </div>
+            
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                        <i class="bi bi-cake2 text-white"></i>
+                    </div>
+                    <div class="stat-value text-dark">{{ cumpleanos_cercanos|length }}</div>
+                    <div class="stat-label">Cumpleaños</div>
+                </div>
+            </div>
+            
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                        <i class="bi bi-bandaid text-white"></i>
+                    </div>
+                    <div class="stat-value text-dark">{{ tratamientos_activos }}</div>
+                    <div class="stat-label">Tratamientos</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="mb-4">
+            <h5 class="fw-bold text-dark mb-3">⚡ Accesos Rápidos</h5>
+            <div class="row g-3">
+                <div class="col-6 col-md-2">
+                    <a href="{% url 'pacientes:crear' %}" class="quick-action">
+                        <i class="bi bi-person-plus text-primary"></i>
+                        <span>Nuevo Paciente</span>
+                    </a>
+                </div>
+                <div class="col-6 col-md-2">
+                    <a href="{% url 'citas:calendario' %}" class="quick-action">
+                        <i class="bi bi-calendar-plus text-success"></i>
+                        <span>Nueva Cita</span>
+                    </a>
+                </div>
+                <div class="col-6 col-md-2">
+                    <a href="{% url 'notas:crear' %}" class="quick-action">
+                        <i class="bi bi-sticky text-warning"></i>
+                        <span>Nueva Nota</span>
+                    </a>
+                </div>
+                <div class="col-6 col-md-2">
+                    <a href="{% url 'citas:calendario' %}" class="quick-action">
+                        <i class="bi bi-calendar-week text-info"></i>
+                        <span>Calendario</span>
+                    </a>
+                </div>
+                <div class="col-6 col-md-2">
+                    <a href="{% url 'pacientes:lista' %}" class="quick-action">
+                        <i class="bi bi-people text-secondary"></i>
+                        <span>Ver Pacientes</span>
+                    </a>
+                </div>
+                <div class="col-6 col-md-2">
+                    <a href="{% url 'reportes:dashboard' %}" class="quick-action">
+                        <i class="bi bi-graph-up text-danger"></i>
+                        <span>Reportes</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Widgets Grid -->
+        <div class="row g-4">
+            <!-- Próximas Citas -->
+            <div class="col-md-6">
+                <div class="widget-card">
+                    <div class="widget-header">
+                        <span>📅 Próximas Citas</span>
+                    </div>
+                    <div class="widget-body">
+                        {% if proximas_citas %}
+                            {% for cita in proximas_citas %}
+                                <div class="cita-item">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div class="d-flex align-items-center">
+                                            <div class="birthday-avatar" style="background-color: {{ cita.paciente.nombre_completo|avatar_color }};">
+                                                {{ cita.paciente.nombre_completo|initials_avatar }}
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold text-dark">{{ cita.paciente.nombre_completo }}</div>
+                                                <div class="small text-muted">{{ cita.motivo|truncatechars:40 }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="small fw-bold text-primary">{{ cita.fecha|date:"d/m" }}</div>
+                                            <div class="small text-muted">{{ cita.hora|time:"H:i" }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-4 text-muted">
+                                <i class="bi bi-calendar-x fs-1 opacity-25"></i>
+                                <p class="mb-0 mt-2">No hay citas próximas</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Cumpleaños Cercanos -->
+            <div class="col-md-6">
+                <div class="widget-card">
+                    <div class="widget-header">
+                        <span>🎂 Cumpleaños Esta Semana</span>
+                    </div>
+                    <div class="widget-body">
+                        {% if cumpleanos_cercanos %}
+                            {% for paciente in cumpleanos_cercanos %}
+                                <div class="birthday-item">
+                                    <div class="birthday-avatar" style="background-color: {{ paciente.nombre_completo|avatar_color }};">
+                                        {{ paciente.nombre_completo|initials_avatar }}
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="fw-bold text-dark">{{ paciente.nombre_completo }}</div>
+                                        <div class="small text-muted">{{ paciente.fecha_nacimiento|date:"d de F" }}</div>
+                                    </div>
+                                    <div>
+                                        {% if paciente.dias_hasta_cumple == 0 %}
+                                            <span class="badge bg-danger">¡Hoy!</span>
+                                        {% else %}
+                                            <span class="badge bg-light text-dark border">{{ paciente.dias_hasta_cumple }} días</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-4 text-muted">
+                                <i class="bi bi-cake2 fs-1 opacity-25"></i>
+                                <p class="mb-0 mt-2">No hay cumpleaños esta semana</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
