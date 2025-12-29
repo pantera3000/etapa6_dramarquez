@@ -49,14 +49,23 @@
         
         // Menu button (open sidebar)
         const menuBtn = document.getElementById('menuBottomNav');
+        console.log('Menu button found:', menuBtn);
         if (menuBtn) {
             menuBtn.addEventListener('click', function(e) {
                 e.preventDefault();
+                e.stopPropagation();
+                console.log('Menu button clicked!');
                 const sidebar = document.getElementById('sidebar-wrapper');
+                console.log('Sidebar found:', sidebar);
                 if (sidebar) {
                     sidebar.classList.add('show');
+                    console.log('Sidebar show class added');
+                } else {
+                    console.error('Sidebar not found!');
                 }
             });
+        } else {
+            console.error('Menu button not found!');
         }
     }
 
