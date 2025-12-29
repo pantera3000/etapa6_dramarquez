@@ -9,6 +9,9 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     
+    # Perfil de usuario (para todos los usuarios autenticados)
+    path('perfil/', views.mi_perfil, name='perfil'),
+    
     # Gestión de usuarios (solo administradores)
     path('', views.lista_usuarios, name='lista'),
     path('crear/', views.crear_usuario, name='crear'),

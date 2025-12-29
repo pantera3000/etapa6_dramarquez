@@ -125,7 +125,7 @@
                 <strong class="sidebar-user-name">{{ user.username }}</strong>
             </a>
             <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
-                <li><a class="dropdown-item" href="{% url 'usuarios:editar' user.pk %}">Perfil</a></li>
+                <li><a class="dropdown-item" href="{% url 'usuarios:perfil' %}">Perfil</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item" href="{% url 'usuarios:logout' %}">Cerrar Sesión</a></li>
             </ul>

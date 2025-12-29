@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from .forms import UserCreateForm, UserEditForm, PasswordChangeFormCustom
+from .forms import UserCreateForm, UserEditForm, PasswordChangeFormCustom, UserProfileForm
 
 
 def es_administrador(user):
