@@ -868,3 +868,35 @@ option {
 a {
     transition: all 0.15s ease;
 }
+
+/* ============================================
+   PATIENT MOBILE CARDS - DARK MODE
+   ============================================ */
+
+[data-theme="dark"] .card-patient-mobile {
+    background: var(--card-bg) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .card-patient-mobile h6,
+[data-theme="dark"] .card-patient-mobile .text-dark {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .card-patient-mobile .text-muted {
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .card-patient-mobile .btn-light {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .card-patient-mobile .btn-light.text-success {
+    color: #10b981 !important;
+}
+
+[data-theme="dark"] .card-patient-mobile .btn-light.text-primary {
+    color: var(--primary) !important;
+}
