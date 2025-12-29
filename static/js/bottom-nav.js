@@ -12,9 +12,36 @@
     let bottomNav = null;
 
     /**
+     * CRITICAL FIX: Eliminar menú flotante del DOM en desktop
+     */
+    function removeBottomNavOnDesktop() {
+        if (window.innerWidth >= 768) {
+            const bottomNav = document.getElementById('bottomNav');
+            const fabMenu = document.getElementById('fabMenu');
+            
+            if (bottomNav) {
+                bottomNav.remove();
+                console.log('Bottom nav removed from DOM (desktop detected)');
+            }
+            if (fabMenu) {
+                fabMenu.remove();
+                console.log('FAB menu removed from DOM (desktop detected)');
+            }
+            return true; // Desktop detected, elements removed
+        }
+        return false; // Mobile, keep elements
+    }
+
+    /**
      * Initialize bottom navigation
      */
     function init() {
+        // CRITICAL: Remove bottom nav on desktop BEFORE any initialization
+        if (removeBottomNavOnDesktop()) {
+            console.log('Desktop detected - bottom nav initialization skipped');
+            return; // Exit early, don't initialize
+        }
+        
         fabButton = document.getElementById('fabButton');
         fabMenu = document.getElementById('fabMenu');
         fabBackdrop = fabMenu?.querySelector('.fab-backdrop');
