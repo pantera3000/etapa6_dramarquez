@@ -6,7 +6,7 @@ DEBUG = False
 ALLOWED_HOSTS = ['app.doctoramarquez.com', 'www.app.doctoramarquez.com', '*.doctoramarquez.com']
 
 # Rutas para archivos estáticos y media en cPanel
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'public/static')
 STATIC_URL = '/static/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'public/media')

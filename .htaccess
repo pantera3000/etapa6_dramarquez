@@ -4,8 +4,8 @@
     
     # Servir archivos estáticos directamente
     RewriteCond %{REQUEST_URI} ^/static/ [NC]
-    RewriteCond %{DOCUMENT_ROOT}/staticfiles%{REQUEST_URI} -f
-    RewriteRule ^static/(.*)$ /staticfiles/$1 [L]
+    RewriteCond %{DOCUMENT_ROOT}/public/static%{REQUEST_URI} -f
+    RewriteRule ^static/(.*)$ /public/static/$1 [L]
     
     # Servir archivos media directamente
     RewriteCond %{REQUEST_URI} ^/media/ [NC]
