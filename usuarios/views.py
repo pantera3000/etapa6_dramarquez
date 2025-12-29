@@ -148,4 +148,4 @@ def logout_view(request):
     """Vista de logout"""
     logout(request)
     messages.success(request, 'Has cerrado sesión exitosamente')
-    return redirect('login')
+    return redirect('usuarios:login')
