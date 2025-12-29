@@ -598,11 +598,11 @@
                             {% for nota in notas_paginadas %}
                             <div class="card mb-2 border shadow-sm" style="max-height: 100px; overflow: hidden;" onclick="window.location='{% url 'notas:detalle' nota.pk %}'">
                                 <div class="card-body p-3" style="overflow: hidden; max-width: 100%;">
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <h6 class="fw-bold mb-0 text-dark" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ nota.titulo }}</h6>
-                                        <small class="text-muted">{{ nota.creado_en|date:"d/m" }}</small>
+                                    <div class="d-flex justify-content-between mb-1" style="overflow: hidden;">
+                                        <h6 class="fw-bold mb-0 text-dark" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ nota.titulo|truncatechars:30 }}</h6>
+                                        <small class="text-muted ms-2 flex-shrink-0">{{ nota.creado_en|date:"d/m" }}</small>
                                     </div>
-                                    <p class="small text-muted mb-0" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; display: block;">{{ nota.contenido }}</p>
+                                    <p class="small text-muted mb-0" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; display: block;">{{ nota.contenido|truncatechars:50 }}</p>
                                 </div>
                             </div>
                             {% endfor %}
