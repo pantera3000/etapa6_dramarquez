@@ -134,15 +134,19 @@
         wrapper.classList.add('sidebar-open');
         
         // Add backdrop
-        if (!document.querySelector('.mobile-backdrop')) {
-            const backdrop = document.createElement('div');
+        let backdrop = document.querySelector('.mobile-backdrop');
+        if (!backdrop) {
+            backdrop = document.createElement('div');
             backdrop.className = 'mobile-backdrop';
-            backdrop.addEventListener('click', closeSidebar);
             document.body.appendChild(backdrop);
-            
-            // Trigger animation
-            setTimeout(() => backdrop.classList.add('show'), 10);
         }
+        
+        // Remove old listener and add new one
+        backdrop.removeEventListener('click', closeSidebar);
+        backdrop.addEventListener('click', closeSidebar);
+        
+        // Trigger animation
+        setTimeout(() => backdrop.classList.add('show'), 10);
     }
 
     /**
@@ -156,7 +160,10 @@
         const backdrop = document.querySelector('.mobile-backdrop');
         if (backdrop) {
             backdrop.classList.remove('show');
-            setTimeout(() => backdrop.remove(), 300);
+            setTimeout(() => {
+                backdrop.removeEventListener('click', closeSidebar);
+                backdrop.remove();
+            }, 300);
         }
     }
 

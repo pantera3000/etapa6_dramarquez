@@ -14,11 +14,19 @@
     opacity: 0;
     transition: opacity 0.3s ease;
     pointer-events: none;
+    cursor: pointer;
 }
 
 .mobile-backdrop.show {
     opacity: 1;
     pointer-events: all;
+}
+
+/* Hide sidebar close button - topbar has the toggle */
+@media (max-width: 992px) {
+    #sidebarClose {
+        display: none !important;
+    }
 }
 
 /* Sidebar Mobile Animations */
