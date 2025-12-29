@@ -1,9 +1,10 @@
 # consultorio_dental/urls.py
 
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.static import serve
 from .search_views import global_search
 from .views import dashboard
 
@@ -20,7 +21,6 @@ urlpatterns = [
     path('notas/', include('notas.urls')),
     path('citas/', include('citas.urls')),
     path('usuarios/', include('usuarios.urls')),
-    path('usuarios/', include('usuarios.urls')),
     path('configuracion/', include('configuracion.urls')),
     path('integraciones/', include('integraciones.urls')),
     path('protocolos/', include('protocolos.urls')),
@@ -28,12 +28,18 @@ urlpatterns = [
     path('odontograma/', include('odontograma.urls')),
     path('comunicaciones/', include('comunicaciones.urls')),
     path('reportes/', include('reportes.urls')),
+
+    # Servir archivos de medios SIEMPRE (Fallback para cPanel/Passenger)
+    # Esto asegura que si Apache no intercepta /media/, Django lo sirva en lugar de dar 404
+    re_path(r'^media/(?P<path>.*)$', serve, {
+        'document_root': settings.MEDIA_ROOT,
+    }),
 ]
 
 # Handlers de errores personalizados
 handler404 = 'consultorio_dental.views.custom_404'
 handler500 = 'consultorio_dental.views.custom_500'
 
-# Servir archivos de medios en desarrollo
+# Servir archivos estáticos en desarrollo (Media ya está cubierto arriba)
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
