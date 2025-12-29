@@ -1281,3 +1281,12 @@ a {
 [data-theme="dark"] .stat-label-small {
     color: var(--text-secondary) !important;
 }
+
+/* Sortable Headers */
+[data-theme="dark"] .sortable:hover {
+    background-color: var(--bg-hover) !important;
+}
+
+[data-theme="dark"] .sort-icon {
+    color: var(--text-muted);
+}
