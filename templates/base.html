@@ -541,6 +541,8 @@
             box-shadow: 0 6px 20px rgba(118, 75, 162, 0.5);
         }
         
+        /* FAB Active State (Click) */
+        .fab-container.active .fab-options,
         .fab-container:hover .fab-options {
             opacity: 1;
             visibility: visible;
@@ -548,85 +550,40 @@
             pointer-events: all;
         }
         
-        .fab-options {
-            display: flex;
-            flex-direction: column-reverse; /* Bottom to top */
-            gap: 12px;
-            margin-bottom: 5px;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(20px);
-            transition: all 0.3s ease;
-            pointer-events: none;
-            align-items: center;
-        }
-        
-        .fab-option {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background-color: white;
-            color: #4a5568;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            font-size: 1.2rem;
-            position: relative;
-            transition: all 0.2s;
-        }
-        
-        .fab-option:hover {
-            transform: scale(1.1);
-            color: #764ba2;
-            background-color: #f8f9fa;
-        }
-        
-        /* Tooltip FAB */
-        .fab-option::before {
-            content: attr(data-tooltip);
-            position: absolute;
-            right: 60px;
-            top: 50%;
-            transform: translateY(-50%) translateX(10px);
-            background-color: rgba(15, 23, 42, 0.9);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            white-space: nowrap;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.2s;
-            pointer-events: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        
-        .fab-option:hover::before {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(-50%) translateX(0);
-        }
-
-        /* Dark Mode Support for FAB */
-        [data-theme="dark"] .fab-option {
-            background-color: #1e293b;
-            color: #e2e8f0;
-            border: 1px solid #334155;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.4);
-        }
-        [data-theme="dark"] .fab-option:hover {
-            background-color: #334155;
-            color: #fff;
-            border-color: #764ba2;
-        }
-        [data-theme="dark"] .fab-option::before {
-            background-color: rgba(255, 255, 255, 0.9);
-            color: #0f172a;
+        .fab-container.active .fab-main,
+        .fab-container:hover .fab-main {
+            transform: scale(1.05) rotate(45deg); /* Rotar a X al abrir */
+            box-shadow: 0 6px 20px rgba(118, 75, 162, 0.5);
         }
     </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fabContainer = document.querySelector('.fab-container');
+            const fabBtn = document.getElementById('fabMainBtn');
+            const fabOptions = document.querySelector('.fab-options');
+
+            if (fabBtn && fabContainer) {
+                // Toggle al hacer click
+                fabBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    fabContainer.classList.toggle('active');
+                });
+
+                // Cerrar al hacer click fuera
+                document.addEventListener('click', function(e) {
+                    if (!fabContainer.contains(e.target)) {
+                        fabContainer.classList.remove('active');
+                    }
+                });
+                
+                // Cerrar al hacer scroll (opcional, para limpieza visual)
+                window.addEventListener('scroll', function() {
+                    fabContainer.classList.remove('active');
+                }, {passive: true});
+            }
+        });
+    </script>
 
     {% include 'comunicaciones/modal_whatsapp.html' %}
 </body>
