@@ -88,6 +88,12 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+# Configuración de Autenticación Personalizada (Case-Insensitive)
+AUTHENTICATION_BACKENDS = [
+    'usuarios.backends.CaseInsensitiveModelBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 # Internacionalización (Perú)
 LANGUAGE_CODE = 'es-pe'
 TIME_ZONE = 'America/Lima'  # UTC-5
