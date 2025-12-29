@@ -900,3 +900,27 @@ a {
 [data-theme="dark"] .card-patient-mobile .btn-light.text-primary {
     color: var(--primary) !important;
 }
+
+/* ============================================
+   HISTORY MOBILE CARDS - DARK MODE
+   ============================================ */
+
+[data-theme="dark"] .card-history-mobile {
+    background: var(--card-bg) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .card-history-mobile h6,
+[data-theme="dark"] .card-history-mobile .text-dark {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .card-history-mobile .text-muted {
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .card-history-mobile .badge.bg-light {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    color: var(--text-secondary) !important;
+}
