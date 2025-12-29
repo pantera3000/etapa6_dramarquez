@@ -3,89 +3,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión - Consultorio Dental</title>
+    <title>Iniciar Sesión - Consultorio Dra. Marquez</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+        
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #0ea5e9;
+            --accent-color: #3b82f6;
+            --bg-gradient: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        }
+
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--bg-gradient);
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-        .login-card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 1.5rem;
+            position: relative;
             overflow: hidden;
-            max-width: 400px;
+        }
+
+        /* Elementos decorativos de fondo */
+        .bg-shape {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.6;
+        }
+        .shape-1 { background: #bfdbfe; width: 400px; height: 400px; top: -100px; right: -100px; }
+        .shape-2 { background: #bae6fd; width: 300px; height: 300px; bottom: -50px; left: -50px; }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 1);
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
             width: 100%;
+            max-width: 440px;
+            overflow: hidden;
+            position: relative;
+            backdrop-filter: blur(10px);
+            transform: translateY(0);
+            transition: transform 0.3s ease;
         }
+
         .login-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 2rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            padding: 3rem 2rem 4rem;
             text-align: center;
+            color: white;
+            clip-path: ellipse(150% 100% at 50% 0%); /* Curva suave elegante */
         }
+        
+        .brand-icon {
+            background: rgba(255,255,255,0.2);
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            backdrop-filter: blur(5px);
+            font-size: 2rem;
+        }
+
         .login-body {
-            padding: 2rem;
+            padding: 0 2.5rem 2.5rem;
+            margin-top: -2rem; /* Subir para solapar con el header curvo */
         }
+
+        .form-floating > .form-control {
+            border-radius: 0.75rem;
+            border: 1px solid #e2e8f0;
+            background-color: #f8fafc;
+        }
+        
+        .form-floating > .form-control:focus {
+            background-color: #fff;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
         .btn-login {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
             border: none;
-            padding: 0.75rem;
+            padding: 1rem;
             font-weight: 600;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+            transition: all 0.2s;
         }
+        
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+            background: linear-gradient(135deg, #1d4ed8, #2563eb);
+        }
+
+        .alert {
+            border-radius: 0.75rem;
+            border: none;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .footer-text {
+            color: #64748b;
+            font-size: 0.85rem;
+            text-align: center;
+            margin-top: 2rem;
         }
     </style>
 </head>
 <body>
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+
     <div class="login-card">
         <div class="login-header">
-            <h2 class="mb-2">🦷 Consultorio Dental</h2>
-            <p class="mb-0">Iniciar Sesión</p>
+            <div class="brand-icon">
+                <i class="bi bi-hospital"></i>
+            </div>
+            <h4 class="fw-bold mb-1">Consultorio Dental</h4>
+            <p class="mb-0 opacity-75 small">Dra. Marquez</p>
         </div>
+        
         <div class="login-body">
+            <div class="card border-0 shadow-sm rounded-4 p-1 mb-4 bg-white" style="margin-top: -30px;">
+                <div class="card-body text-center py-2">
+                    <small class="text-muted fw-medium py-1 d-block">Iniciar Sesión</small>
+                </div>
+            </div>
+
             {% if messages %}
                 {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                        {{ message }}
+                    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show d-flex align-items-center" role="alert">
+                        <i class="bi bi-exclamation-circle-fill me-2 fs-5"></i>
+                        <div>{{ message }}</div>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 {% endfor %}
             {% endif %}
 
-            <form method="post">
+            <form method="post" class="mt-2">
                 {% csrf_token %}
                 
-                <div class="mb-3">
-                    <label for="id_username" class="form-label">Usuario</label>
+                <div class="form-floating mb-3">
                     <input type="text" 
                            name="username" 
                            class="form-control" 
                            id="id_username" 
-                           placeholder="Ingresa tu usuario"
+                           placeholder="Usuario"
                            required
                            autofocus>
+                    <label for="id_username"><i class="bi bi-person me-2"></i>Usuario</label>
                 </div>
 
-                <div class="mb-4">
-                    <label for="id_password" class="form-label">Contraseña</label>
+                <div class="form-floating mb-4">
                     <input type="password" 
                            name="password" 
                            class="form-control" 
                            id="id_password" 
-                           placeholder="Ingresa tu contraseña"
+                           placeholder="Contraseña"
                            required>
+                    <label for="id_password"><i class="bi bi-lock me-2"></i>Contraseña</label>
                 </div>
 
                 <div class="d-grid">
-                    <button type="submit" class="btn btn-primary btn-login">
-                        🔐 Iniciar Sesión
+                    <button type="submit" class="btn btn-primary btn-login text-white">
+                        Ingresar al Sistema <i class="bi bi-arrow-right-short ms-1 fs-5 align-middle"></i>
                     </button>
+                </div>
+                
+                <div class="footer-text">
+                    <p class="mb-0">&copy; {% now "Y" %} NeuroSystems</p>
                 </div>
             </form>
         </div>
