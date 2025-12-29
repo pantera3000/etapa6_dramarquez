@@ -27,6 +27,16 @@
     #sidebarClose {
         display: none !important;
     }
+    
+    /* Hide entire sidebar header in mobile - topbar has menu and user controls */
+    #sidebar-wrapper .sidebar-heading {
+        display: none !important;
+    }
+    
+    /* Adjust sidebar content to account for hidden header */
+    #sidebar-wrapper .list-group {
+        padding-top: 1rem;
+    }
 }
 
 /* Sidebar Mobile Animations */
