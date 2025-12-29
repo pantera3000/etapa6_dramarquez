@@ -75,6 +75,28 @@ def editar_usuario(request, pk):
 
 
 @login_required
+def mi_perfil(request):
+    """Vista para que el usuario edite su propio perfil"""
+    usuario = request.user
+    
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, instance=usuario)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Has actualizado tu perfil exitosamente')
+            return redirect('usuarios:perfil')
+    else:
+        form = UserProfileForm(instance=usuario)
+    
+    return render(request, 'usuarios/form_usuario.html', {
+        'form': form,
+        'titulo': 'Mi Perfil',
+        'accion': 'Actualizar Perfil',
+        'es_perfil_propio': True
+    })
+
+
+@login_required
 @user_passes_test(es_administrador)
 def eliminar_usuario(request, pk):
     """Eliminar un usuario"""
