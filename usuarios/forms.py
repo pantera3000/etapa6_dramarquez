@@ -64,6 +64,28 @@ class UserEditForm(forms.ModelForm):
                 self.fields['grupo'].initial = grupos.first()
 
 
+class UserProfileForm(forms.ModelForm):
+    """Formulario para que el usuario edite su propio perfil (limitado)"""
+    email = forms.EmailField(required=True, label='Correo electrónico')
+    first_name = forms.CharField(required=True, label='Nombre')
+    last_name = forms.CharField(required=True, label='Apellido')
+    
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'first_name', 'last_name')
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Agregar clases de Bootstrap
+        for field_name in self.fields:
+            self.fields[field_name].widget.attrs['class'] = 'form-control'
+        
+        # Username solo lectura
+        if 'username' in self.fields:
+            self.fields['username'].disabled = True
+            self.fields['username'].help_text = 'El nombre de usuario no se puede cambiar'
+
+
 class PasswordChangeFormCustom(forms.Form):
     """Formulario para cambiar contraseña de un usuario"""
     new_password1 = forms.CharField(
