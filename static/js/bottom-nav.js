@@ -49,16 +49,12 @@
         
         // Menu button (open sidebar)
         const menuBtn = document.getElementById('menuBottomNav');
-        console.log('Menu button found:', menuBtn);
         if (menuBtn) {
             menuBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('Menu button clicked!');
                 openSidebar();
             });
-        } else {
-            console.error('Menu button not found!');
         }
         
         // Sidebar close button
@@ -76,10 +72,8 @@
      */
     function openSidebar() {
         const sidebar = document.getElementById('sidebar-wrapper');
-        console.log('Sidebar found:', sidebar);
         if (sidebar) {
             sidebar.classList.add('show');
-            console.log('Sidebar show class added');
             
             // Create backdrop if it doesn't exist
             let backdrop = document.getElementById('sidebar-backdrop');
@@ -103,8 +97,6 @@
             }
             
             backdrop.style.display = 'block';
-        } else {
-            console.error('Sidebar not found!');
         }
     }
 
