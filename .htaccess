@@ -2,15 +2,11 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
     
-    # Servir archivos estáticos directamente
-    RewriteCond %{REQUEST_URI} ^/static/ [NC]
-    RewriteCond %{DOCUMENT_ROOT}/public/static%{REQUEST_URI} -f
-    RewriteRule ^static/(.*)$ /public/static/$1 [L]
+    # Servir archivos estáticos directamente (Sin checks complejos)
+    RewriteRule ^static/(.*)$ public/static/$1 [L]
     
     # Servir archivos media directamente
-    RewriteCond %{REQUEST_URI} ^/media/ [NC]
-    RewriteCond %{DOCUMENT_ROOT}/public/media%{REQUEST_URI} -f
-    RewriteRule ^media/(.*)$ /public/media/$1 [L]
+    RewriteRule ^media/(.*)$ public/media/$1 [L]
 </IfModule>
 
 # Configurar tipos MIME correctos
