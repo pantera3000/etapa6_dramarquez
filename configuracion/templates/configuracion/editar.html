@@ -65,6 +65,26 @@
                     <div class="form-text">{{ form.logo.help_text }}</div>
                 </div>
 
+                <!-- Imagen Login -->
+                <div class="mb-4">
+                    <label for="{{ form.imagen_login.id_for_label }}" class="form-label">
+                        {{ form.imagen_login.label }}
+                    </label>
+                    
+                    {% if config.imagen_login %}
+                        <div class="mb-3">
+                            <p class="text-muted small mb-2">Imagen actual:</p>
+                            <img src="{{ config.imagen_login.url }}" alt="Login actual" class="img-fluid rounded border" style="max-height: 150px;">
+                        </div>
+                    {% endif %}
+                    
+                    {{ form.imagen_login }}
+                    {% if form.imagen_login.errors %}
+                        <div class="text-danger small">{{ form.imagen_login.errors }}</div>
+                    {% endif %}
+                    <div class="form-text">{{ form.imagen_login.help_text }}</div>
+                </div>
+
                 <!-- Información de Contacto -->
                 <h5 class="mb-3 pb-2 border-bottom mt-4">📞 Información de Contacto</h5>
                 

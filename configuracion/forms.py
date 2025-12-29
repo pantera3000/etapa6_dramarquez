@@ -12,6 +12,7 @@ class ConfiguracionForm(forms.ModelForm):
             'nombre_consultorio',
             'nombre_doctor',
             'logo',
+            'imagen_login',
             'telefono',
             'email',
             'direccion',
@@ -31,6 +32,7 @@ class ConfiguracionForm(forms.ModelForm):
             'facebook': forms.URLInput(attrs={'class': 'form-control'}),
             'instagram': forms.URLInput(attrs={'class': 'form-control'}),
             'logo': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
+            'imagen_login': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
             'modulo_protocolos_activo': forms.CheckboxInput(attrs={'class': 'form-check-input', 'role': 'switch'}),
             'modulo_programa_salud_activo': forms.CheckboxInput(attrs={'class': 'form-check-input', 'role': 'switch'}),
         }
@@ -48,3 +50,17 @@ class ConfiguracionForm(forms.ModelForm):
                 raise forms.ValidationError('Solo se permiten imágenes JPG, PNG o GIF')
         
         return logo
+
+    def clean_imagen_login(self):
+        """Validar tamaño y formato de la imagen de login"""
+        imagen = self.cleaned_data.get('imagen_login')
+        if imagen:
+            # Validar tamaño (máximo 4MB para fondo)
+            if imagen.size > 4 * 1024 * 1024:
+                raise forms.ValidationError('La imagen no debe superar los 4MB')
+            
+            # Validar formato
+            if not imagen.content_type in ['image/jpeg', 'image/png', 'image/webp']:
+                raise forms.ValidationError('Solo se permiten imágenes JPG, PNG o WebP')
+        
+        return imagen

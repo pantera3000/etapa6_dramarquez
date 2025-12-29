@@ -24,6 +24,12 @@ class ConfiguracionConsultorio(models.Model):
         null=True,
         help_text='Logo del consultorio (recomendado: 200x200px, PNG con fondo transparente)'
     )
+    imagen_login = models.ImageField(
+        upload_to='configuracion/login/',
+        blank=True,
+        null=True,
+        help_text='Imagen de fondo para la pantalla de inicio de sesión (recomendado: 1920x1080px)'
+    )
     telefono = models.CharField(
         max_length=20,
         blank=True,

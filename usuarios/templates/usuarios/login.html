@@ -16,10 +16,9 @@
         }
 
         body {
-            /* Fondo con imagen y superposición oscura para legibilidad.
-               Puedes cambiar la URL por una foto local: '/static/img/tu-foto.jpg' */
+            /* Fondo con imagen y superposición oscura para legibilidad. */
             background: linear-gradient(rgba(2, 6, 23, 0.7), rgba(30, 58, 138, 0.6)), 
-                        url('https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2600&auto=format&fit=crop');
+                        url('{% if config.imagen_login %}{{ config.imagen_login.url }}{% else %}https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2600&auto=format&fit=crop{% endif %}');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
