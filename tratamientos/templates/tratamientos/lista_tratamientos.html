@@ -146,11 +146,109 @@
                     .badge-subtle-success { background-color: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; }
                     .badge-subtle-secondary { background-color: #e2e3e5; color: #41464b; border: 1px solid #d3d6d8; }
                     
-                    /* Hover effect en filas */
-                    .table-hover tbody tr:hover { transform: translateY(-1px); box-shadow: 0 4px 6px rgba(0,0,0,0.05); z-index: 1; position: relative; }
-                    .action-btn { transition: all 0.2s; opacity: 0.7; }
-                    .table-hover tbody tr:hover .action-btn { opacity: 1; transform: scale(1.1); }
-                </style>
+                /* --- Avatar Styles --- */
+                .avatar-circle {
+                    width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+                    color: white; font-weight: 600; font-size: 0.9rem; text-transform: uppercase; flex-shrink: 0;
+                }
+                .avatar-circle-sm { width: 32px; height: 32px; font-size: 0.8rem; }
+                
+                /* --- Table Styles --- */
+                .table-saas thead th {
+                    font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;
+                    color: #64748b; background-color: #f8fafc; border-bottom: 1px solid #e2e8f0;
+                    padding: 12px 16px;
+                }
+                .table-saas tbody td {
+                    vertical-align: middle; padding: 12px 16px; border-bottom: 1px solid #f1f5f9;
+                }
+                .table-saas tbody tr { transition: all 0.2s ease-in-out; }
+                .table-saas tbody tr:hover {
+                    background-color: #f8fafc !important;
+                    cursor: pointer;
+                    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+                    transform: translateY(-2px);
+                }
+                
+                /* --- Typography --- */
+                .text-title { color: #0f172a; font-weight: 600; font-size: 0.95rem; }
+                .text-amount { font-family: 'Consolas', monospace; font-weight: 600; color: #0f172a; }
+                .text-meta { font-size: 0.85rem; color: #64748b; }
+                
+                /* --- Badges & Status --- */
+                .badge-saas { font-weight: 500; padding: 0.35em 0.65em; font-size: 0.75em; border-radius: 6px; }
+                
+                /* --- Actions --- */
+                .actions-group { opacity: 1; display: flex; gap: 0.25rem; justify-content: flex-end; }
+
+                /* --- Mobile Cards --- */
+                .card-mobile-saas {
+                    background: white; border: 1px solid #e2e8f0; border-radius: 0.75rem;
+                    transition: transform 0.2s;
+                }
+                .card-mobile-saas:active { transform: scale(0.98); }
+
+                /* Hover effect en filas */
+                .table-hover tbody tr:hover { transform: translateY(-1px); box-shadow: 0 4px 6px rgba(0,0,0,0.05); z-index: 1; position: relative; }
+                .action-btn { transition: all 0.2s; opacity: 0.7; }
+                .table-hover tbody tr:hover .action-btn { opacity: 1; transform: scale(1.1); }
+                
+                /* ========= DARK MODE FIX ========= */
+                [data-theme="dark"] .table-saas thead th {
+                    background-color: #25282e; color: #adb5bd; border-bottom-color: #373b45;
+                }
+                [data-theme="dark"] .table-saas tbody td {
+                    border-bottom-color: #2d3139; color: #e9ecef;
+                }
+                [data-theme="dark"] .text-title,
+                [data-theme="dark"] .text-amount { color: #e9ecef !important; }
+                
+                [data-theme="dark"] .table-hover tbody tr:hover {
+                    background-color: #2d3139 !important;
+                    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
+                }
+                
+                /* Reemplaza los fondos blancos por oscuros */
+                [data-theme="dark"] .bg-white, 
+                [data-theme="dark"] .table-hover tbody tr.bg-white {
+                    background-color: #1a1d23 !important;
+                    color: #dee2e6;
+                }
+
+                /* Badges Subtle Dark Mode Fix - Alta visibilidad */
+                [data-theme="dark"] .badge-subtle-warning { 
+                    background-color: rgba(255, 193, 7, 0.2) !important; 
+                    color: #ffd54f !important; 
+                    border: 1px solid rgba(255, 193, 7, 0.4) !important;
+                }
+                [data-theme="dark"] .badge-subtle-primary { 
+                    background-color: rgba(13, 110, 253, 0.2) !important; 
+                    color: #9ec5fe !important; 
+                    border: 1px solid rgba(13, 110, 253, 0.4) !important;
+                }
+                [data-theme="dark"] .badge-subtle-success { 
+                    background-color: rgba(25, 135, 84, 0.2) !important; 
+                    color: #a3cfbb !important; 
+                    border: 1px solid rgba(25, 135, 84, 0.4) !important;
+                }
+                [data-theme="dark"] .badge-subtle-secondary { 
+                    background-color: rgba(108, 117, 125, 0.2) !important; 
+                    color: #ced4da !important; 
+                    border: 1px solid rgba(108, 117, 125, 0.4) !important;
+                }
+
+                /* Contenedores Dark Mode */
+                [data-theme="dark"] .card-mobile-saas {
+                    background-color: #25282e; border-color: #495057;
+                }
+                [data-theme="dark"] .bg-light { 
+                    background-color: #1a1d23 !important; 
+                    color: #e9ecef;
+                }
+                
+                /* Textos en tarjetas */
+                [data-theme="dark"] h2, [data-theme="dark"] h6 { color: #e9ecef !important; }
+            </style>
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0" style="min-width: 900px;">
                         <thead class="bg-light">
