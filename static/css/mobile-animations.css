@@ -1,0 +1,245 @@
+/* ============================================
+   Mobile Animations & Optimizations
+   ============================================ */
+
+/* Mobile Backdrop */
+.mobile-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1025;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.mobile-backdrop.show {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* Sidebar Mobile Animations */
+@media (max-width: 992px) {
+    #sidebar-wrapper {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        height: 100vh;
+        z-index: 1026;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+    }
+
+    #sidebar-wrapper.show {
+        left: 0;
+    }
+
+    /* Smooth slide animation */
+    #sidebar-wrapper.show {
+        animation: slideInLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+/* Ripple Effect */
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.6);
+    transform: scale(0);
+    animation: ripple-animation 0.6s ease-out;
+    pointer-events: none;
+}
+
+[data-theme="dark"] .ripple {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+@keyframes ripple-animation {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* Button/Link positioning for ripple */
+.btn,
+.list-group-item-action,
+.topbar-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Touch-Optimized Buttons */
+@media (max-width: 768px) {
+    .btn {
+        min-height: 44px;
+        padding: 0.5rem 1rem;
+    }
+
+    .list-group-item {
+        min-height: 44px;
+        padding: 0.75rem 1rem;
+    }
+
+    /* Larger tap targets for icons */
+    .bi {
+        font-size: 1.25rem;
+    }
+
+    /* More spacing between clickable elements */
+    .btn-group .btn {
+        margin: 0.25rem;
+    }
+}
+
+/* Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Optimize animations for mobile */
+@media (max-width: 768px) {
+    * {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Reduce motion for better performance */
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+}
+
+/* Pull to Refresh Indicator (Optional) */
+.pull-to-refresh {
+    position: fixed;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100%);
+    background: var(--card-bg);
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 9998;
+}
+
+.pull-to-refresh.active {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.pull-to-refresh .spinner-border {
+    width: 1rem;
+    height: 1rem;
+    border-width: 2px;
+}
+
+/* Loading Skeleton (for better perceived performance) */
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0.06) 25%,
+        rgba(0, 0, 0, 0.15) 50%,
+        rgba(0, 0, 0, 0.06) 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s ease-in-out infinite;
+    border-radius: 0.25rem;
+}
+
+[data-theme="dark"] .skeleton {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.06) 25%,
+        rgba(255, 255, 255, 0.15) 50%,
+        rgba(255, 255, 255, 0.06) 75%
+    );
+    background-size: 200% 100%;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Improve form inputs on mobile */
+@media (max-width: 768px) {
+    input,
+    textarea,
+    select {
+        font-size: 16px !important; /* Prevent zoom on iOS */
+    }
+
+    .form-control,
+    .form-select {
+        min-height: 44px;
+    }
+}
+
+/* Sticky elements optimization */
+.sticky-top {
+    position: -webkit-sticky;
+    position: sticky;
+}
+
+/* Safe area insets for notched devices */
+@supports (padding: max(0px)) {
+    body {
+        padding-left: max(0px, env(safe-area-inset-left));
+        padding-right: max(0px, env(safe-area-inset-right));
+    }
+
+    .topbar {
+        padding-left: max(1.5rem, env(safe-area-inset-left));
+        padding-right: max(1.5rem, env(safe-area-inset-right));
+    }
+}
+
+/* Improve scrolling performance */
+.overflow-auto,
+.custom-scrollbar {
+    -webkit-overflow-scrolling: touch;
+    will-change: scroll-position;
+}
+
+/* Hardware acceleration for animations */
+.sidebar,
+.topbar,
+.search-modal-content {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+/* Optimize images for mobile */
+@media (max-width: 768px) {
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+}
