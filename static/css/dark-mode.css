@@ -1041,3 +1041,101 @@ a {
 [data-theme="dark"] #notas .card .text-muted {
     color: var(--text-secondary) !important;
 }
+
+/* ============================================
+   ODONTOGRAMA - DARK MODE
+   ============================================ */
+
+/* Container background */
+[data-theme="dark"] .odontograma-container {
+    background-color: var(--bg-primary) !important;
+}
+
+/* Sidebar panels */
+[data-theme="dark"] .sidebar-panel {
+    background: var(--card-bg) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .sidebar-header {
+    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .sidebar-content {
+    color: var(--text-primary) !important;
+}
+
+/* Tool buttons */
+[data-theme="dark"] .tool-btn {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .tool-btn:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .tool-btn.active {
+    background-color: rgba(51, 154, 240, 0.2) !important;
+    border-color: #339af0 !important;
+    color: #74c0fc !important;
+}
+
+/* Text elements */
+[data-theme="dark"] .text-muted {
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .history-item {
+    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .history-time {
+    color: var(--text-secondary) !important;
+}
+
+/* Selection panel */
+[data-theme="dark"] #selection-panel {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] #selection-panel h6 {
+    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Alerts */
+[data-theme="dark"] .alert-info {
+    background: rgba(13, 202, 240, 0.1) !important;
+    border-color: rgba(13, 202, 240, 0.2) !important;
+    color: #6edff6 !important;
+}
+
+/* Card body (odontogram area) */
+[data-theme="dark"] .card-body.bg-white {
+    background: var(--card-bg) !important;
+}
+
+/* Tooth numbers */
+[data-theme="dark"] .tooth-number {
+    color: var(--text-secondary) !important;
+}
+
+/* Dynamic comments */
+[data-theme="dark"] #dynamic-comments-list .bg-white {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] #dynamic-comments-list .text-dark {
+    color: var(--text-primary) !important;
+}
+
+/* Findings list */
+[data-theme="dark"] #findings-list .bg-light {
+    background: rgba(255, 255, 255, 0.05) !important;
+}
