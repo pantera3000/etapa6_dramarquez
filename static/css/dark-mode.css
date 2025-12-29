@@ -1268,3 +1268,16 @@ a {
 [data-theme="dark"] .widget-body .text-muted {
     color: var(--text-secondary) !important;
 }
+
+/* ============================================
+   LISTA PACIENTES - ESTADÍSTICAS - DARK MODE
+   ============================================ */
+
+/* Stats cards small */
+[data-theme="dark"] .stat-value-small {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .stat-label-small {
+    color: var(--text-secondary) !important;
+}

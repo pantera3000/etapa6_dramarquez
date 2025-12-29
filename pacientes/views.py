@@ -7,6 +7,8 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Paciente
 from .forms import PacienteForm
+from datetime import date, timedelta
+from django.utils import timezone
 
 class ListaPacientesView(LoginRequiredMixin, ListView):
     model = Paciente
@@ -23,6 +25,36 @@ class ListaPacientesView(LoginRequiredMixin, ListView):
                 dni__icontains=query
             )
         return Paciente.objects.all()
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        hoy = date.today()
+        
+        # Total de pacientes
+        context['total_pacientes'] = Paciente.objects.count()
+        
+        # Nuevos este mes
+        primer_dia_mes = hoy.replace(day=1)
+        context['nuevos_mes'] = Paciente.objects.filter(
+            creado_en__gte=primer_dia_mes
+        ).count()
+        
+        # Próximos cumpleaños (7 días)
+        cumpleanos_count = 0
+        for paciente in Paciente.objects.all():
+            if paciente.dias_hasta_cumple is not None and 0 <= paciente.dias_hasta_cumple <= 7:
+                cumpleanos_count += 1
+        context['proximos_cumpleanos'] = cumpleanos_count
+        
+        # Pacientes activos (con citas en últimos 3 meses)
+        from citas.models import Cita
+        hace_3_meses = hoy - timedelta(days=90)
+        pacientes_con_citas = Cita.objects.filter(
+            fecha__gte=hace_3_meses
+        ).values_list('paciente_id', flat=True).distinct()
+        context['pacientes_activos'] = len(set(pacientes_con_citas))
+        
+        return context
 
 # pacientes/views.py
 from django.core.paginator import Paginator

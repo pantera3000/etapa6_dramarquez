@@ -97,7 +97,85 @@
                 .card-patient-mobile:active {
                     transform: scale(0.98);
                 }
+                
+                /* --- Stats Cards Small --- */
+                .stat-card-small {
+                    text-align: center;
+                    padding: 1rem;
+                    transition: transform 0.2s;
+                }
+                .stat-card-small:hover {
+                    transform: translateY(-2px);
+                }
+                .stat-icon-small {
+                    width: 48px;
+                    height: 48px;
+                    border-radius: 0.75rem;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 1.25rem;
+                    margin-bottom: 0.5rem;
+                }
+                .stat-value-small {
+                    font-size: 1.75rem;
+                    font-weight: 700;
+                    line-height: 1;
+                    margin-bottom: 0.25rem;
+                }
+                .stat-label-small {
+                    color: #64748b;
+                    font-size: 0.75rem;
+                    font-weight: 500;
+                    text-transform: uppercase;
+                    letter-spacing: 0.05em;
+                }
             </style>
+
+            <!-- Mini-Dashboard de Estadísticas -->
+            <div class="p-4 border-bottom">
+                <div class="row g-3 mb-0">
+                    <div class="col-6 col-md-3">
+                        <div class="stat-card-small">
+                            <div class="stat-icon-small" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                <i class="bi bi-people text-white"></i>
+                            </div>
+                            <div class="stat-value-small text-dark">{{ total_pacientes }}</div>
+                            <div class="stat-label-small">Total Pacientes</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-6 col-md-3">
+                        <div class="stat-card-small">
+                            <div class="stat-icon-small" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                                <i class="bi bi-person-plus text-white"></i>
+                            </div>
+                            <div class="stat-value-small text-dark">{{ nuevos_mes }}</div>
+                            <div class="stat-label-small">Nuevos Este Mes</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-6 col-md-3">
+                        <div class="stat-card-small">
+                            <div class="stat-icon-small" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                                <i class="bi bi-cake2 text-white"></i>
+                            </div>
+                            <div class="stat-value-small text-dark">{{ proximos_cumpleanos }}</div>
+                            <div class="stat-label-small">Cumpleaños Próximos</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-6 col-md-3">
+                        <div class="stat-card-small">
+                            <div class="stat-icon-small" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                                <i class="bi bi-activity text-white"></i>
+                            </div>
+                            <div class="stat-value-small text-dark">{{ pacientes_activos }}</div>
+                            <div class="stat-label-small">Pacientes Activos</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Barra de búsqueda Estilizada -->
             <div class="p-4 border-bottom bg-light bg-opacity-10">
