@@ -82,3 +82,28 @@
         </a>
     </div>
 </div>
+
+<script>
+// CRITICAL FIX: Eliminar menú flotante del DOM INMEDIATAMENTE en desktop
+(function() {
+    'use strict';
+    
+    // Ejecutar inmediatamente cuando se carga este script
+    if (window.innerWidth >= 768) {
+        // Desktop detectado - eliminar elementos del DOM
+        const bottomNav = document.getElementById('bottomNav');
+        const fabMenu = document.getElementById('fabMenu');
+        
+        if (bottomNav) {
+            bottomNav.remove();
+            console.log('[BOTTOM-NAV] Removed from DOM (desktop detected)');
+        }
+        if (fabMenu) {
+            fabMenu.remove();
+            console.log('[FAB-MENU] Removed from DOM (desktop detected)');
+        }
+    } else {
+        console.log('[BOTTOM-NAV] Mobile detected - keeping navigation');
+    }
+})();
+</script>
