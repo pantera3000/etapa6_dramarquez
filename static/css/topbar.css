@@ -212,10 +212,10 @@
     border-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Content Offset */
-body {
+/* Content Offset - NOT NEEDED, topbar removed */
+/* body {
     padding-top: 60px;
-}
+} */
 
 /* Responsive */
 @media (max-width: 768px) {

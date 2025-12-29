@@ -15,14 +15,8 @@
     <!-- Dark Mode CSS - CARGAR ANTES PARA EVITAR FLASH -->
     <link rel="stylesheet" href="{% static 'css/dark-mode.css' %}">
     
-    <!-- Top Navigation Bar CSS -->
-    <link rel="stylesheet" href="{% static 'css/topbar.css' %}">
-    
     <!-- Global Search Modal CSS -->
     <link rel="stylesheet" href="{% static 'css/search-modal.css' %}">
-    
-    <!-- Mobile Animations & Optimizations -->
-    <link rel="stylesheet" href="{% static 'css/mobile-animations.css' %}?v=2">
     
     <!-- Aplicar tema INMEDIATAMENTE para evitar flash -->
     <script>
@@ -198,16 +192,6 @@
             min-height: 48px; /* Reservar altura para prevenir layout shifts */
         }
         
-        /* CRITICAL: Hide sidebar header in mobile to prevent duplicate menu/user buttons */
-        @media (max-width: 1200px) {
-            #sidebar-wrapper .sidebar-heading {
-                display: none !important;
-            }
-            #sidebar-wrapper .list-group {
-                padding-top: 1rem !important;
-            }
-        }
-        
         /* Custom Scrollbar - Simplificado */
         .custom-scrollbar::-webkit-scrollbar { width: 5px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
@@ -220,9 +204,6 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <!-- Top Navigation Bar -->
-    {% include 'components/topbar.html' %}
-    
     <div class="d-flex" id="wrapper">
         <!-- Sidebar -->
         {% include 'sidebar.html' %}
@@ -489,9 +470,6 @@
     
     <!-- Global Search Modal Controller -->
     <script src="{% static 'js/search-modal.js' %}"></script>
-    
-    <!-- Mobile Gestures & Interactions -->
-    <script src="{% static 'js/mobile-gestures.js' %}"></script>
 
     <!-- Global Search Modal -->
     {% include 'components/search_modal.html' %}

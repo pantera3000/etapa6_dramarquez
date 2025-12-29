@@ -106,21 +106,21 @@
      */
     function initSearchTrigger() {
         const searchBtn = document.getElementById('searchTrigger');
+        const searchBtnDesktop = document.getElementById('searchTriggerDesktop');
         
         if (searchBtn) {
-            searchBtn.addEventListener('click', function() {
-                // This will be connected to the search modal in Phase 3
-                console.log('Search triggered - Modal will be implemented in Phase 3');
-                // TODO: Open search modal
-            });
+            searchBtn.addEventListener('click', openModal);
+        }
+        
+        if (searchBtnDesktop) {
+            searchBtnDesktop.addEventListener('click', openModal);
         }
 
         // Keyboard shortcut Ctrl+K / Cmd+K
         document.addEventListener('keydown', function(e) {
             if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
                 e.preventDefault();
-                console.log('Ctrl+K pressed - Search modal will be implemented in Phase 3');
-                // TODO: Open search modal
+                openModal();
             }
         });
     }
