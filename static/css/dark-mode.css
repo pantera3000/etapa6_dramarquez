@@ -924,3 +924,31 @@ a {
     border-color: rgba(255, 255, 255, 0.2) !important;
     color: var(--text-secondary) !important;
 }
+
+/* ============================================
+   NOTES MOBILE CARDS - DARK MODE
+   ============================================ */
+
+[data-theme="dark"] .card-mobile-saas {
+    background: var(--card-bg) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .card-mobile-saas h6,
+[data-theme="dark"] .card-mobile-saas .text-dark {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .card-mobile-saas .text-muted {
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .card-mobile-saas .badge.bg-light {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .card-mobile-saas .text-secondary {
+    color: var(--text-secondary) !important;
+}
