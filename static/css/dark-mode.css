@@ -1139,3 +1139,63 @@ a {
 [data-theme="dark"] #findings-list .bg-light {
     background: rgba(255, 255, 255, 0.05) !important;
 }
+
+/* ============================================
+   CUMPLEAÑOS - DARK MODE
+   ============================================ */
+
+/* Birthday cards */
+[data-theme="dark"] .birthday-card {
+    background: var(--card-bg) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .birthday-card.is-today {
+    background: linear-gradient(to bottom right, rgba(236, 72, 153, 0.1), var(--card-bg)) !important;
+    border-color: #ec4899 !important;
+}
+
+[data-theme="dark"] .birthday-card h5,
+[data-theme="dark"] .birthday-card .text-dark {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .birthday-card .text-muted {
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .birthday-card .text-secondary {
+    color: var(--text-secondary) !important;
+}
+
+/* Days badge */
+[data-theme="dark"] .days-badge.bg-light {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    color: var(--text-secondary) !important;
+}
+
+/* Age badge */
+[data-theme="dark"] .birthday-card .bg-white.border {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: var(--text-secondary) !important;
+}
+
+/* Border top */
+[data-theme="dark"] .birthday-card .border-top {
+    border-top-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Header badge */
+[data-theme="dark"] .badge.bg-white {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Empty state */
+[data-theme="dark"] .bg-white.rounded.shadow-sm {
+    background: var(--card-bg) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
