@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Integraciones{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+    <div class="d-flex align-items-center mb-4">
+        <a href="{% url 'configuracion:index' %}" class="btn btn-outline-secondary me-3">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        <div>
+            <h2 class="fw-bold text-dark mb-0">🔌 Integraciones</h2>
+            <p class="text-muted mb-0">Gestiona las conexiones con servicios externos.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for integracion in integraciones %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm border-0 {% if integracion.activo %}border-top border-success border-3{% else %}border-top border-secondary border-3{% endif %}">
+                <div class="card-body p-4 d-flex flex-column h-100">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" 
+                             style="width: 50px; height: 50px; 
+                                    {% if integracion.tipo == 'google_calendar' %}background-color: #e8f0fe; color: #4285f4;{% endif %}
+                                    {% if integracion.tipo == 'whatsapp' %}background-color: #e6fffa; color: #25d366;{% endif %}
+                                    {% if integracion.tipo == 'email' %}background-color: #fff4e6; color: #fd7e14;{% endif %}
+                             ">
+                            {% if integracion.tipo == 'google_calendar' %}<i class="bi bi-calendar-check fs-4"></i>{% endif %}
+                            {% if integracion.tipo == 'whatsapp' %}<i class="bi bi-whatsapp fs-4"></i>{% endif %}
+                            {% if integracion.tipo == 'email' %}<i class="bi bi-envelope fs-4"></i>{% endif %}
+                        </div>
+                        <span class="badge {% if integracion.activo %}bg-success{% else %}bg-secondary{% endif %} rounded-pill">
+                            {% if integracion.activo %}Activo{% else %}Inactivo{% endif %}
+                        </span>
+                    </div>
+                    
+                    <h5 class="card-title fw-bold mb-2">{{ integracion.get_tipo_display }}</h5>
+                    <p class="card-text text-muted small flex-grow-1">
+                        {% if integracion.tipo == 'google_calendar' %}Sincroniza tus citas automáticamente con Google Calendar.{% endif %}
+                        {% if integracion.tipo == 'whatsapp' %}Envía recordatorios y confirmaciones automáticas por WhatsApp.{% endif %}
+                        {% if integracion.tipo == 'email' %}Notifica a los pacientes sobre sus citas vía correo electrónico.{% endif %}
+                    </p>
+                    
+                    <a href="{% url 'integraciones:editar' integracion.pk %}" class="btn btn-outline-primary btn-sm w-100 mt-3 align-self-end">
+                        <i class="bi bi-gear me-1"></i> Configurar
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

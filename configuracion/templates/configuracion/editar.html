@@ -133,6 +133,35 @@
                     </div>
                 </div>
 
+                <!-- Módulos del Sistema -->
+                <h5 class="mb-3 pb-2 border-bottom mt-4">🧩 Módulos del Sistema</h5>
+                <p class="text-muted small">Active o desactive los módulos que desea utilizar.</p>
+                
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <div class="form-check form-switch p-0 d-flex gap-2 align-items-center">
+                            {{ form.modulo_protocolos_activo }}
+                            <div class="ms-4">
+                                <label class="form-check-label fw-bold" for="{{ form.modulo_protocolos_activo.id_for_label }}">
+                                    {{ form.modulo_protocolos_activo.label }}
+                                </label>
+                                <div class="text-muted small">Si se desactiva, se ocultará la pestaña y funcionalidades de Protocolo Niños.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <div class="form-check form-switch p-0 d-flex gap-2 align-items-center">
+                            {{ form.modulo_programa_salud_activo }}
+                            <div class="ms-4">
+                                <label class="form-check-label fw-bold" for="{{ form.modulo_programa_salud_activo.id_for_label }}">
+                                    {{ form.modulo_programa_salud_activo.label }}
+                                </label>
+                                <div class="text-muted small">Si se desactiva, se ocultará la pestaña y funcionalidades de Programa Salud.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Botones -->
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
                     <button type="submit" class="btn btn-success">💾 Guardar Configuración</button>

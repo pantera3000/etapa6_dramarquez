@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Configurar {{ integracion.get_tipo_display }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="mb-4 d-flex align-items-center">
+                <a href="{% url 'integraciones:lista' %}" class="btn btn-outline-secondary me-3 rounded-circle" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <div>
+                    <h2 class="fw-bold mb-0">Configurar {{ integracion.get_tipo_display }}</h2>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Estado Activo/Inactivo -->
+                        <div class="mb-4 p-3 bg-light rounded hover-bg-light border">
+                            <div class="form-check form-switch d-flex align-items-center gap-3">
+                                {{ form.activo }}
+                                <label class="form-check-label fw-bold mb-0" for="{{ form.activo.id_for_label }}">
+                                    Activar Integración
+                                </label>
+                            </div>
+                            <div class="form-text mt-2 ms-5">
+                                Habilita o deshabilita la conexión con este servicio.
+                            </div>
+                        </div>
+
+                        <!-- Webhook URL (Si aplica) -->
+                        <div class="mb-4">
+                            <label for="{{ form.webhook_url.id_for_label }}" class="form-label fw-bold">Webhook URL</label>
+                            {{ form.webhook_url }}
+                            <div class="form-text">La URL de endpoint provista por tu servicio de integración (ej. Pabbly, Zapier).</div>
+                            {% if form.webhook_url.errors %}
+                                <div class="text-danger small mt-1">{{ form.webhook_url.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{% url 'integraciones:lista' %}" class="btn btn-light">Cancelar</a>
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="bi bi-check-lg me-1"></i> Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            {% if integracion.tipo == 'google_calendar' %}
+            <div class="alert alert-info mt-3 d-flex align-items-center" role="alert">
+                <i class="bi bi-info-circle-fill me-2 fs-4"></i>
+                <div>
+                    <strong>Nota:</strong> Esta integración requiere que el servicio de Google Calendar API esté habilitado y configurado en tu consola de Google Cloud si usas conexión directa.
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

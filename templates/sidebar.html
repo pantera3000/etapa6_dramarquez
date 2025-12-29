@@ -88,7 +88,7 @@
         <!-- 5. GRUPO EXTRAS -->
         {% if user.is_superuser %}
         <small class="text-muted px-3 mt-3 mb-1 text-uppercase fw-bold section-title" style="font-size: 0.7rem;">Admin</small>
-        <a href="{% url 'configuracion:editar' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'configuracion' in request.path %}active{% endif %}" title="Configuración" data-bs-toggle="tooltip" data-bs-placement="right">
+        <a href="{% url 'configuracion:index' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'configuracion' in request.path %}active{% endif %}" title="Configuración" data-bs-toggle="tooltip" data-bs-placement="right">
             <i class="bi bi-gear fs-5 me-2 text-dark"></i> <span>Configuración</span>
         </a>
         <a href="{% url 'usuarios:lista' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'usuarios' in request.path %}active{% endif %}" title="Usuarios" data-bs-toggle="tooltip" data-bs-placement="right">

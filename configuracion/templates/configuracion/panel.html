@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Panel de Configuración{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+    <div class="mb-4">
+        <h2 class="fw-bold text-dark">⚙️ Panel de Configuración</h2>
+        <p class="text-muted">Administra los aspectos generales del sistema, integraciones y usuarios.</p>
+    </div>
+
+    <div class="row g-4">
+        <!-- 1. Configuración del Consultorio -->
+        <div class="col-md-6 col-lg-4">
+            <a href="{% url 'configuracion:editar' %}" class="text-decoration-none">
+                <div class="card h-100 shadow-sm border-0 hover-card">
+                    <div class="card-body text-center p-4">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2.5rem;">
+                            <i class="bi bi-building"></i>
+                        </div>
+                        <h4 class="card-title text-dark fw-bold">Consultorio</h4>
+                        <p class="card-text text-muted">Información general, logo, contacto y activación de módulos.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- 2. Integraciones (Google, WhatsApp, Email) -->
+        <div class="col-md-6 col-lg-4">
+            <a href="{% url 'integraciones:lista' %}" class="text-decoration-none">
+                <div class="card h-100 shadow-sm border-0 hover-card">
+                    <div class="card-body text-center p-4">
+                        <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2.5rem;">
+                            <i class="bi bi-diagram-3"></i>
+                        </div>
+                        <h4 class="card-title text-dark fw-bold">Integraciones</h4>
+                        <p class="card-text text-muted">Conecta servicios externos como Google Calendar y WhatsApp.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- 3. Gestión de Usuarios -->
+        <div class="col-md-6 col-lg-4">
+            <a href="{% url 'usuarios:lista' %}" class="text-decoration-none">
+                <div class="card h-100 shadow-sm border-0 hover-card">
+                    <div class="card-body text-center p-4">
+                        <div class="bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2.5rem;">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        <h4 class="card-title text-dark fw-bold">Usuarios</h4>
+                        <p class="card-text text-muted">Gestión de roles, permisos y acceso al personal del consultorio.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+</style>
+{% endblock %}

@@ -30,3 +30,14 @@ def editar_configuracion(request):
         'form': form,
         'config': config
     })
+    return render(request, 'configuracion/editar.html', {
+        'form': form,
+        'config': config
+    })
+
+
+@login_required
+@user_passes_test(es_administrador)
+def panel_configuracion(request):
+    """Vista principal del panel de configuración"""
+    return render(request, 'configuracion/panel.html')
