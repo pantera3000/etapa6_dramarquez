@@ -218,7 +218,7 @@
                             </div>
                             <div class="stat-content">
                                 <div class="stat-value-small text-dark">{{ total_pacientes }}</div>
-                                <div class="stat-label-small">Total Pacientes</div>
+                                <div class="stat-label-small">Total Pacientess</div>
                             </div>
                         </div>
                     </div>
@@ -475,7 +475,155 @@
 </div>
 
 {% load static %}
-<script src="{% static 'js/pacientes-list.js' %}"></script>
+<script>
+/**
+ * Pacientes List - Filtros y Ordenamiento (Inline)
+ */
+(function() {
+    'use strict';
+
+    let currentSort = { column: null, direction: 'asc' };
+
+    function initFilters() {
+        const searchInput = document.querySelector('input[name="q"]');
+        const ageFilter = document.getElementById('ageFilter');
+        const genderFilter = document.getElementById('genderFilter');
+        const statusFilter = document.getElementById('statusFilter');
+
+        if (searchInput) searchInput.addEventListener('input', debounce(applyFilters, 300));
+        if (ageFilter) ageFilter.addEventListener('change', applyFilters);
+        if (genderFilter) genderFilter.addEventListener('change', applyFilters);
+        if (statusFilter) statusFilter.addEventListener('change', applyFilters);
+    }
+
+    function applyFilters() {
+        const searchTerm = document.querySelector('input[name="q"]')?.value.toLowerCase() || '';
+        const ageRange = document.getElementById('ageFilter')?.value || 'all';
+        const gender = document.getElementById('genderFilter')?.value || 'all';
+        const status = document.getElementById('statusFilter')?.value || 'all';
+
+        const rows = document.querySelectorAll('.table-saas tbody tr');
+        let visibleCount = 0;
+
+        rows.forEach(row => {
+            const name = row.querySelector('.patient-name')?.textContent.toLowerCase() || '';
+            const dni = row.querySelector('.patient-meta')?.textContent.toLowerCase() || '';
+            const age = parseInt(row.dataset.age) || 0;
+            const rowGender = row.dataset.gender || '';
+            const rowStatus = row.dataset.status || '';
+
+            const matchesSearch = searchTerm === '' || name.includes(searchTerm) || dni.includes(searchTerm);
+            
+            let matchesAge = true;
+            if (ageRange !== 'all') {
+                const [min, max] = ageRange.split('-').map(Number);
+                if (max) { matchesAge = age >= min && age <= max; } 
+                else { matchesAge = age >= min; }
+            }
+
+            const matchesGender = gender === 'all' || rowGender === gender;
+            const matchesStatus = status === 'all' || rowStatus === status;
+
+            if (matchesSearch && matchesAge && matchesGender && matchesStatus) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        updateEmptyState(visibleCount);
+    }
+
+    function updateEmptyState(count) {
+        let emptyState = document.getElementById('emptyState');
+        if (count === 0) {
+            if (!emptyState) {
+                emptyState = document.createElement('tr');
+                emptyState.id = 'emptyState';
+                emptyState.innerHTML = '<td colspan="100%" class="text-center py-5 text-muted"><i class="bi bi-search fs-1 opacity-25"></i><p class="mb-0 mt-2">No se encontraron pacientes con los filtros aplicados</p></td>';
+                document.querySelector('.table-saas tbody').appendChild(emptyState);
+            }
+            emptyState.style.display = '';
+        } else if (emptyState) {
+            emptyState.style.display = 'none';
+        }
+    }
+
+    function initSorting() {
+        document.querySelectorAll('.sortable').forEach(header => {
+            header.style.cursor = 'pointer';
+            header.addEventListener('click', () => sortTable(header.dataset.sort));
+        });
+    }
+
+    function sortTable(column) {
+        const tbody = document.querySelector('.table-saas tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr:not(#emptyState)'));
+
+        if (currentSort.column === column) {
+            currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+        } else {
+            currentSort.column = column;
+            currentSort.direction = 'asc';
+        }
+
+        rows.sort((a, b) => {
+            let aVal, bVal;
+            switch(column) {
+                case 'nombre':
+                    aVal = a.querySelector('.patient-name')?.textContent || '';
+                    bVal = b.querySelector('.patient-name')?.textContent || '';
+                    break;
+                case 'edad':
+                    aVal = parseInt(a.dataset.age) || 0;
+                    bVal = parseInt(b.dataset.age) || 0;
+                    break;
+                case 'fecha': // Fecha creación
+                    aVal = new Date(a.dataset.fecha || 0);
+                    bVal = new Date(b.dataset.fecha || 0);
+                    break;
+                default: return 0;
+            }
+            // Simple sort string/number handled inside
+            if (column === 'nombre') return currentSort.direction === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+            return currentSort.direction === 'asc' ? aVal - bVal : bVal - aVal;
+        });
+
+        rows.forEach(row => tbody.appendChild(row));
+        updateSortIndicators(column);
+    }
+
+    function updateSortIndicators(column) {
+        document.querySelectorAll('.sortable').forEach(header => {
+            const icon = header.querySelector('.sort-icon');
+            if (icon) {
+                if (header.dataset.sort === column) {
+                    icon.className = currentSort.direction === 'asc' ? 'bi bi-arrow-up sort-icon' : 'bi bi-arrow-down sort-icon';
+                    icon.classList.remove('opacity-25');
+                } else {
+                    icon.className = 'bi bi-arrow-down-up sort-icon opacity-25';
+                }
+            }
+        });
+    }
+
+    function debounce(func, wait) {
+        let timeout;
+        return function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func(...args), wait);
+        };
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => { initFilters(); initSorting(); });
+    } else {
+        initFilters();
+        initSorting();
+    }
+})();
+</script>
 <script>
 function enviarLinkWhatsApp() {
     // Obtener la URL completa del formulario de registro

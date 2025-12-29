@@ -30,29 +30,51 @@ class ListaPacientesView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         hoy = date.today()
         
-        # Total de pacientes
+        # Total de pacientes (Rápido: Count en DB)
         context['total_pacientes'] = Paciente.objects.count()
         
-        # Nuevos este mes
+        # Nuevos este mes (Rápido: Filtro + Count)
         primer_dia_mes = hoy.replace(day=1)
         context['nuevos_mes'] = Paciente.objects.filter(
             creado_en__gte=primer_dia_mes
         ).count()
         
-        # Próximos cumpleaños (7 días)
+        # Próximos cumpleaños (7 días) - OPTIMIZADO: Filtro por mes/día en lugar de iterar todo
+        # Nota: Para hacerlo simple y compatible con SQLite/prod sin funciones complejas de fecha DB,
+        # usaremos una aproximación iterando solo sobre candidatos probables (mes actual o sig).
+        
+        mes_actual = hoy.month
+        # Siguiente mes (manejo diciembre -> enero)
+        mes_siguiente = 1 if mes_actual == 12 else mes_actual + 1
+        
+        # Filtrar solo candidatos de este mes y el siguiente (reduce el dataset 6x aprox)
+        candidatos = Paciente.objects.filter(
+            Q(fecha_nacimiento__month=mes_actual) | 
+            Q(fecha_nacimiento__month=mes_siguiente)
+        )
+        
         cumpleanos_count = 0
-        for paciente in Paciente.objects.all():
-            if paciente.dias_hasta_cumple is not None and 0 <= paciente.dias_hasta_cumple <= 7:
-                cumpleanos_count += 1
+        limit_date = hoy + timedelta(days=7)
+        
+        for p in candidatos:
+            if p.fecha_nacimiento:
+                # Calcular cumple este año
+                cumple = p.fecha_nacimiento.replace(year=hoy.year)
+                if cumple < hoy:
+                    cumple = cumple.replace(year=hoy.year + 1)
+                
+                # Chequear si cae en el rango [hoy, hoy+7]
+                if hoy <= cumple <= limit_date:
+                    cumpleanos_count += 1
+                    
         context['proximos_cumpleanos'] = cumpleanos_count
         
-        # Pacientes activos (con citas en últimos 3 meses)
+        # Pacientes activos (con citas en últimos 3 meses) - OPTIMIZADO: Count distinct directo
         from citas.models import Cita
         hace_3_meses = hoy - timedelta(days=90)
-        pacientes_con_citas = Cita.objects.filter(
+        context['pacientes_activos'] = Cita.objects.filter(
             fecha__gte=hace_3_meses
-        ).values_list('paciente_id', flat=True).distinct()
-        context['pacientes_activos'] = len(set(pacientes_con_citas))
+        ).values('paciente').distinct().count()
         
         return context
 
