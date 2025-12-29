@@ -15,6 +15,9 @@
     <!-- Dark Mode CSS - CARGAR ANTES PARA EVITAR FLASH -->
     <link rel="stylesheet" href="{% static 'css/dark-mode.css' %}">
     
+    <!-- Top Navigation Bar CSS -->
+    <link rel="stylesheet" href="{% static 'css/topbar.css' %}">
+    
     <!-- Aplicar tema INMEDIATAMENTE para evitar flash -->
     <script>
         (function() {
@@ -200,8 +203,10 @@
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
-<body> <!-- La clase inicial se establece via JavaScript según el dispositivo -->
-
+<body>
+    <!-- Top Navigation Bar -->
+    {% include 'components/topbar.html' %}
+    
     <div class="d-flex" id="wrapper">
         <!-- Sidebar -->
         {% include 'sidebar.html' %}
@@ -462,6 +467,9 @@
 
     <!-- Dark Mode Controller -->
     <script src="{% static 'js/dark-mode.js' %}"></script>
+    
+    <!-- Top Navigation Bar Controller -->
+    <script src="{% static 'js/topbar.js' %}"></script>
 
     {% include 'comunicaciones/modal_whatsapp.html' %}
 </body>
