@@ -312,7 +312,7 @@
                                     </div>
                                     <div class="flex-grow-1">
                                         <div class="fw-bold text-dark">{{ paciente.nombre_completo }}</div>
-                                        <div class="small text-muted">{{ paciente.fecha_nacimiento|date:"d de F" }}</div>
+                                        <div class="small text-muted">{{ paciente.fecha_nacimiento|date:"d/m/Y" }}</div>
                                     </div>
                                     <div>
                                         {% if paciente.dias_hasta_cumple == 0 %}
