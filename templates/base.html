@@ -18,6 +18,9 @@
     <!-- Top Navigation Bar CSS -->
     <link rel="stylesheet" href="{% static 'css/topbar.css' %}">
     
+    <!-- Global Search Modal CSS -->
+    <link rel="stylesheet" href="{% static 'css/search-modal.css' %}">
+    
     <!-- Aplicar tema INMEDIATAMENTE para evitar flash -->
     <script>
         (function() {
@@ -470,6 +473,12 @@
     
     <!-- Top Navigation Bar Controller -->
     <script src="{% static 'js/topbar.js' %}"></script>
+    
+    <!-- Global Search Modal Controller -->
+    <script src="{% static 'js/search-modal.js' %}"></script>
+
+    <!-- Global Search Modal -->
+    {% include 'components/search_modal.html' %}
 
     {% include 'comunicaciones/modal_whatsapp.html' %}
 </body>

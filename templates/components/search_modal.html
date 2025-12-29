@@ -1,0 +1,66 @@
+<!-- Global Search Modal (Ctrl+K) -->
+<div class="search-modal" id="searchModal">
+    <div class="search-modal-backdrop" id="searchBackdrop"></div>
+    <div class="search-modal-content">
+        <div class="search-modal-header">
+            <div class="search-input-wrapper">
+                <i class="bi bi-search search-icon"></i>
+                <input 
+                    type="text" 
+                    class="search-input" 
+                    id="searchInput" 
+                    placeholder="Buscar pacientes, tratamientos, notas..."
+                    autocomplete="off"
+                >
+                <button class="search-close" id="searchClose">
+                    <kbd>Esc</kbd>
+                </button>
+            </div>
+        </div>
+        
+        <div class="search-modal-body" id="searchResults">
+            <!-- Initial state -->
+            <div class="search-empty-state">
+                <i class="bi bi-search"></i>
+                <p>Busca pacientes, tratamientos, notas y más...</p>
+                <div class="search-shortcuts">
+                    <div class="shortcut-item">
+                        <kbd>↑</kbd><kbd>↓</kbd>
+                        <span>Navegar</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Enter</kbd>
+                        <span>Seleccionar</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Esc</kbd>
+                        <span>Cerrar</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Loading state -->
+            <div class="search-loading" style="display: none;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Buscando...</span>
+                </div>
+                <p>Buscando...</p>
+            </div>
+            
+            <!-- Results will be inserted here -->
+            <div class="search-results-container" style="display: none;"></div>
+            
+            <!-- No results state -->
+            <div class="search-no-results" style="display: none;">
+                <i class="bi bi-inbox"></i>
+                <p>No se encontraron resultados</p>
+            </div>
+        </div>
+        
+        <div class="search-modal-footer">
+            <div class="search-footer-hint">
+                <span>💡 Tip: Usa <kbd>Ctrl+K</kbd> desde cualquier página para buscar</span>
+            </div>
+        </div>
+    </div>
+</div>
