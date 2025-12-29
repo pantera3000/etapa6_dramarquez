@@ -596,7 +596,7 @@
                          <!-- VISTA MOVIL -->
                          <div class="d-md-none">
                             {% for nota in notas_paginadas %}
-                            <div class="card mb-2 border shadow-sm" onclick="window.location='{% url 'notas:detalle' nota.pk %}'">
+                            <div class="card mb-2 border shadow-sm" style="max-height: 100px; overflow: hidden;" onclick="window.location='{% url 'notas:detalle' nota.pk %}'">
                                 <div class="card-body p-3" style="overflow: hidden; max-width: 100%;">
                                     <div class="d-flex justify-content-between mb-1">
                                         <h6 class="fw-bold mb-0 text-dark" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ nota.titulo }}</h6>
