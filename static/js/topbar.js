@@ -109,18 +109,28 @@
         const searchBtnDesktop = document.getElementById('searchTriggerDesktop');
         
         if (searchBtn) {
-            searchBtn.addEventListener('click', openModal);
+            searchBtn.addEventListener('click', function() {
+                if (window.openSearchModal) {
+                    window.openSearchModal();
+                }
+            });
         }
         
         if (searchBtnDesktop) {
-            searchBtnDesktop.addEventListener('click', openModal);
+            searchBtnDesktop.addEventListener('click', function() {
+                if (window.openSearchModal) {
+                    window.openSearchModal();
+                }
+            });
         }
 
         // Keyboard shortcut Ctrl+K / Cmd+K
         document.addEventListener('keydown', function(e) {
             if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
                 e.preventDefault();
-                openModal();
+                if (window.openSearchModal) {
+                    window.openSearchModal();
+                }
             }
         });
     }
