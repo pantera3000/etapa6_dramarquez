@@ -1,6 +1,7 @@
 {% load static %}
 <div class="border-end bg-white" id="sidebar-wrapper">
-    <div class="sidebar-heading border-bottom bg-primary text-white d-flex align-items-center justify-content-between">
+    <!-- Hide this header in mobile (< 992px) since topbar has menu and user controls -->
+    <div class="sidebar-heading border-bottom bg-primary text-white d-none d-lg-flex align-items-center justify-content-between">
         <div class="sidebar-brand d-flex align-items-center gap-2 text-decoration-none text-white fw-bold truncate-text">
             {% if config.logo %}
                 <img src="{{ config.logo.url }}" alt="Logo" style="height: 30px; width: auto; object-fit: contain;">
