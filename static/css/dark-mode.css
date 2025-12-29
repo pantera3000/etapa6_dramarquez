@@ -973,3 +973,35 @@ a {
     min-width: 0 !important;
     overflow: hidden !important;
 }
+
+/* ============================================
+   PATIENT DETAIL NOTES CARDS - MOBILE
+   ============================================ */
+
+/* Prevent overflow in patient detail notes cards */
+.tab-content .card .card-body p,
+.tab-content .card .card-body h6 {
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.tab-content .card .card-body {
+    overflow: hidden !important;
+}
+
+/* Dark mode for patient detail notes */
+[data-theme="dark"] .tab-content .card {
+    background: var(--card-bg) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .tab-content .card h6,
+[data-theme="dark"] .tab-content .card .text-dark {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .tab-content .card .text-muted {
+    color: var(--text-secondary) !important;
+}
