@@ -585,5 +585,226 @@
             </div>
         </div>
     </div>
+    <!-- Scripts Críticos Inline (Copia de respaldo por fallo de estáticos) -->
+    <script>
+    /**
+     * GLOBAL SEARCH & DARK MODE CONTROLLER (INLINE)
+     */
+    (function() {
+        'use strict';
+
+        // --- DARK MODE ---
+        const DarkMode = {
+            STORAGE_KEY: 'theme-preference',
+            THEME_ATTR: 'data-theme',
+            currentTheme: null,
+            init() {
+                this.currentTheme = this.getSavedTheme() || this.getSystemPreference();
+                this.applyTheme(this.currentTheme);
+                this.setupListeners();
+                this.watchSystemPreference();
+                console.log('🌓 Dark Mode initialized (Inline):', this.currentTheme);
+            },
+            getSavedTheme() { return localStorage.getItem(this.STORAGE_KEY); },
+            getSystemPreference() {
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
+                return 'light';
+            },
+            applyTheme(theme) {
+                document.documentElement.setAttribute(this.THEME_ATTR, theme);
+                this.currentTheme = theme;
+                localStorage.setItem(this.STORAGE_KEY, theme);
+                this.updateToggleIcon();
+                window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme } }));
+            },
+            toggle() {
+                const newTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
+                this.applyTheme(newTheme);
+            },
+            updateToggleIcon() {
+                // Actualizar TODOS los botones de toggle
+                document.querySelectorAll('.dark-mode-toggle').forEach(toggleBtn => {
+                    const sunIcon = toggleBtn.querySelector('.icon-sun');
+                    const moonIcon = toggleBtn.querySelector('.icon-moon');
+                    // Text labels if present
+                    const sunText = toggleBtn.querySelector('span.icon-sun');
+                    const moonText = toggleBtn.querySelector('span.icon-moon');
+
+                    if (this.currentTheme === 'dark') {
+                        // Modo Oscuro activo > Mostrar opción de ir a Claro (SOL)
+                        if (sunIcon) sunIcon.style.display = 'inline-block';
+                        if (moonIcon) moonIcon.style.display = 'none';
+                        if (sunText) sunText.style.display = 'inline-block';
+                        if (moonText) moonText.style.display = 'none';
+                        toggleBtn.setAttribute('title', 'Cambiar a modo claro');
+                    } else {
+                        // Modo Claro activo > Mostrar opción de ir a Oscuro (LUNA)
+                        if (sunIcon) sunIcon.style.display = 'none';
+                        if (moonIcon) moonIcon.style.display = 'inline-block';
+                        if (sunText) sunText.style.display = 'none';
+                        if (moonText) moonText.style.display = 'inline-block';
+                        toggleBtn.setAttribute('title', 'Cambiar a modo oscuro');
+                    }
+                });
+            },
+            setupListeners() {
+                document.addEventListener('click', (e) => {
+                    if (e.target.closest('.dark-mode-toggle')) {
+                        e.preventDefault();
+                        this.toggle();
+                    }
+                });
+            },
+            watchSystemPreference() {
+                if (!window.matchMedia) return;
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                    if (!this.getSavedTheme()) {
+                        this.applyTheme(e.matches ? 'dark' : 'light');
+                    }
+                });
+            }
+        };
+
+        // --- SEARCH MODAL ---
+        const SearchController = {
+            searchModal: null,
+            searchInput: null,
+            searchResults: null,
+            searchTimeout: null,
+            init() {
+                this.searchModal = document.getElementById('searchModal');
+                this.searchInput = document.getElementById('searchInput');
+                this.searchResults = document.querySelector('.search-results-container');
+                
+                if (!this.searchModal || !this.searchInput) return;
+
+                // Bind events
+                document.addEventListener('keydown', (e) => this.handleGlobalKeydown(e));
+                
+                const closeBtn = document.getElementById('searchClose');
+                if (closeBtn) closeBtn.addEventListener('click', () => this.closeModal());
+                
+                const backdrop = document.getElementById('searchBackdrop');
+                if (backdrop) backdrop.addEventListener('click', () => this.closeModal());
+
+                this.searchInput.addEventListener('input', (e) => this.handleSearchInput(e));
+                
+                // Trigger buttons logic
+                document.addEventListener('click', (e) => {
+                    if (e.target.closest('#searchTrigger') || e.target.closest('#searchTriggerDesktop')) {
+                        e.preventDefault();
+                        this.openModal();
+                    }
+                });
+            },
+            handleGlobalKeydown(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    this.openModal();
+                }
+                if (e.key === 'Escape' && this.searchModal.classList.contains('show')) {
+                    this.closeModal();
+                }
+            },
+            openModal() {
+                this.searchModal.style.display = 'flex'; // Force display first
+                // Small delay to allow display:flex to apply before adding class for animation (if any)
+                setTimeout(() => {
+                    this.searchModal.classList.add('show');
+                    this.searchInput.value = '';
+                    this.searchInput.focus();
+                    this.showEmptyState();
+                    document.body.style.overflow = 'hidden';
+                }, 10);
+            },
+            closeModal() {
+                this.searchModal.classList.remove('show');
+                setTimeout(() => {
+                    this.searchModal.style.display = 'none'; // Hide after animation
+                }, 300);
+                document.body.style.overflow = '';
+            },
+            handleSearchInput(e) {
+                const query = e.target.value.trim();
+                if (this.searchTimeout) clearTimeout(this.searchTimeout);
+                
+                if (query.length === 0) {
+                    this.showEmptyState();
+                    return;
+                }
+                if (query.length < 2) return;
+                
+                this.searchTimeout = setTimeout(() => this.performSearch(query), 300);
+            },
+            performSearch(query) {
+                this.showLoadingState();
+                fetch(`/api/search/?q=${encodeURIComponent(query)}`)
+                    .then(r => r.json())
+                    .then(data => this.displayResults(data, query))
+                    .catch(console.error);
+            },
+            showEmptyState() {
+                this.toggleStates('search-empty-state');
+            },
+            showLoadingState() {
+                this.toggleStates('search-loading');
+            },
+            toggleStates(activeClass) {
+                ['search-empty-state', 'search-loading', 'search-results-container', 'search-no-results'].forEach(cls => {
+                    const el = document.querySelector('.' + cls);
+                    if (el) el.style.display = (cls === activeClass) ? (cls === 'search-results-container' ? 'block' : 'flex') : 'none';
+                });
+            },
+            createResultItem(item, type) {
+               // Simplificado para inline
+               const icons = { 'pacientes': 'bi-person-circle', 'tratamientos': 'bi-bandaid', 'notas': 'bi-sticky-fill', 'historias': 'bi-journal-medical' };
+               const urlMap = { 'pacientes': '/pacientes/', 'tratamientos': '/tratamientos/', 'notas': '/notas/', 'historias': '/historias/' };
+               const title = item.nombre_completo || item.descripcion || item.titulo || item.motivo || 'Item';
+               const url = `${urlMap[type]}${item.id}/`;
+               
+               return `
+                <div class="search-result-item p-2 border-bottom" onclick="window.location.href='${url}'" style="cursor:pointer; transition: background 0.2s;">
+                    <div class="d-flex align-items-center">
+                        <i class="bi ${icons[type]} fs-5 me-3 text-primary"></i>
+                        <div>
+                            <div class="fw-bold">${title}</div>
+                            <small class="text-muted">${type.toUpperCase()}</small>
+                        </div>
+                    </div>
+                </div>`;
+            },
+            displayResults(data, query) {
+                let html = '';
+                let hasResults = false;
+                ['pacientes', 'tratamientos', 'notas', 'historias'].forEach(type => {
+                    if (data[type] && data[type].length) {
+                        hasResults = true;
+                        html += `<div class="p-2 bg-light fw-bold text-uppercase small">${type}</div>`;
+                        data[type].forEach(item => html += this.createResultItem(item, type));
+                    }
+                });
+                
+                const container = document.querySelector('.search-results-container');
+                if (hasResults) {
+                     container.innerHTML = html;
+                     this.toggleStates('search-results-container');
+                } else {
+                     this.toggleStates('search-no-results');
+                }
+            }
+        };
+
+        // Init on load
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                DarkMode.init();
+                SearchController.init();
+            });
+        } else {
+            DarkMode.init();
+            SearchController.init();
+        }
+    })();
+    </script>
 </body>
 </html>
