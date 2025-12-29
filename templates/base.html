@@ -102,6 +102,93 @@
             border-radius: 0.25rem; color: #333;
         }
         [data-theme="dark"] kbd { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); color: var(--text-primary); }
+
+        /* --- COMPONENTES BOOTSTRAP DARK MODE OVERRIDES --- */
+        [data-theme="dark"] .bg-white,
+        [data-theme="dark"] .bg-light {
+            background-color: var(--card-bg) !important;
+            color: var(--text-primary) !important;
+        }
+
+        /* Cards */
+        [data-theme="dark"] .card {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+        [data-theme="dark"] .card-header,
+        [data-theme="dark"] .card-footer {
+            background-color: rgba(0,0,0,0.2);
+            border-color: var(--border-color);
+        }
+
+        /* Sidebar & List Groups */
+        [data-theme="dark"] .list-group-item {
+            background-color: var(--sidebar-bg);
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+        [data-theme="dark"] .list-group-item-action:hover,
+        [data-theme="dark"] .list-group-item-action:focus {
+            background-color: rgba(255,255,255,0.05);
+            color: var(--text-primary);
+        }
+        [data-theme="dark"] .list-group-item.active {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: #fff;
+        }
+        [data-theme="dark"] #sidebar-wrapper {
+            background-color: var(--sidebar-bg) !important;
+            border-right-color: var(--border-color) !important;
+        }
+        [data-theme="dark"] .sidebar-heading {
+            border-bottom-color: var(--border-color) !important;
+        }
+        [data-theme="dark"] .text-dark { color: var(--text-primary) !important; }
+        [data-theme="dark"] .text-muted { color: var(--text-muted) !important; }
+
+        /* Forms & Inputs */
+        [data-theme="dark"] .form-control,
+        [data-theme="dark"] .form-select {
+            background-color: var(--input-bg);
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+        [data-theme="dark"] .form-control::placeholder { color: var(--text-secondary); opacity: 0.7; }
+        [data-theme="dark"] .input-group-text {
+            background-color: var(--bg-tertiary);
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        /* Tables */
+        [data-theme="dark"] .table {
+            color: var(--text-primary);
+            border-color: var(--border-color);
+        }
+        [data-theme="dark"] .table > :not(caption) > * > * {
+            background-color: transparent; /* Dejar que herede del container o card */
+            border-bottom-color: var(--border-color);
+            color: var(--text-primary);
+        }
+        [data-theme="dark"] .table-striped > tbody > tr:nth-of-type(odd) > * {
+            background-color: rgba(255,255,255,0.03);
+            color: var(--text-primary);
+        }
+        [data-theme="dark"] .table-hover > tbody > tr:hover > * {
+            background-color: rgba(255,255,255,0.05);
+            color: var(--text-primary);
+        }
+
+        /* Dropdowns */
+        [data-theme="dark"] .dropdown-menu {
+            background-color: var(--dropdown-bg);
+            border-color: var(--border-color);
+        }
+        [data-theme="dark"] .dropdown-item { color: var(--text-primary); }
+        [data-theme="dark"] .dropdown-item:hover { background-color: rgba(255,255,255,0.1); }
+        [data-theme="dark"] .dropdown-divider { border-color: var(--border-color); }
     </style>
 
     
