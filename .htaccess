@@ -2,10 +2,14 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
     
-    # Servir archivos estáticos directamente (Sin checks complejos)
+    # Bypasear Passenger para archivos estáticos y media
+    # Esto fuerza a que sea Apache quien sirva los archivos, no Python/Django
+    RewriteCond %{REQUEST_URI} ^/media/ [OR]
+    RewriteCond %{REQUEST_URI} ^/static/
+    RewriteRule . - [E=DO_NOT_HAND_OFF_TO_PASSENGER:1]
+
+    # Redirigir a las carpetas físicas reales dentro de 'public'
     RewriteRule ^static/(.*)$ public/static/$1 [L]
-    
-    # Servir archivos media directamente
     RewriteRule ^media/(.*)$ public/media/$1 [L]
 </IfModule>
 
