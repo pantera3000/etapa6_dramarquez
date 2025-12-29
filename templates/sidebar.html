@@ -26,7 +26,7 @@
     <div class="list-group list-group-flush flex-grow-1 overflow-auto custom-scrollbar">
         <!-- SECCIÓN PACIENTES -->
         <small class="text-muted px-3 mt-3 mb-1 text-uppercase fw-bold section-title" style="font-size: 0.7rem;">Pacientes</small>
-        <a href="{% url 'pacientes:lista' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'pacientes' in request.path %}active{% endif %}">
+        <a href="{% url 'pacientes:lista' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'pacientes' in request.path and 'cumpleanos' not in request.path %}active{% endif %}">
             <i class="bi bi-people fs-5 me-2"></i> <span>Pacientes</span>
         </a>
         <a href="{% url 'pacientes:cumpleanos_proximos' %}" class="list-group-item list-group-item-action list-group-item-light p-3 position-relative {% if 'cumpleanos' in request.path %}active{% endif %}">
@@ -38,10 +38,10 @@
 
         <!-- SECCIÓN CLINICA -->
         <small class="text-muted px-3 mt-3 mb-1 text-uppercase fw-bold section-title" style="font-size: 0.7rem;">Clínica</small>
-        <a href="{% url 'citas:calendario' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'calendario' in request.path %}active{% endif %}">
+        <a href="{% url 'citas:calendario' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'citas/calendario' in request.path %}active{% endif %}">
             <i class="bi bi-calendar-week fs-5 me-2 text-primary"></i> <span>Calendario</span>
         </a>
-        <a href="{% url 'citas:eventos_ics' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'eventos' in request.path %}active{% endif %}">
+        <a href="{% url 'citas:eventos_ics' %}" class="list-group-item list-group-item-action list-group-item-light p-3 {% if 'citas/eventos' in request.path %}active{% endif %}">
             <i class="bi bi-list-check fs-5 me-2 text-primary"></i> <span>Lista Citas (ICS)</span>
         </a>
         
