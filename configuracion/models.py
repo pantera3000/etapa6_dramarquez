@@ -66,11 +66,14 @@ class ConfiguracionConsultorio(models.Model):
 
     # Personalización de Diseño
     TEMA_SIDEBAR_CHOICES = [
+        ('rose', 'Rose Premium (Estilo Doctora)'),
         ('light', 'Clásico (Blanco)'),
         ('blue', 'Midnight Blue (Azul Corporativo)'),
         ('obsidian', 'Obsidian Slate (Gris Moderno)'),
         ('carbon', 'Carbon Total (Negro Alto Contraste)'),
-        ('rose', 'Rose Premium (Estilo Doctora)'),
+        ('emerald', 'Emerald Executive (Verde Elegante)'),
+        ('royal', 'Royal Violet (Púrpura Intenso)'),
+        ('ocean', 'Ocean Teal (Turquesa Profundo)'),
     ]
     tema_sidebar = models.CharField(
         max_length=20,
