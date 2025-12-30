@@ -42,27 +42,39 @@ class ConfiguracionForm(forms.ModelForm):
     def clean_logo(self):
         """Validar tamaño y formato del logo"""
         logo = self.cleaned_data.get('logo')
-        if logo and hasattr(logo, 'content_type'):  # Solo validar si es una nueva subida
-            # Validar tamaño (máximo 2MB)
-            if logo.size > 2 * 1024 * 1024:
-                raise forms.ValidationError('El logo no debe superar los 2MB')
-            
-            # Validar formato
-            if not logo.content_type in ['image/jpeg', 'image/png', 'image/gif']:
-                raise forms.ValidationError('Solo se permiten imágenes JPG, PNG o GIF')
+        if logo:
+            try:
+                # Intentamos acceder a content_type. Si falla, es un archivo ya guardado y saltamos la validación.
+                content_type = logo.content_type
+                
+                # Validar tamaño (máximo 2MB)
+                if logo.size > 2 * 1024 * 1024:
+                    raise forms.ValidationError('El logo no debe superar los 2MB')
+                
+                # Validar formato
+                if content_type not in ['image/jpeg', 'image/png', 'image/gif']:
+                    raise forms.ValidationError('Solo se permiten imágenes JPG, PNG o GIF')
+            except AttributeError:
+                pass
         
         return logo
 
     def clean_imagen_login(self):
         """Validar tamaño y formato de la imagen de login"""
         imagen = self.cleaned_data.get('imagen_login')
-        if imagen and hasattr(imagen, 'content_type'):  # Solo validar si es una nueva subida
-            # Validar tamaño (máximo 4MB para fondo)
-            if imagen.size > 4 * 1024 * 1024:
-                raise forms.ValidationError('La imagen no debe superar los 4MB')
-            
-            # Validar formato
-            if not imagen.content_type in ['image/jpeg', 'image/png', 'image/webp']:
-                raise forms.ValidationError('Solo se permiten imágenes JPG, PNG o WebP')
+        if imagen:
+            try:
+                # Intentamos acceder a content_type. Si falla, es un archivo ya guardado.
+                content_type = imagen.content_type
+                
+                # Validar tamaño (máximo 4MB para fondo)
+                if imagen.size > 4 * 1024 * 1024:
+                    raise forms.ValidationError('La imagen no debe superar los 4MB')
+                
+                # Validar formato
+                if content_type not in ['image/jpeg', 'image/png', 'image/webp']:
+                    raise forms.ValidationError('Solo se permiten imágenes JPG, PNG o WebP')
+            except AttributeError:
+                pass
         
         return imagen

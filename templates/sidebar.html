@@ -8,8 +8,8 @@
         /* 1. TEMA ROSE PREMIUM (DOCTORA) - DEFAULT */
         {% if config.tema_sidebar == 'rose' or not config.tema_sidebar %}
         html:not([data-theme="dark"]) #sidebar-wrapper {
-            background: #881337; /* Rose-900 */
-            background-image: linear-gradient(180deg, #881337 0%, #4c0519 100%);
+            background: #881337 !important; /* Rose-900 */
+            background-image: linear-gradient(180deg, #881337 0%, #4c0519 100%) !important;
             box-shadow: 4px 0 24px rgba(136, 19, 55, 0.15);
             border-right: none !important;
             overflow-x: hidden;
@@ -32,7 +32,7 @@
         
         /* 2. TEMA CARBON TOTAL (NEGRO) */
         {% elif config.tema_sidebar == 'carbon' %}
-        html:not([data-theme="dark"]) #sidebar-wrapper { background: #18181b; box-shadow: 4px 0 24px rgba(0,0,0,0.1); border-right: 1px solid #27272a !important; overflow-x: hidden; }
+        html:not([data-theme="dark"]) #sidebar-wrapper { background: #18181b !important; box-shadow: 4px 0 24px rgba(0,0,0,0.1); border-right: 1px solid #27272a !important; overflow-x: hidden; }
         html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-heading { background: #18181b !important; border-bottom: 1px solid #27272a !important; }
         html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-title, html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-brand { color: #f4f4f5 !important; }
         html:not([data-theme="dark"]) #sidebar-wrapper .border-top { border-top: 1px solid #27272a !important; background: #18181b !important; }
@@ -42,31 +42,45 @@
         html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item.active { background: #27272a !important; color: #60a5fa !important; box-shadow: none; border-left: 3px solid #60a5fa; border-top-left-radius: 2px; border-bottom-left-radius: 2px; font-weight: 600; }
         html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item.active i { color: #60a5fa !important; }
         html:not([data-theme="dark"]) #sidebar-wrapper .list-group { overflow-x: hidden !important; }
-        #sidebar-wrapper .list-group-item i { transition: color 0.2s; font-size: 1.1rem; vertical-align: -3px; }
+        #sidebar-wrapper .list-group-item i { transition: color 2s; font-size: 1.1rem; vertical-align: -3px; }
         html:not([data-theme="dark"]) .section-title { color: #52525b !important; letter-spacing: 0.5px; margin-top: 1.5rem !important; margin-bottom: 0.5rem !important; }
 
         /* 3. TEMA MIDNIGHT BLUE (AZUL CORPORATIVO) */
         {% elif config.tema_sidebar == 'blue' %}
-        html:not([data-theme="dark"]) #sidebar-wrapper { background: #0f172a; box-shadow: 4px 0 24px rgba(15, 23, 42, 0.15); border-right: none !important; overflow-x: hidden; }
+        html:not([data-theme="dark"]) #sidebar-wrapper { background: #0f172a !important; box-shadow: 4px 0 24px rgba(15, 23, 42, 0.15); border-right: none !important; overflow-x: hidden; }
         html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-heading { background: #0f172a !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; }
         html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-title, html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-brand { color: #fff !important; }
         html:not([data-theme="dark"]) #sidebar-wrapper .border-top { border-top: 1px solid rgba(255,255,255,0.05) !important; background: #0f172a !important; }
         html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-user-name { color: #e2e8f0 !important; }
         html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item { border: none; margin: 4px 12px; width: calc(100% - 24px) !important; border-radius: 8px; color: #94a3b8; font-weight: 500; transition: all 0.2s ease; position: relative; background: transparent; }
-        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item:hover { background-color: rgba(255,255,255,0.05); color: #fff; transform: translateX(4px); }
+        
+        /* FIX HOVER VISIBILITY - Solid lighter background */
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item:hover { 
+            background-color: #1e293b !important; /* Slate-800 */
+            color: #ffffff !important; 
+            transform: translateX(4px); 
+        }
+        
         html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item.active { background: #3b82f6 !important; color: #fff !important; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); font-weight: 600; }
         html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item.active i { color: #fff !important; }
         html:not([data-theme="dark"]) .section-title { color: #475569 !important; letter-spacing: 0.5px; margin-top: 1.5rem !important; margin-bottom: 0.5rem !important; }
         
         /* 4. TEMA OBSIDIAN SLATE (GRIS) */
         {% elif config.tema_sidebar == 'obsidian' %}
-        html:not([data-theme="dark"]) #sidebar-wrapper { background: #1e293b; box-shadow: 4px 0 24px rgba(30, 41, 59, 0.1); border-right: 1px solid rgba(255,255,255,0.05) !important; overflow-x: hidden; }
+        html:not([data-theme="dark"]) #sidebar-wrapper { background: #1e293b !important; box-shadow: 4px 0 24px rgba(30, 41, 59, 0.1); border-right: 1px solid rgba(255,255,255,0.05) !important; overflow-x: hidden; }
         html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-heading { background: #1e293b !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; }
         html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-title, html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-brand { color: #f8fafc !important; }
         html:not([data-theme="dark"]) #sidebar-wrapper .border-top { border-top: 1px solid rgba(255,255,255,0.05) !important; background: #1e293b !important; }
         html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-user-name { color: #cbd5e1 !important; }
         html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item { border: none; margin: 4px 12px; width: calc(100% - 24px) !important; border-radius: 8px; color: #94a3b8; font-weight: 500; transition: all 0.2s ease; position: relative; background: transparent; }
-        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item:hover { background-color: rgba(255,255,255,0.05); color: #fff; transform: translateX(4px); }
+        
+        /* FIX HOVER VISIBILITY - Solid lighter background */
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item:hover { 
+            background-color: #334155 !important; /* Slate-700 */
+            color: #ffffff !important; 
+            transform: translateX(4px); 
+        }
+        
         html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item.active { background: rgba(56, 189, 248, 0.1) !important; color: #38bdf8 !important; border: 1px solid rgba(56, 189, 248, 0.2); font-weight: 600; }
         html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item.active i { color: #38bdf8 !important; }
         html:not([data-theme="dark"]) .section-title { color: #64748b !important; letter-spacing: 0.5px; margin-top: 1.5rem !important; margin-bottom: 0.5rem !important; }
@@ -96,6 +110,13 @@
                 padding-left: 1rem !important;
                 color: #fda4af !important;
             }
+            
+            /* Tema Rose Specific Mobile Override */
+            {% if config.tema_sidebar == 'rose' %}
+            html:not([data-theme="dark"]) .section-title { color: #fda4af !important; }
+            {% else %}
+            html:not([data-theme="dark"]) .section-title { color: #94a3b8 !important; }
+            {% endif %}
         }
     </style>
     <div class="sidebar-heading border-bottom bg-primary text-white d-flex align-items-center justify-content-between">
