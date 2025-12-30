@@ -20,7 +20,8 @@ class ConfiguracionForm(forms.ModelForm):
             'facebook',
             'instagram',
             'modulo_protocolos_activo',
-            'modulo_programa_salud_activo'
+            'modulo_programa_salud_activo',
+            'tema_sidebar'
         ]
         widgets = {
             'nombre_consultorio': forms.TextInput(attrs={'class': 'form-control'}),
@@ -35,6 +36,7 @@ class ConfiguracionForm(forms.ModelForm):
             'imagen_login': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
             'modulo_protocolos_activo': forms.CheckboxInput(attrs={'class': 'form-check-input', 'role': 'switch'}),
             'modulo_programa_salud_activo': forms.CheckboxInput(attrs={'class': 'form-check-input', 'role': 'switch'}),
+            'tema_sidebar': forms.Select(attrs={'class': 'form-select'}),
         }
     
     def clean_logo(self):

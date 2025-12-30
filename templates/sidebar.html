@@ -1,7 +1,11 @@
 {% load static %}
 <div class="border-end bg-white" id="sidebar-wrapper">
-    <style>
-        /* ESTILOS PREMIUM SIDEBAR - TEMA ROSE PREMIUM (DOCTORA) */
+        /* =========================================================
+           ESTILOS DINÁMICOS DEL SIDEBAR (Se elige en Configuración)
+           ========================================================= */
+        
+        /* 1. TEMA ROSE PREMIUM (DOCTORA) - DEFAULT */
+        {% if config.tema_sidebar == 'rose' or not config.tema_sidebar %}
         html:not([data-theme="dark"]) #sidebar-wrapper {
             background: #881337; /* Rose-900 */
             background-image: linear-gradient(180deg, #881337 0%, #4c0519 100%);
@@ -9,84 +13,73 @@
             border-right: none !important;
             overflow-x: hidden;
         }
-
-        /* Header Oscuro (Rose) */
         html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-heading {
             background: transparent !important;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
         }
-        
-        /* Texto del Logo en Header */
         html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-title,
-        html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-brand {
-            color: #fff1f2 !important; /* Rose-50 */
-            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        }
-
-        /* Footer Oscuro */
-        html:not([data-theme="dark"]) #sidebar-wrapper .border-top {
-            border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
-            background: rgba(0, 0, 0, 0.1) !important;
-        }
+        html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-brand { color: #fff1f2 !important; text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        html:not([data-theme="dark"]) #sidebar-wrapper .border-top { border-top: 1px solid rgba(255, 255, 255, 0.1) !important; background: rgba(0, 0, 0, 0.1) !important; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-user-name { color: #fff1f2 !important; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item { border: none; margin: 4px 12px; width: calc(100% - 24px) !important; border-radius: 8px; color: #fda4af; font-weight: 500; transition: all 0.2s ease; position: relative; background: transparent; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item:hover { background-color: rgba(255, 255, 255, 0.1); color: #fff; transform: translateX(4px); }
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item.active { background: #fff !important; color: #9f1239 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); font-weight: 700; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item.active i { color: #be123c !important; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group { overflow-x: hidden !important; }
+        #sidebar-wrapper .list-group-item i { transition: color 0.2s; font-size: 1.1rem; vertical-align: -3px; }
+        html:not([data-theme="dark"]) .section-title { color: #fca5a5 !important; opacity: 0.8; letter-spacing: 0.5px; margin-top: 1.5rem !important; margin-bottom: 0.5rem !important; text-shadow: 0 1px 1px rgba(0,0,0,0.1); }
         
-        /* Dropdown User Name */
-        html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-user-name {
-            color: #fff1f2 !important;
-        }
+        /* 2. TEMA CARBON TOTAL (NEGRO) */
+        {% elif config.tema_sidebar == 'carbon' %}
+        html:not([data-theme="dark"]) #sidebar-wrapper { background: #18181b; box-shadow: 4px 0 24px rgba(0,0,0,0.1); border-right: 1px solid #27272a !important; overflow-x: hidden; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-heading { background: #18181b !important; border-bottom: 1px solid #27272a !important; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-title, html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-brand { color: #f4f4f5 !important; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .border-top { border-top: 1px solid #27272a !important; background: #18181b !important; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-user-name { color: #e4e4e7 !important; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item { border: none; margin: 4px 12px; width: calc(100% - 24px) !important; border-radius: 8px; color: #a1a1aa; font-weight: 500; transition: all 0.2s ease; position: relative; background: transparent; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item:hover { background-color: #27272a; color: #fff; transform: translateX(4px); }
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item.active { background: #27272a !important; color: #60a5fa !important; box-shadow: none; border-left: 3px solid #60a5fa; border-top-left-radius: 2px; border-bottom-left-radius: 2px; font-weight: 600; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item.active i { color: #60a5fa !important; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group { overflow-x: hidden !important; }
+        #sidebar-wrapper .list-group-item i { transition: color 0.2s; font-size: 1.1rem; vertical-align: -3px; }
+        html:not([data-theme="dark"]) .section-title { color: #52525b !important; letter-spacing: 0.5px; margin-top: 1.5rem !important; margin-bottom: 0.5rem !important; }
 
-        /* Items del menú */
-        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item {
-            border: none;
-            margin: 4px 12px;
-            width: calc(100% - 24px) !important;
-            border-radius: 8px;
-            color: #fda4af; /* Rose-300 */
-            font-weight: 500;
-            transition: all 0.2s ease;
-            position: relative;
-            background: transparent;
-        }
-
-        /* Hover Effect */
-        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            transform: translateX(4px);
-        }
-
-        /* ACTIVE STATE - Elegante y Femenino */
-        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item.active {
-            background: #fff !important; /* Fondo Blanco */
-            color: #9f1239 !important; /* Rose-800 */
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            font-weight: 700;
-        }
+        /* 3. TEMA MIDNIGHT BLUE (AZUL CORPORATIVO) */
+        {% elif config.tema_sidebar == 'blue' %}
+        html:not([data-theme="dark"]) #sidebar-wrapper { background: #0f172a; box-shadow: 4px 0 24px rgba(15, 23, 42, 0.15); border-right: none !important; overflow-x: hidden; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-heading { background: #0f172a !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-title, html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-brand { color: #fff !important; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .border-top { border-top: 1px solid rgba(255,255,255,0.05) !important; background: #0f172a !important; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-user-name { color: #e2e8f0 !important; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item { border: none; margin: 4px 12px; width: calc(100% - 24px) !important; border-radius: 8px; color: #94a3b8; font-weight: 500; transition: all 0.2s ease; position: relative; background: transparent; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item:hover { background-color: rgba(255,255,255,0.05); color: #fff; transform: translateX(4px); }
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item.active { background: #3b82f6 !important; color: #fff !important; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); font-weight: 600; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item.active i { color: #fff !important; }
+        html:not([data-theme="dark"]) .section-title { color: #475569 !important; letter-spacing: 0.5px; margin-top: 1.5rem !important; margin-bottom: 0.5rem !important; }
         
-        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item.active i {
-            color: #be123c !important; /* Icon Rose-700 */
-        }
+        /* 4. TEMA OBSIDIAN SLATE (GRIS) */
+        {% elif config.tema_sidebar == 'obsidian' %}
+        html:not([data-theme="dark"]) #sidebar-wrapper { background: #1e293b; box-shadow: 4px 0 24px rgba(30, 41, 59, 0.1); border-right: 1px solid rgba(255,255,255,0.05) !important; overflow-x: hidden; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-heading { background: #1e293b !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-title, html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-brand { color: #f8fafc !important; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .border-top { border-top: 1px solid rgba(255,255,255,0.05) !important; background: #1e293b !important; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-user-name { color: #cbd5e1 !important; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item { border: none; margin: 4px 12px; width: calc(100% - 24px) !important; border-radius: 8px; color: #94a3b8; font-weight: 500; transition: all 0.2s ease; position: relative; background: transparent; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item:hover { background-color: rgba(255,255,255,0.05); color: #fff; transform: translateX(4px); }
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item.active { background: rgba(56, 189, 248, 0.1) !important; color: #38bdf8 !important; border: 1px solid rgba(56, 189, 248, 0.2); font-weight: 600; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item.active i { color: #38bdf8 !important; }
+        html:not([data-theme="dark"]) .section-title { color: #64748b !important; letter-spacing: 0.5px; margin-top: 1.5rem !important; margin-bottom: 0.5rem !important; }
 
-        /* Fix scroll container */
-        html:not([data-theme="dark"]) #sidebar-wrapper .list-group {
-            overflow-x: hidden !important;
-        }
-
-        /* Ajuste de iconos */
-        #sidebar-wrapper .list-group-item i {
-            transition: color 0.2s;
-            font-size: 1.1rem;
-            vertical-align: -3px;
-        }
-
-        /* Secciones */
-        html:not([data-theme="dark"]) .section-title {
-            color: #fca5a5 !important; /* Red/Rose-300 */
-            opacity: 0.8;
-            letter-spacing: 0.5px;
-            margin-top: 1.5rem !important;
-            margin-bottom: 0.5rem !important;
-            text-shadow: 0 1px 1px rgba(0,0,0,0.1);
-        }
+        /* 5. TEMA CLÁSICO (WHITE) */
+        {% else %}
+        html:not([data-theme="dark"]) #sidebar-wrapper { background: #fff; box-shadow: 4px 0 24px rgba(0,0,0,0.02); border-right: none !important; overflow-x: hidden; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-heading { background: linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%) !important; border-bottom: none !important; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item { border: none; margin: 4px 12px; width: calc(100% - 24px) !important; border-radius: 12px; color: #64748b; font-weight: 500; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); position: relative; background: transparent; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item:hover { background-color: #f1f5f9; color: #2563eb; transform: translateX(4px); }
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item.active { background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%) !important; color: white !important; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25); font-weight: 600; }
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item.active i { color: white !important; }
+        html:not([data-theme="dark"]) .section-title { color: #94a3b8 !important; letter-spacing: 0.5px; margin-top: 1.5rem !important; margin-bottom: 0.5rem !important; }
+        {% endif %}
 
         /* MOBILE OPTIMIZATIONS */
         @media (max-width: 768px) {

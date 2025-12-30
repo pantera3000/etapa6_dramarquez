@@ -64,6 +64,22 @@ class ConfiguracionConsultorio(models.Model):
         help_text='Si se desactiva, se ocultará la pestaña y funcionalidades de Programa Salud.'
     )
 
+    # Personalización de Diseño
+    TEMA_SIDEBAR_CHOICES = [
+        ('light', 'Clásico (Blanco)'),
+        ('blue', 'Midnight Blue (Azul Corporativo)'),
+        ('obsidian', 'Obsidian Slate (Gris Moderno)'),
+        ('carbon', 'Carbon Total (Negro Alto Contraste)'),
+        ('rose', 'Rose Premium (Estilo Doctora)'),
+    ]
+    tema_sidebar = models.CharField(
+        max_length=20,
+        choices=TEMA_SIDEBAR_CHOICES,
+        default='rose',
+        verbose_name='Tema de la Barra Lateral',
+        help_text='Selecciona el esquema de colores para el menú lateral.'
+    )
+
     
     class Meta:
         verbose_name = 'Configuración del Consultorio'
