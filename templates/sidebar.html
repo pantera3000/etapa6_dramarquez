@@ -1,5 +1,72 @@
 {% load static %}
 <div class="border-end bg-white" id="sidebar-wrapper">
+    <style>
+        /* ESTILOS PREMIUM SIDEBAR - MODO CLARO SOLAMENTE */
+        html:not([data-theme="dark"]) #sidebar-wrapper {
+            background: #fff;
+            box-shadow: 4px 0 24px rgba(0,0,0,0.02);
+            border-right: none !important;
+            overflow-x: hidden; /* Fix horizontal scroll */
+        }
+
+        /* Header con gradiente */
+        html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-heading {
+            background: linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%) !important;
+            border-bottom: none !important;
+        }
+
+        /* Items del menú estilo Píldora (Pills) */
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item {
+            border: none;
+            margin: 4px 12px;
+            width: calc(100% - 24px) !important; /* Calculo exacto para evitar desbordes */
+            border-radius: 12px;
+            color: #64748b; /* Slate 500 */
+            font-weight: 500;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            background: transparent;
+        }
+
+        /* Fix scroll container */
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group {
+            overflow-x: hidden !important;
+        }
+
+        /* Hover Effect */
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item:hover {
+            background-color: #f1f5f9;
+            color: #2563eb;
+            transform: translateX(4px);
+        }
+
+        /* ACTIVE STATE - Gradiente y Sombra */
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item.active {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%) !important;
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+            font-weight: 600;
+        }
+        
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item.active i {
+            color: white !important; /* Forzar icono blanco en activo */
+        }
+
+        /* Ajuste de iconos */
+        #sidebar-wrapper .list-group-item i {
+            transition: color 0.2s;
+            font-size: 1.1rem;
+            vertical-align: -3px;
+        }
+
+        /* Secciones */
+        html:not([data-theme="dark"]) .section-title {
+            color: #94a3b8 !important; /* Slate 400 */
+            letter-spacing: 0.5px;
+            margin-top: 1.5rem !important;
+            margin-bottom: 0.5rem !important;
+        }
+    </style>
     <div class="sidebar-heading border-bottom bg-primary text-white d-flex align-items-center justify-content-between">
         <div class="sidebar-brand d-flex align-items-center gap-2 text-decoration-none text-white fw-bold truncate-text">
             {% if config.logo %}
@@ -27,7 +94,7 @@
         </div>
     </div>
     
-    <div class="list-group list-group-flush flex-grow-1 overflow-auto custom-scrollbar">
+    <div class="list-group list-group-flush flex-grow-1 overflow-auto custom-scrollbar" style="overflow-x: hidden;">
         <!-- DASHBOARD -->
         <a href="{% url 'dashboard' %}" class="list-group-item list-group-item-action list-group-item-light p-3 border-bottom {% if request.path == '/' %}active{% endif %}" title="Dashboard" data-bs-toggle="tooltip" data-bs-placement="right">
             <i class="bi bi-speedometer2 fs-5 me-2 text-primary"></i> <span>Dashboard</span>

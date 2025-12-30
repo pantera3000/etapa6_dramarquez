@@ -19,8 +19,8 @@
     <!-- Global Search Modal CSS (Disabled: Inline Fallback Used) -->
     <!-- <link rel="stylesheet" href="{% static 'css/search-modal.css' %}"> -->
     
-    <!-- Mobile Bottom Navigation CSS (Disabled: Inline Fallback Used) -->
-    <!-- <link rel="stylesheet" href="{% static 'css/bottom-nav.css' %}?v=2.0"> -->
+    <!-- Mobile Bottom Navigation CSS -->
+    <link rel="stylesheet" href="{% static 'css/bottom-nav.css' %}?v=2.1">
 
     <!-- CRITICAL STYLES FALLBACK (Inline) -->
     <style id="critical-styles">
@@ -213,22 +213,6 @@
         }
         
         /* CRITICAL FIX: Ocultar menú flotante en desktop - INLINE */
-        @media (min-width: 768px) {
-            .bottom-nav,
-            .fab-menu,
-            .fab-backdrop,
-            .fab-options,
-            .bottom-nav-item,
-            .bottom-nav-fab {
-                display: none !important;
-                visibility: hidden !important;
-                opacity: 0 !important;
-                pointer-events: none !important;
-                height: 0 !important;
-                overflow: hidden !important;
-            }
-        }
-
         /* CLS OPTIMIZATION - Reservar espacio para iconos */
         .bi::before {
             display: inline-block;
