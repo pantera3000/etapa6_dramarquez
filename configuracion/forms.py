@@ -42,7 +42,7 @@ class ConfiguracionForm(forms.ModelForm):
     def clean_logo(self):
         """Validar tamaño y formato del logo"""
         logo = self.cleaned_data.get('logo')
-        if logo:
+        if logo and hasattr(logo, 'content_type'):  # Solo validar si es una nueva subida
             # Validar tamaño (máximo 2MB)
             if logo.size > 2 * 1024 * 1024:
                 raise forms.ValidationError('El logo no debe superar los 2MB')
@@ -56,7 +56,7 @@ class ConfiguracionForm(forms.ModelForm):
     def clean_imagen_login(self):
         """Validar tamaño y formato de la imagen de login"""
         imagen = self.cleaned_data.get('imagen_login')
-        if imagen:
+        if imagen and hasattr(imagen, 'content_type'):  # Solo validar si es una nueva subida
             # Validar tamaño (máximo 4MB para fondo)
             if imagen.size > 4 * 1024 * 1024:
                 raise forms.ValidationError('La imagen no debe superar los 4MB')
