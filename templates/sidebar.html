@@ -1,55 +1,74 @@
 {% load static %}
 <div class="border-end bg-white" id="sidebar-wrapper">
     <style>
-        /* ESTILOS PREMIUM SIDEBAR - MODO CLARO SOLAMENTE */
+        /* ESTILOS PREMIUM SIDEBAR - TEMA ROSE PREMIUM (DOCTORA) */
         html:not([data-theme="dark"]) #sidebar-wrapper {
-            background: #fff;
-            box-shadow: 4px 0 24px rgba(0,0,0,0.02);
+            background: #881337; /* Rose-900 */
+            background-image: linear-gradient(180deg, #881337 0%, #4c0519 100%);
+            box-shadow: 4px 0 24px rgba(136, 19, 55, 0.15);
             border-right: none !important;
-            overflow-x: hidden; /* Fix horizontal scroll */
+            overflow-x: hidden;
         }
 
-        /* Header con gradiente */
+        /* Header Oscuro (Rose) */
         html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-heading {
-            background: linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%) !important;
-            border-bottom: none !important;
+            background: transparent !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+        
+        /* Texto del Logo en Header */
+        html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-title,
+        html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-brand {
+            color: #fff1f2 !important; /* Rose-50 */
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
 
-        /* Items del menú estilo Píldora (Pills) */
+        /* Footer Oscuro */
+        html:not([data-theme="dark"]) #sidebar-wrapper .border-top {
+            border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+            background: rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        /* Dropdown User Name */
+        html:not([data-theme="dark"]) #sidebar-wrapper .sidebar-user-name {
+            color: #fff1f2 !important;
+        }
+
+        /* Items del menú */
         html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item {
             border: none;
             margin: 4px 12px;
-            width: calc(100% - 24px) !important; /* Calculo exacto para evitar desbordes */
-            border-radius: 12px;
-            color: #64748b; /* Slate 500 */
+            width: calc(100% - 24px) !important;
+            border-radius: 8px;
+            color: #fda4af; /* Rose-300 */
             font-weight: 500;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s ease;
             position: relative;
             background: transparent;
+        }
+
+        /* Hover Effect */
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            transform: translateX(4px);
+        }
+
+        /* ACTIVE STATE - Elegante y Femenino */
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item.active {
+            background: #fff !important; /* Fondo Blanco */
+            color: #9f1239 !important; /* Rose-800 */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            font-weight: 700;
+        }
+        
+        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item.active i {
+            color: #be123c !important; /* Icon Rose-700 */
         }
 
         /* Fix scroll container */
         html:not([data-theme="dark"]) #sidebar-wrapper .list-group {
             overflow-x: hidden !important;
-        }
-
-        /* Hover Effect */
-        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item:hover {
-            background-color: #f1f5f9;
-            color: #2563eb;
-            transform: translateX(4px);
-        }
-
-        /* ACTIVE STATE - Gradiente y Sombra */
-        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item.active {
-            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%) !important;
-            color: white !important;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
-            font-weight: 600;
-        }
-        
-        html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item.active i {
-            color: white !important; /* Forzar icono blanco en activo */
         }
 
         /* Ajuste de iconos */
@@ -61,33 +80,27 @@
 
         /* Secciones */
         html:not([data-theme="dark"]) .section-title {
-            color: #94a3b8 !important; /* Slate 400 */
+            color: #fca5a5 !important; /* Red/Rose-300 */
+            opacity: 0.8;
             letter-spacing: 0.5px;
             margin-top: 1.5rem !important;
             margin-bottom: 0.5rem !important;
+            text-shadow: 0 1px 1px rgba(0,0,0,0.1);
         }
 
-        /* MOBILE OPTIMIZATIONS (Compact View) */
+        /* MOBILE OPTIMIZATIONS */
         @media (max-width: 768px) {
-            /* Compact Menu Items */
             html:not([data-theme="dark"]) #sidebar-wrapper .list-group-item {
                 margin: 2px 8px !important;
-                /* Force smaller visual footprint */
                 min-height: 40px;
                 display: flex;
                 align-items: center;
             }
-            
-            /* Smaller Section Titles */
             html:not([data-theme="dark"]) .section-title {
                 margin-top: 0.75rem !important;
                 margin-bottom: 0.25rem !important;
-                padding-left: 1rem !important; /* Align with item text */
-            }
-            
-            /* Adjust Icons */
-            #sidebar-wrapper .list-group-item i {
-                font-size: 1rem;
+                padding-left: 1rem !important;
+                color: #fda4af !important;
             }
         }
     </style>
