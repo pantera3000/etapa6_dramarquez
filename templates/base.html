@@ -1371,6 +1371,18 @@
                 const backdrop = document.getElementById('searchBackdrop');
                 if (backdrop) backdrop.addEventListener('click', () => this.closeModal());
 
+                // FIX: Mobile Search Button Listener (Direct Binding)
+                const mobileSearch = document.getElementById('searchBottomNav');
+                if (mobileSearch) {
+                    mobileSearch.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        // Close sidebar if open to prevent z-index issues
+                        document.body.classList.remove('sb-sidenav-toggled'); 
+                        this.openModal();
+                    });
+                }
+
                 this.searchInput.addEventListener('input', (e) => this.handleSearchInput(e));
                 
                 // Trigger buttons logic
