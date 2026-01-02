@@ -1,4 +1,31 @@
 <!-- Modal WhatsApp -->
+<style>
+    /* Dark Mode for WhatsApp Modal */
+    html[data-theme="dark"] #modalWhatsApp .modal-content {
+        background-color: #1e293b;
+        border-color: rgba(255,255,255,0.1);
+        color: #f8fafc;
+    }
+    html[data-theme="dark"] #modalWhatsApp .modal-header {
+        border-bottom-color: rgba(255,255,255,0.1);
+    }
+    html[data-theme="dark"] #modalWhatsApp .btn-close {
+        filter: invert(1) grayscale(100%) brightness(200%);
+    }
+    html[data-theme="dark"] #modalWhatsApp .form-control,
+    html[data-theme="dark"] #modalWhatsApp .form-select {
+        background-color: #0f172a;
+        border-color: rgba(255,255,255,0.1);
+        color: #e2e8f0;
+    }
+    html[data-theme="dark"] #modalWhatsApp .form-control-plaintext {
+        color: #e2e8f0;
+        border-bottom-color: rgba(255,255,255,0.1) !important;
+    }
+    html[data-theme="dark"] #modalWhatsApp .form-text {
+        color: #94a3b8;
+    }
+</style>
 <div class="modal fade" id="modalWhatsApp" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">

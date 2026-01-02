@@ -30,6 +30,34 @@
                 border-radius: 2rem; font-weight: 700; font-size: 0.85rem;
                 box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             }
+
+            /* DARK MODE OVERRIDES */
+            html[data-theme="dark"] .birthday-card,
+            html[data-theme="dark"] .bg-white {
+                background: #1e293b !important;
+                border-color: rgba(255,255,255,0.1) !important;
+                color: #f8fafc !important;
+            }
+            html[data-theme="dark"] .text-dark,
+            html[data-theme="dark"] .text-secondary {
+                color: #f1f5f9 !important;
+            }
+            html[data-theme="dark"] .text-muted {
+                color: #94a3b8 !important;
+            }
+            html[data-theme="dark"] .days-badge.bg-light {
+                background: rgba(255,255,255,0.05) !important;
+                color: #e2e8f0 !important;
+                border-color: rgba(255,255,255,0.1) !important;
+            }
+            html[data-theme="dark"] .birthday-card:hover {
+                box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5);
+                border-color: #475569;
+                background: #334155 !important;
+            }
+            html[data-theme="dark"] .avatar-xl {
+                border-color: #1e293b;
+            }
         </style>
 
         <!-- HEADER -->

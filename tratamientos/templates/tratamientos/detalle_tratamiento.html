@@ -45,6 +45,66 @@
                 transition: width 1s ease-in-out;
                 height: 100%;
             }
+
+            /* =========================================
+               DARK MODE OVERRIDES
+               ========================================= */
+            [data-theme="dark"] .card-saas {
+                background-color: #1e293b !important;
+                border-color: rgba(255,255,255,0.1) !important;
+                color: #f8fafc;
+            }
+            [data-theme="dark"] .stat-card {
+                background-color: #0f172a !important;
+                border-color: rgba(255,255,255,0.1) !important;
+            }
+            [data-theme="dark"] .stat-value { color: #f8fafc !important; }
+            [data-theme="dark"] .stat-label { color: #94a3b8 !important; }
+            
+            [data-theme="dark"] .bg-white { 
+                background-color: #1e293b !important; 
+                border-color: rgba(255,255,255,0.1) !important;
+                color: #e2e8f0;
+            }
+            
+            /* Text Color Fixes */
+            [data-theme="dark"] .text-dark { color: #f1f5f9 !important; }
+            [data-theme="dark"] .text-muted { color: #94a3b8 !important; }
+            
+            /* Table Dark Mode */
+            [data-theme="dark"] .table-saas thead th {
+                background-color: #0f172a !important;
+                color: #94a3b8 !important;
+                border-bottom-color: rgba(255,255,255,0.1) !important;
+            }
+            [data-theme="dark"] .table-saas tbody td {
+                border-bottom-color: rgba(255,255,255,0.05) !important;
+                color: #e2e8f0 !important;
+            }
+            [data-theme="dark"] .table-saas tbody tr:hover {
+                background-color: #334155 !important;
+            }
+            
+            /* Badges & Buttons */
+            [data-theme="dark"] .badge.bg-light {
+                background-color: #334155 !important;
+                border-color: #475569 !important;
+                color: #e2e8f0 !important;
+            }
+            [data-theme="dark"] .btn-white {
+                background-color: #334155 !important;
+                border-color: #475569 !important;
+                color: #e2e8f0 !important;
+            }
+            [data-theme="dark"] .btn-light {
+                background-color: #334155 !important;
+                border-color: #475569 !important;
+                color: #e2e8f0 !important;
+            }
+            [data-theme="dark"] hr {
+                border-color: rgba(255,255,255,0.2) !important;
+                opacity: 0.5;
+            }
         </style>
 
         <!-- HEADER & NAVIGATION -->

@@ -154,8 +154,8 @@ try {
     Write-Host "`nTodo listo!`n" -ForegroundColor Green
 
 } catch {
-    Write-Host "`nERROR INESPERADO: $_" -ForegroundColor Red
+    Write-Host "ERROR INESPERADO: $_" -ForegroundColor Red
     Write-Host "Volviendo a rama original..." -ForegroundColor Yellow
-    git checkout $ramaActual
+    if ($ramaActual) { git checkout $ramaActual }
     exit 1
 }

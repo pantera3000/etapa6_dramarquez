@@ -6,8 +6,8 @@
 {% block title %}Lista de Notas{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-center">
-    <div class="col-lg-9">
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-9">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="mb-0">📝 Lista de Notas</h2>
             <div>
@@ -106,6 +106,71 @@
                     transition: transform 0.2s;
                 }
                 .card-mobile-saas:active { transform: scale(0.98); }
+
+                /* =========================================
+                   DARK MODE OVERRIDES
+                   ========================================= */
+                [data-theme="dark"] .bg-white {
+                    background-color: #1e293b !important;
+                    border-color: rgba(255,255,255,0.1) !important;
+                    color: #f8fafc;
+                }
+                
+                /* Table Dark Mode */
+                [data-theme="dark"] .table-saas thead th {
+                    background-color: #0f172a !important;
+                    color: #94a3b8 !important;
+                    border-bottom-color: rgba(255,255,255,0.1) !important;
+                }
+                [data-theme="dark"] .table-saas tbody td {
+                    border-bottom-color: rgba(255,255,255,0.05) !important;
+                    color: #e2e8f0 !important;
+                }
+                [data-theme="dark"] .table-saas tbody tr:hover {
+                    background-color: #334155 !important;
+                }
+                
+                /* Mobile Cards Dark Mode */
+                [data-theme="dark"] .card-mobile-saas {
+                    background-color: #1e293b !important;
+                    border-color: rgba(255,255,255,0.1) !important;
+                    color: #e2e8f0;
+                }
+                [data-theme="dark"] .card-mobile-saas .text-dark { color: #f8fafc !important; }
+                [data-theme="dark"] .card-mobile-saas .text-muted { color: #94a3b8 !important; }
+                
+                /* Form Controls Dark Mode */
+                [data-theme="dark"] .form-control {
+                    background-color: #0f172a !important;
+                    border-color: rgba(255,255,255,0.1) !important;
+                    color: #e2e8f0 !important;
+                }
+                [data-theme="dark"] .form-control::placeholder { color: #64748b; }
+                
+                /* Text & Badges */
+                [data-theme="dark"] .text-title { color: #f8fafc !important; }
+                [data-theme="dark"] .text-dark { color: #f1f5f9 !important; }
+                [data-theme="dark"] .badge.bg-light {
+                    background-color: #334155 !important;
+                    border-color: #475569 !important;
+                    color: #e2e8f0 !important;
+                }
+                
+                /* Buttons */
+                [data-theme="dark"] .btn-outline-secondary {
+                    color: #cbd5e1;
+                    border-color: #475569;
+                }
+                [data-theme="dark"] .btn-outline-secondary:hover {
+                    background-color: #334155;
+                    color: #f8fafc;
+                }
+                
+                /* Layout Fixes */
+                .card-mobile-saas {
+                    overflow: hidden; /* Prevent text overflow */
+                    max-width: 100%;
+                }
             </style>
 
             {% if notas %}

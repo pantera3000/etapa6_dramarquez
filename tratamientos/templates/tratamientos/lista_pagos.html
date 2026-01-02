@@ -171,6 +171,66 @@
                     transition: transform 0.2s;
                 }
                 .card-mobile-saas:active { transform: scale(0.98); }
+
+                /* =========================================
+                   DARK MODE OVERRIDES
+                   ========================================= */
+                [data-theme="dark"] .bg-white {
+                    background-color: #1e293b !important;
+                    border-color: rgba(255,255,255,0.1) !important;
+                    color: #f8fafc;
+                }
+                [data-theme="dark"] .table-saas thead th {
+                    background-color: #0f172a !important;
+                    color: #94a3b8 !important;
+                    border-bottom-color: rgba(255,255,255,0.1) !important;
+                }
+                [data-theme="dark"] .table-saas tbody td {
+                    border-bottom-color: rgba(255,255,255,0.05) !important;
+                    color: #e2e8f0 !important;
+                }
+                [data-theme="dark"] .table-saas tbody tr:hover {
+                    background-color: #334155 !important;
+                }
+                [data-theme="dark"] .card-mobile-saas {
+                    background-color: #1e293b !important;
+                    border-color: rgba(255,255,255,0.1) !important;
+                }
+                
+                /* Statistics Cards Dark Mode */
+                [data-theme="dark"] .card {
+                    background-color: #1e293b !important;
+                    border-color: rgba(255,255,255,0.1) !important;
+                }
+                [data-theme="dark"] .text-dark { color: #f1f5f9 !important; }
+                [data-theme="dark"] .text-muted { color: #94a3b8 !important; }
+                [data-theme="dark"] .text-title { color: #f8fafc !important; }
+                
+                /* Form Controls Dark Mode */
+                [data-theme="dark"] .form-control,
+                [data-theme="dark"] .form-select {
+                    background-color: #0f172a !important;
+                    border-color: rgba(255,255,255,0.1) !important;
+                    color: #e2e8f0 !important;
+                }
+                [data-theme="dark"] .form-control::placeholder { color: #64748b; }
+                
+                /* Button Overrides */
+                [data-theme="dark"] .btn-outline-secondary {
+                    color: #cbd5e1;
+                    border-color: #475569;
+                }
+                [data-theme="dark"] .btn-outline-secondary:hover {
+                    background-color: #334155;
+                    color: #f8fafc;
+                }
+                
+                /* Badges */
+                [data-theme="dark"] .badge.bg-light {
+                    background-color: #334155 !important;
+                    border-color: #475569 !important;
+                    color: #e2e8f0 !important;
+                }
             </style>
 
             {% if pagos %}

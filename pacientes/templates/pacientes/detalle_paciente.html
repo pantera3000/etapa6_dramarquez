@@ -120,6 +120,36 @@
                 background-color: #dc3545 !important;
                 color: white !important;
             }
+
+            /* DARK MODE OVERRIDES */
+            [data-theme="dark"] .alert-medical {
+                background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%) !important;
+                border-color: #991b1b !important;
+                color: #fecaca !important;
+            }
+            [data-theme="dark"] .alert-medical .text-danger {
+                color: #fca5a5 !important;
+            }
+            
+            /* Table Dark Mode */
+            [data-theme="dark"] .table-saas thead th {
+                background-color: #0f172a !important;
+                color: #94a3b8 !important;
+                border-bottom-color: rgba(255,255,255,0.1) !important;
+            }
+            [data-theme="dark"] .table-saas tbody td {
+                border-bottom-color: rgba(255,255,255,0.05) !important;
+                color: #e2e8f0 !important;
+            }
+            [data-theme="dark"] .table-saas tbody tr:hover {
+                background-color: #334155 !important;
+            }
+            
+            /* General Text Fixes for Dark Mode */
+            [data-theme="dark"] .text-dark { color: #f1f5f9 !important; }
+            [data-theme="dark"] .text-muted { color: #94a3b8 !important; }
+            [data-theme="dark"] .bg-white { background-color: #1e293b !important; border-color: #334155 !important; }
+            [data-theme="dark"] .bg-light { background-color: #334155 !important; color: #f1f5f9 !important; }
         </style>
 
         <!-- COLUMNA IZQUIERDA: PERFIL STICKY -->

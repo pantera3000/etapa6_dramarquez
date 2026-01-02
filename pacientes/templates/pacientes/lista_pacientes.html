@@ -206,6 +206,58 @@
                         max-width: 200px;
                     }
                 }
+
+                /* =========================================
+                   DARK MODE OVERRIDES
+                   ========================================= */
+                html[data-theme="dark"] .bg-white {
+                    background-color: #1e293b !important; /* Slate-800 */
+                    border-color: rgba(255,255,255,0.1) !important;
+                    color: #f8fafc;
+                }
+                html[data-theme="dark"] .table-saas thead th {
+                    background-color: #0f172a !important; /* Slate-900 */
+                    color: #94a3b8 !important;
+                    border-bottom-color: rgba(255,255,255,0.1) !important;
+                }
+                html[data-theme="dark"] .table-saas tbody td {
+                    border-bottom-color: rgba(255,255,255,0.05) !important;
+                }
+                html[data-theme="dark"] .table-saas tbody tr:hover {
+                    background-color: #334155 !important; /* Slate-700 */
+                }
+                
+                /* Text Fixes */
+                html[data-theme="dark"] .patient-name { color: #f8fafc !important; }
+                html[data-theme="dark"] .text-dark { color: #e2e8f0 !important; }
+                html[data-theme="dark"] .text-muted { color: #94a3b8 !important; }
+                
+                /* Input & Forms Dark Mode */
+                html[data-theme="dark"] .input-group-text,
+                html[data-theme="dark"] .form-control,
+                html[data-theme="dark"] .form-select {
+                    background-color: #0f172a !important;
+                    border-color: rgba(255,255,255,0.1) !important;
+                    color: #e2e8f0 !important;
+                }
+                html[data-theme="dark"] .form-control::placeholder { color: #64748b; }
+                
+                /* Cards Mobile */
+                html[data-theme="dark"] .card-patient-mobile {
+                    background-color: #1e293b !important;
+                    border-color: rgba(255,255,255,0.1) !important;
+                }
+                /* Buttons light override (e.g. edit/delete circle buttons) */
+                html[data-theme="dark"] .btn-light {
+                    background-color: #334155 !important;
+                    border-color: #475569 !important;
+                    color: #e2e8f0 !important;
+                }
+
+                /* Filter Container BG */
+                html[data-theme="dark"] .bg-light {
+                    background-color: rgba(255,255,255,0.05) !important;
+                }
             </style>
 
             <!-- Mini-Dashboard de Estadísticas -->
