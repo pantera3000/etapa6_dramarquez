@@ -162,6 +162,64 @@
             font-size: 1.5rem;
         }
     }
+
+    /* =========================================
+       DARK MODE OVERRIDES
+       ========================================= */
+    [data-theme="dark"] .stat-card {
+        background-color: #1e293b !important;
+        border-color: rgba(255,255,255,0.1) !important;
+    }
+    [data-theme="dark"] .stat-value {
+        color: #f8fafc !important;
+    }
+    [data-theme="dark"] .stat-label {
+        color: #94a3b8 !important;
+    }
+    
+    /* Quick Actions Dark Mode */
+    [data-theme="dark"] .quick-action {
+        background: #1e293b !important;
+        border-color: rgba(255,255,255,0.1) !important;
+    }
+    [data-theme="dark"] .quick-action:hover {
+        background: #334155 !important;
+        border-color: #475569 !important;
+    }
+    [data-theme="dark"] .quick-action span {
+        color: #f8fafc !important;
+    }
+    [data-theme="dark"] .quick-action i {
+        /* Keep original colors but maybe brighten them slightly if needed, 
+           bootstrap colors usually work fine on dark */
+    }
+
+    /* Widgets Dark Mode */
+    [data-theme="dark"] .widget-card {
+        background-color: #1e293b !important;
+        border-color: rgba(255,255,255,0.1) !important;
+    }
+    [data-theme="dark"] .widget-header {
+        border-bottom-color: rgba(255,255,255,0.1) !important;
+        color: #f8fafc !important;
+    }
+    [data-theme="dark"] .cita-item {
+        border-bottom-color: rgba(255,255,255,0.05) !important;
+    }
+    [data-theme="dark"] .birthday-item:hover {
+        background-color: #334155 !important;
+    }
+    
+    /* Global Text Fixes */
+    [data-theme="dark"] .text-dark { color: #f1f5f9 !important; }
+    [data-theme="dark"] .text-muted { color: #94a3b8 !important; }
+    
+    /* Badges */
+    [data-theme="dark"] .badge.bg-light {
+        background-color: #334155 !important;
+        border-color: #475569 !important;
+        color: #e2e8f0 !important;
+    }
 </style>
 
 <div class="dashboard-container">
