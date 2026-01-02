@@ -52,6 +52,8 @@ class UserCreateForm(UserCreationForm):
         return user
 
 
+from .models import Perfil
+
 class UserEditForm(forms.ModelForm):
     """Formulario para editar usuario existente y sus permisos"""
     email = forms.EmailField(required=True, label='Correo electrónico')
@@ -87,11 +89,28 @@ class UserEditForm(forms.ModelForm):
             else:
                 self.fields[field_name].widget.attrs['class'] = 'form-control'
         
-        # Cargar datos iniciales del perfil
-        if self.instance.pk and hasattr(self.instance, 'perfil'):
-            self.fields['permiso_grafico_ingresos'].initial = self.instance.perfil.permiso_grafico_ingresos
-            self.fields['permiso_cobranza_pendiente'].initial = self.instance.perfil.permiso_cobranza_pendiente
-            self.fields['permiso_reportes'].initial = self.instance.perfil.permiso_reportes
+        # Cargar datos iniciales del perfil (Auto-corrección si no existe)
+        if self.instance.pk:
+            # Intentar obtener perfil, crearlo si no existe (Fix para usuarios antiguos)
+            try:
+                perfil = self.instance.perfil
+            except Perfil.DoesNotExist: # Capturamos el error de relación inversa inversa
+                # Crear perfil si falta
+                perfil = Perfil.objects.create(user=self.instance)
+            except Exception:
+                # Fallback genérico por si acaso (para hasattr false positive)
+                if not hasattr(self.instance, 'perfil'):
+                     perfil = Perfil.objects.create(user=self.instance)
+                else:
+                     perfil = self.instance.perfil
+
+            # Cargar valores
+            if perfil:
+                self.fields['permiso_grafico_ingresos'].initial = perfil.permiso_grafico_ingresos
+                self.fields['permiso_cobranza_pendiente'].initial = perfil.permiso_cobranza_pendiente
+                self.fields['permiso_reportes'].initial = perfil.permiso_reportes
+        
+        # Si el usuario ya tiene un grupo, seleccionarlo
         
         # Si el usuario ya tiene un grupo, seleccionarlo
         if self.instance.pk:
@@ -103,12 +122,14 @@ class UserEditForm(forms.ModelForm):
         user = super().save(commit=False)
         if commit:
             user.save()
-            # Actualizar perfil
-            if hasattr(user, 'perfil'):
-                user.perfil.permiso_grafico_ingresos = self.cleaned_data['permiso_grafico_ingresos']
-                user.perfil.permiso_cobranza_pendiente = self.cleaned_data['permiso_cobranza_pendiente']
-                user.perfil.permiso_reportes = self.cleaned_data['permiso_reportes']
-                user.perfil.save()
+            # Actualizar perfil (Asegurando existencia)
+            if not hasattr(user, 'perfil'):
+                Perfil.objects.create(user=user)
+                
+            user.perfil.permiso_grafico_ingresos = self.cleaned_data['permiso_grafico_ingresos']
+            user.perfil.permiso_cobranza_pendiente = self.cleaned_data['permiso_cobranza_pendiente']
+            user.perfil.permiso_reportes = self.cleaned_data['permiso_reportes']
+            user.perfil.save()
                 
             # Actualizar grupo
             grupo = self.cleaned_data.get('grupo')
