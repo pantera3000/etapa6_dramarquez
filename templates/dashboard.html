@@ -140,6 +140,7 @@
     .cita-item {
         padding: 1rem;
         border-bottom: 1px solid #f1f5f9;
+        position: relative; /* Prevent stretched-link from affecting the whole page */
     }
     
     .cita-item:last-child {
@@ -318,79 +319,177 @@
         
         <!-- Widgets Grid -->
         <div class="row g-4">
-            <!-- Próximas Citas -->
+            <!-- Últimos Pacientes Vistos -->
             <div class="col-md-6">
                 <div class="widget-card">
                     <div class="widget-header">
-                        <span>📅 Próximas Citas</span>
+                        <span>🕐 Últimos Pacientes Vistos</span>
                     </div>
                     <div class="widget-body">
-                        {% if proximas_citas %}
-                            {% for cita in proximas_citas %}
+                        {% if ultimos_pacientes %}
+                            {% for paciente in ultimos_pacientes %}
                                 <div class="cita-item">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div class="d-flex justify-content-between align-items-center">
                                         <div class="d-flex align-items-center">
-                                            <div class="birthday-avatar" style="background-color: {{ cita.paciente.nombre_completo|avatar_color }};">
-                                                {{ cita.paciente.nombre_completo|initials_avatar }}
+                                            <div class="birthday-avatar" style="background-color: {{ paciente.nombre_completo|avatar_color }};">
+                                                {{ paciente.nombre_completo|initials_avatar }}
                                             </div>
                                             <div>
-                                                <div class="fw-bold text-dark">{{ cita.paciente.nombre_completo }}</div>
-                                                <div class="small text-muted">{{ cita.motivo|truncatechars:40 }}</div>
+                                                <a href="{% url 'pacientes:detalle' paciente.pk %}" class="fw-bold text-dark text-decoration-none stretched-link">
+                                                    {{ paciente.nombre_completo }}
+                                                </a>
+                                                <div class="small text-muted">
+                                                    <i class="bi bi-clock-history me-1"></i> Editado: {{ paciente.actualizado_en|date:"d/m/Y H:i" }}
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="text-end">
-                                            <div class="small fw-bold text-primary">{{ cita.fecha|date:"d/m" }}</div>
-                                            <div class="small text-muted">{{ cita.hora }}</div>
+                                            <i class="bi bi-chevron-right text-muted small"></i>
                                         </div>
                                     </div>
                                 </div>
                             {% endfor %}
                         {% else %}
                             <div class="text-center py-4 text-muted">
-                                <i class="bi bi-calendar-x fs-1 opacity-25"></i>
-                                <p class="mb-0 mt-2">No hay citas próximas</p>
+                                <i class="bi bi-person-x fs-1 opacity-25"></i>
+                                <p class="mb-0 mt-2">No hay pacientes recientes</p>
                             </div>
                         {% endif %}
                     </div>
                 </div>
             </div>
             
-            <!-- Cumpleaños Cercanos -->
+            <!-- Cobranza Pendiente (Pagos Pendientes) -->
+            {% if permiso_cobranza %}
             <div class="col-md-6">
-                <div class="widget-card">
-                    <div class="widget-header">
-                        <span>🎂 Cumpleaños Esta Semana</span>
+                <div class="widget-card h-100">
+                    <div class="widget-header d-flex justify-content-between align-items-center">
+                        <span class="text-danger"><i class="bi bi-exclamation-circle me-2"></i>Cobranza Pendiente (Top 5)</span>
+                        <a href="{% url 'tratamientos:lista' %}?estado_pago=pendiente" class="btn btn-sm btn-outline-danger" style="font-size: 0.75rem;">Ver Todo</a>
                     </div>
                     <div class="widget-body">
-                        {% if cumpleanos_cercanos %}
-                            {% for paciente in cumpleanos_cercanos %}
-                                <div class="birthday-item">
-                                    <div class="birthday-avatar" style="background-color: {{ paciente.nombre_completo|avatar_color }};">
-                                        {{ paciente.nombre_completo|initials_avatar }}
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <div class="fw-bold text-dark">{{ paciente.nombre_completo }}</div>
-                                        <div class="small text-muted">{{ paciente.fecha_nacimiento|date:"d/m/Y" }}</div>
-                                    </div>
-                                    <div>
-                                        {% if paciente.dias_hasta_cumple == 0 %}
-                                            <span class="badge bg-danger">¡Hoy!</span>
-                                        {% else %}
-                                            <span class="badge bg-light text-dark border">{{ paciente.dias_hasta_cumple }} días</span>
-                                        {% endif %}
+                        {% if tratamientos_deuda %}
+                            {% for tratamiento in tratamientos_deuda %}
+                                <div class="cita-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <div class="birthday-avatar bg-danger bg-opacity-10 text-danger">
+                                                <i class="bi bi-cash"></i>
+                                            </div>
+                                            <div>
+                                                <a href="{% url 'tratamientos:detalle' tratamiento.pk %}" class="fw-bold text-dark text-decoration-none stretched-link">
+                                                    {{ tratamiento.paciente.nombre_completo|truncatechars:20 }}
+                                                </a>
+                                                <div class="small text-muted">
+                                                    {{ tratamiento.nombre }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="fw-bold text-danger">S/ {{ tratamiento.saldo_pendiente|floatformat:2 }}</div>
+                                            <div class="small text-muted" style="font-size: 0.7rem;">Deuda</div>
+                                        </div>
                                     </div>
                                 </div>
                             {% endfor %}
                         {% else %}
                             <div class="text-center py-4 text-muted">
-                                <i class="bi bi-cake2 fs-1 opacity-25"></i>
-                                <p class="mb-0 mt-2">No hay cumpleaños esta semana</p>
+                                <i class="bi bi-check-circle fs-1 opacity-25 text-success"></i>
+                                <p class="mb-0 mt-2">¡Todo al día! No hay deudas pendientes.</p>
                             </div>
                         {% endif %}
                     </div>
                 </div>
             </div>
+            {% endif %}
         </div>
+        
+        <!-- ROW 4: Gráfico Financiero -->
+        {% if permiso_grafico %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="widget-card">
+                    <div class="widget-header">
+                        <span>📊 Ingresos Mensuales (Últimos 6 meses)</span>
+                    </div>
+                    <div class="widget-body" style="height: 300px; max-height: 300px;">
+                        <canvas id="ingresosChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Datos desde Django Views
+        // Solo inicializar si el canvas existe (validación por permisos)
+        const canvas = document.getElementById('ingresosChart');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            const labels = JSON.parse('{{ chart_labels|safe }}');
+            const data = JSON.parse('{{ chart_data|safe }}');
+            
+            // Detectar modo oscuro para ajustar colores del gráfico
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            const textColor = isDark ? '#94a3b8' : '#64748b';
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Ingresos (S/)',
+                        data: data,
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)', // Blue-500 alpha
+                        borderColor: 'rgba(59, 130, 246, 1)',     // Blue-500
+                        borderWidth: 1,
+                        borderRadius: 4,
+                        barThickness: 30,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: gridColor,
+                                drawBorder: false,
+                            },
+                            ticks: {
+                                color: textColor,
+                                callback: function(value) {
+                                    return 'S/ ' + value;
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false,
+                            },
+                            ticks: {
+                                color: textColor
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}

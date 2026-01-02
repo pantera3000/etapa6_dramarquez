@@ -252,8 +252,8 @@
             <i class="bi bi-cash-stack fs-5 me-2 text-success"></i> <span>Pagos</span>
         </a>
 
-        <!-- 4. GRUPO REPORTES (Solo Finanzas/Admin) -->
-        {% if user.is_superuser or perms.tratamientos.view_pago %}
+        <!-- 4. GRUPO REPORTES (Solo Finanzas/Admin/Permisos) -->
+        {% if user.is_superuser or user.perfil.permiso_reportes %}
         <div class="list-group-item list-group-item-light small text-uppercase text-muted fw-bold mt-2 section-title">
             Reportes
         </div>

@@ -104,6 +104,30 @@
                 </div>
                 {% endif %}
 
+                {% if form.permiso_grafico_ingresos %}
+                <hr class="my-4">
+                <h6 class="mb-3 text-muted text-uppercase fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Permisos Financieros</h6>
+                
+                <div class="mb-2 form-check">
+                    {{ form.permiso_grafico_ingresos }}
+                    <label class="form-check-label" for="{{ form.permiso_grafico_ingresos.id_for_label }}">
+                        {{ form.permiso_grafico_ingresos.label }}
+                    </label>
+                </div>
+                <div class="mb-2 form-check">
+                    {{ form.permiso_cobranza_pendiente }}
+                    <label class="form-check-label" for="{{ form.permiso_cobranza_pendiente.id_for_label }}">
+                        {{ form.permiso_cobranza_pendiente.label }}
+                    </label>
+                </div>
+                <div class="mb-3 form-check">
+                    {{ form.permiso_reportes }}
+                    <label class="form-check-label" for="{{ form.permiso_reportes.id_for_label }}">
+                        {{ form.permiso_reportes.label }}
+                    </label>
+                </div>
+                {% endif %}
+
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                     <a href="{% url 'usuarios:lista' %}" class="btn btn-secondary">Cancelar</a>
                     <button type="submit" class="btn btn-success">{{ accion }}</button>

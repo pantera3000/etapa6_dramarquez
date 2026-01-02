@@ -11,7 +11,18 @@ from decimal import Decimal
 class FinanzasGroupRequiredMixin(UserPassesTestMixin):
     """Mixin para requerir ser superusuario o del grupo 'Finanzas'"""
     def test_func(self):
-        return self.request.user.is_superuser or self.request.user.groups.filter(name='Finanzas').exists()
+        user = self.request.user
+        # 1. Superusuario
+        if user.is_superuser:
+            return True
+        # 2. Grupo Finanzas (Legacy support)
+        if user.groups.filter(name='Finanzas').exists():
+            return True
+        # 3. Permiso Granular Nuevo
+        if hasattr(user, 'perfil') and user.perfil.permiso_reportes:
+            return True
+            
+        return False
 
     def handle_no_permission(self):
         # Redirigir si no tiene permiso (o mostrar 403)
