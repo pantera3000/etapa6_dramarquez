@@ -1,0 +1,40 @@
+[
+{
+    "model": "comunicaciones.plantillamensaje",
+    "pk": 1,
+    "fields": {
+        "nombre": "Feliz Cumpleaños",
+        "contenido": "¡Hola {paciente}! \n\nDesde la Clínica Dental te deseamos un feliz cumpleaños.",
+        "categoria": "CUMPLE",
+        "creado_en": "2025-12-11T02:32:10.958Z",
+        "actualizado_en": "2025-12-11T02:32:10.958Z"
+    }
+},
+{
+    "model": "comunicaciones.plantillamensaje",
+    "pk": 2,
+    "fields": {
+        "nombre": "Recordatorio de Cita Formal",
+        "contenido": "Estimado/a {paciente}, le recordamos su cita programada en nuestra clínica dental. Por favor confirmar su asistencia. Gracias.",
+        "categoria": "CITA",
+        "creado_en": "2025-12-11T04:51:51.636Z",
+        "actualizado_en": "2025-12-11T04:51:51.636Z"
+    }
+},
+{
+    "model": "comunicaciones.plantillamensaje",
+    "pk": 3,
+    "fields": {
+        "nombre": "Confirmación de Cita",
+        "contenido": "Hola {paciente}, su cita ha sido confirmada exitosamente. Le esperamos puntual para su atención. Saludos cordiales.",
+        "categoria": "CITA",
+        "creado_en": "2025-12-11T04:51:51.651Z",
+        "actualizado_en": "2025-12-11T04:51:51.651Z"
+    }
+},
+{
+    "model": "comunicaciones.plantillamensaje",
+    "pk": 4,
+    "fields": {
+        "nombre": "Recordatorio Amigable",
+        "contenido": 
