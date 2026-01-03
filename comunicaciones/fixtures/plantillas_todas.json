@@ -3,8 +3,8 @@
     "model": "comunicaciones.plantillamensaje",
     "pk": 1,
     "fields": {
-        "nombre": "Feliz Cumpleaños",
-        "contenido": "¡Hola {paciente}! \n\nDesde la Clínica Dental te deseamos un feliz cumpleaños.",
+        "nombre": "Feliz Cumplea\u00f1os",
+        "contenido": "\u00a1Hola {paciente}! \n\nDesde la Cl\u00ednica Dental te deseamos un feliz cumplea\u00f1os.",
         "categoria": "CUMPLE",
         "creado_en": "2025-12-11T02:32:10.958Z",
         "actualizado_en": "2025-12-11T02:32:10.958Z"
@@ -15,7 +15,7 @@
     "pk": 2,
     "fields": {
         "nombre": "Recordatorio de Cita Formal",
-        "contenido": "Estimado/a {paciente}, le recordamos su cita programada en nuestra clínica dental. Por favor confirmar su asistencia. Gracias.",
+        "contenido": "Estimado/a {paciente}, le recordamos su cita programada en nuestra cl\u00ednica dental. Por favor confirmar su asistencia. Gracias.",
         "categoria": "CITA",
         "creado_en": "2025-12-11T04:51:51.636Z",
         "actualizado_en": "2025-12-11T04:51:51.636Z"
@@ -25,8 +25,8 @@
     "model": "comunicaciones.plantillamensaje",
     "pk": 3,
     "fields": {
-        "nombre": "Confirmación de Cita",
-        "contenido": "Hola {paciente}, su cita ha sido confirmada exitosamente. Le esperamos puntual para su atención. Saludos cordiales.",
+        "nombre": "Confirmaci\u00f3n de Cita",
+        "contenido": "Hola {paciente}, su cita ha sido confirmada exitosamente. Le esperamos puntual para su atenci\u00f3n. Saludos cordiales.",
         "categoria": "CITA",
         "creado_en": "2025-12-11T04:51:51.651Z",
         "actualizado_en": "2025-12-11T04:51:51.651Z"
@@ -37,4 +37,65 @@
     "pk": 4,
     "fields": {
         "nombre": "Recordatorio Amigable",
-        "contenido": 
+        "contenido": "Hola {paciente} \ud83d\udc4b, te escribimos para recordarte tu cita odontol\u00f3gica de ma\u00f1ana. \u00a1Nos vemos pronto para cuidar tu sonrisa!",
+        "categoria": "CITA",
+        "creado_en": "2025-12-11T04:51:51.658Z",
+        "actualizado_en": "2025-12-11T04:51:51.658Z"
+    }
+},
+{
+    "model": "comunicaciones.plantillamensaje",
+    "pk": 5,
+    "fields": {
+        "nombre": "Bienvenida Nuevo Paciente",
+        "contenido": "\u00a1Bienvenido/a {paciente}! Gracias por confiar en nosotros. Estamos felices de acompa\u00f1arte en el cuidado de tu salud dental. \ud83e\uddb7\u2728",
+        "categoria": "GENERAL",
+        "creado_en": "2025-12-11T04:51:51.664Z",
+        "actualizado_en": "2025-12-11T04:51:51.664Z"
+    }
+},
+{
+    "model": "comunicaciones.plantillamensaje",
+    "pk": 6,
+    "fields": {
+        "nombre": "Seguimiento Post-Tratamiento",
+        "contenido": "Hola {paciente}, esperamos que te encuentres bien despu\u00e9s de tu tratamiento. \u00bfHas tenido alguna molestia? Quedamos atentos a cualquier consulta.",
+        "categoria": "GENERAL",
+        "creado_en": "2025-12-11T04:51:51.671Z",
+        "actualizado_en": "2025-12-11T04:51:51.671Z"
+    }
+},
+{
+    "model": "comunicaciones.plantillamensaje",
+    "pk": 7,
+    "fields": {
+        "nombre": "Recordatorio de Pago",
+        "contenido": "Estimado/a {paciente}, le informamos que tiene un saldo pendiente en su cuenta. Agradecer\u00edamos regularizarlo en su pr\u00f3xima visita. Muchas gracias.",
+        "categoria": "PAGO",
+        "creado_en": "2025-12-11T04:51:51.676Z",
+        "actualizado_en": "2025-12-11T04:51:51.676Z"
+    }
+},
+{
+    "model": "comunicaciones.plantillamensaje",
+    "pk": 8,
+    "fields": {
+        "nombre": "Aviso de Promoci\u00f3n",
+        "contenido": "Hola {paciente}, tenemos una promoci\u00f3n especial en blanqueamiento dental este mes. \u00a1Preg\u00fantanos si te interesa lucir una sonrisa m\u00e1s brillante! \ud83d\ude01",
+        "categoria": "GENERAL",
+        "creado_en": "2025-12-11T04:51:51.679Z",
+        "actualizado_en": "2025-12-11T04:51:51.679Z"
+    }
+},
+{
+    "model": "comunicaciones.plantillamensaje",
+    "pk": 9,
+    "fields": {
+        "nombre": "Feliz Cumplea\u00f1os (Premium)",
+        "contenido": "\u00a1Feliz Cumplea\u00f1os {paciente}! \ud83c\udf82\ud83c\udf88 Deseamos que pases un d\u00eda incre\u00edble lleno de alegr\u00eda. \u00a1Recuerda sonre\u00edr mucho hoy!",
+        "categoria": "CUMPLE",
+        "creado_en": "2025-12-11T04:51:51.683Z",
+        "actualizado_en": "2025-12-11T04:51:51.683Z"
+    }
+}
+]
