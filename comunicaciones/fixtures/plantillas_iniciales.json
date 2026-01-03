@@ -1,0 +1,46 @@
+[
+    {
+        "model": "comunicaciones.plantillamensaje",
+        "pk": 1,
+        "fields": {
+            "nombre": "Feliz Cumpleaños",
+            "contenido": "¡Hola {paciente}! 🎉 En Consultorio Dental Dra. Marquez queremos desearte un muy feliz cumpleaños. ¡Que pases un día excelente!",
+            "categoria": "CUMPLE",
+            "creado_en": "2024-01-01T12:00:00Z",
+            "actualizado_en": "2024-01-01T12:00:00Z"
+        }
+    },
+    {
+        "model": "comunicaciones.plantillamensaje",
+        "pk": 2,
+        "fields": {
+            "nombre": "Recordatorio de Cita",
+            "contenido": "Hola {paciente}, te recordamos tu cita odontológica para mañana. Por favor confirma tu asistencia. Saludos, Dra. Marquez.",
+            "categoria": "CITA",
+            "creado_en": "2024-01-01T12:00:00Z",
+            "actualizado_en": "2024-01-01T12:00:00Z"
+        }
+    },
+    {
+        "model": "comunicaciones.plantillamensaje",
+        "pk": 3,
+        "fields": {
+            "nombre": "Recordatorio de Pago",
+            "contenido": "Estimado/a {paciente}, le recordamos amablemente que tiene un saldo pendiente. Agradeceríamos regularizarlo en su próxima visita.",
+            "categoria": "PAGO",
+            "creado_en": "2024-01-01T12:00:00Z",
+            "actualizado_en": "2024-01-01T12:00:00Z"
+        }
+    },
+    {
+        "model": "comunicaciones.plantillamensaje",
+        "pk": 4,
+        "fields": {
+            "nombre": "Bienvenida",
+            "contenido": "¡Bienvenido/a {paciente} a nuestra familia dental! Estamos felices de cuidar tu sonrisa. Cualquier duda estamos aquí.",
+            "categoria": "GENERAL",
+            "creado_en": "2024-01-01T12:00:00Z",
+            "actualizado_en": "2024-01-01T12:00:00Z"
+        }
+    }
+]
