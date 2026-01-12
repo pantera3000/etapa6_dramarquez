@@ -4,689 +4,542 @@
 {% block title %}Lista de Pacientes{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-center">
-    <div class="col-12 col-lg-9 w-100">
-        <!-- Encabezado -->
-        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
-            <h2 class="mb-0">📋 Lista de Pacientes</h2>
-            <div class="btn-group">
-                <a href="{% url 'pacientes:crear' %}" class="btn btn-success btn-sm">➕ Nuevo Paciente</a>
-                <button type="button" class="btn btn-info btn-sm" onclick="enviarLinkWhatsApp()">
-                    📱 Enviar Link de Registro
-                </button>
+{% load static %}
+{% load paciente_tags %}
+
+<div class="row g-0 justify-content-center">
+    <div class="col-12 col-xl-11">
+
+        <!-- ============================================== -->
+        <!-- ESTILOS POWER DASHBOARD (Embedded for No-Cache) -->
+        <!-- ============================================== -->
+        <style>
+            :root {
+                --dashboard-bg: #f3f4f6;
+                --panel-bg: #ffffff;
+                --border-color: #e5e7eb;
+                --text-primary: #111827;
+                --text-secondary: #6b7280;
+                --primary-accent: #2563eb;
+                --font-mono: "SF Mono", "Menlo", "Monaco", "Courier New", monospace;
+            }
+
+            /* --- Layout --- */
+            .dashboard-container {
+                display: flex;
+                flex-direction: column;
+                height: calc(100vh - 80px); /* Ajuste aproximado al header/footer */
+                background-color: var(--panel-bg);
+                border: 1px solid var(--border-color);
+                border-radius: 8px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+                overflow: hidden;
+            }
+
+            /* --- Toolbar Superior --- */
+            .dashboard-toolbar {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 1rem;
+                padding: 0.75rem 1.25rem;
+                background-color: var(--panel-bg);
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            /* Tabs estilo Botón */
+            .view-tabs {
+                display: flex;
+                background-color: #f3f4f6;
+                padding: 4px;
+                border-radius: 8px;
+                gap: 2px;
+            }
+            .view-tab {
+                padding: 6px 12px;
+                font-size: 0.85rem;
+                font-weight: 500;
+                color: var(--text-secondary);
+                border-radius: 6px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                border: none;
+                background: transparent;
+            }
+            .view-tab.active {
+                background-color: white;
+                color: var(--text-primary);
+                box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+                font-weight: 600;
+            }
+            .view-tab:hover:not(.active) {
+                background-color: rgba(0,0,0,0.03);
+            }
+
+            /* Search Bar Integrada */
+            .search-wrapper {
+                position: relative;
+                flex-grow: 1;
+                max-width: 400px;
+            }
+            .search-input {
+                width: 100%;
+                padding: 0.5rem 0.75rem 0.5rem 2.25rem;
+                font-size: 0.9rem;
+                border: 1px solid var(--border-color);
+                border-radius: 6px;
+                background-color: #f9fafb;
+                transition: all 0.2s;
+            }
+            .search-input:focus {
+                background-color: white;
+                border-color: var(--primary-accent);
+                outline: none;
+                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            }
+            .search-icon {
+                position: absolute;
+                left: 0.75rem;
+                top: 50%;
+                transform: translateY(-50%);
+                color: var(--text-secondary);
+                pointer-events: none;
+                font-size: 0.9rem;
+            }
+
+            /* --- Data Grid Table --- */
+            .table-container {
+                flex-grow: 1;
+                overflow: auto;
+                background-color: white;
+                position: relative;
+            }
+            
+            .data-grid {
+                width: 100%;
+                border-collapse: separate;
+                border-spacing: 0;
+            }
+
+            .data-grid th {
+                position: sticky;
+                top: 0;
+                background-color: #f9fafb;
+                color: var(--text-secondary);
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                padding: 0.75rem 1rem;
+                border-bottom: 1px solid var(--border-color);
+                z-index: 10;
+                white-space: nowrap;
+            }
+
+            .data-grid td {
+                padding: 0.5rem 1rem;
+                border-bottom: 1px solid var(--border-color);
+                vertical-align: middle;
+                font-size: 0.875rem;
+                color: var(--text-primary);
+                background-color: white;
+            }
+
+            .data-grid tr:hover td {
+                background-color: #f9fafb;
+            }
+            
+            /* Bordes verticales sutiles */
+            .data-grid th:not(:last-child),
+            .data-grid td:not(:last-child) {
+                border-right: 1px solid transparent; /* Oculto por defecto, visible si se desea */
+            }
+            .data-grid tr:hover td:not(:last-child) {
+                border-right-color: #f3f4f6;
+            }
+
+            /* Typography Specialized */
+            .font-mono-num {
+                font-family: var(--font-mono);
+                font-size: 0.8rem;
+                color: var(--text-secondary);
+                letter-spacing: -0.02em;
+            }
+
+            /* --- Components --- */
+            .avatar-chip {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+            }
+            .avatar-square {
+                width: 32px;
+                height: 32px;
+                border-radius: 6px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 600;
+                font-size: 0.8rem;
+                color: white;
+            }
+
+            .status-tag {
+                display: inline-flex;
+                align-items: center;
+                padding: 2px 8px;
+                border-radius: 4px;
+                font-size: 0.75rem;
+                font-weight: 500;
+                line-height: 1.4;
+                white-space: nowrap;
+            }
+            .tag-blue { background: #eff6ff; color: #1e40af; border: 1px solid #dbeafe; }
+            .tag-green { background: #f0fdf4; color: #166534; border: 1px solid #dcfce7; }
+            .tag-amber { background: #fffbeb; color: #92400e; border: 1px solid #fef3c7; }
+            .tag-red { background: #fef2f2; color: #991b1b; border: 1px solid #fee2e2; }
+            .tag-gray { background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; }
+
+            /* Action Buttons (Hover Reveal) */
+            .action-cell {
+                text-align: right;
+                opacity: 0.2;
+                transition: opacity 0.2s;
+            }
+            .data-grid tr:hover .action-cell {
+                opacity: 1;
+            }
+
+            /* --- Footer Bar --- */
+            .dashboard-footer {
+                padding: 0.5rem 1.25rem;
+                background-color: #f9fafb;
+                border-top: 1px solid var(--border-color);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 0.8rem;
+                color: var(--text-secondary);
+            }
+
+            /* --- Dark Mode --- */
+            html[data-theme="dark"] {
+                --dashboard-bg: #111827;
+                --panel-bg: #1f2937;
+                --border-color: #374151;
+                --text-primary: #f9fafb;
+                --text-secondary: #9ca3af;
+                --search-bg: #111827;
+            }
+            html[data-theme="dark"] .view-tabs { background-color: #111827; }
+            html[data-theme="dark"] .view-tab:hover:not(.active) { background-color: rgba(255,255,255,0.05); }
+            html[data-theme="dark"] .view-tab.active { background-color: #374151; color: white; }
+            html[data-theme="dark"] .search-input { background-color: #111827; color: white; border-color: #4b5563; }
+            html[data-theme="dark"] .data-grid th { background-color: #111827; color: #d1d5db; }
+            html[data-theme="dark"] .data-grid td { background-color: #1f2937; color: #e5e7eb; }
+            html[data-theme="dark"] .data-grid tr:hover td { background-color: #374151; }
+            html[data-theme="dark"] .dashboard-footer { background-color: #111827; }
+
+            html[data-theme="dark"] .tag-blue { background: rgba(30, 64, 175, 0.2); color: #93c5fd; border-color: rgba(30, 64, 175, 0.3); }
+            html[data-theme="dark"] .tag-green { background: rgba(22, 101, 52, 0.2); color: #86efac; border-color: rgba(22, 101, 52, 0.3); }
+            html[data-theme="dark"] .tag-amber { background: rgba(146, 64, 14, 0.2); color: #fcd34d; border-color: rgba(146, 64, 14, 0.3); }
+
+            /* Mobile Adaptation */
+            @media (max-width: 768px) {
+                .dashboard-container { height: auto; overflow: visible; }
+                .table-container { overflow-x: auto; max-height: 600px; }
+                .view-tabs { width: 100%; overflow-x: auto; }
+                .view-tab { white-space: nowrap; flex-shrink: 0; }
+                .action-cell { opacity: 1; }
+                .dashboard-toolbar { gap: 0.5rem; flex-direction: column; align-items: stretch; }
+                .search-wrapper { max-width: 100%; }
+            }
+        </style>
+
+        <!-- ============================================== -->
+        <!-- CONTENT -->
+        <!-- ============================================== -->
+        
+        <div class="d-flex justify-content-between align-items-end mb-3 px-1">
+            <div>
+                <h4 class="mb-0 fw-bold">Pacientes</h4>
+                <p class="text-muted small mb-0">Gestión centralizada de historias clínicas</p>
+            </div>
+            <div>
+                <a href="{% url 'pacientes:crear' %}" class="btn btn-primary btn-sm d-flex align-items-center gap-2 shadow-sm">
+                    <i class="bi bi-plus-lg"></i>
+                    <span class="d-none d-sm-inline">Nuevo Paciente</span>
+                </a>
             </div>
         </div>
 
-{% load static paciente_tags %}
-
-        <!-- Tarjeta principal -->
-        <div class="bg-white p-0 rounded-3 shadow-sm border overflow-hidden">
-            <!-- Estilos Inline para asegurar carga inmediata sin cache -->
-            <style>
-                /* --- Avatar Styles --- */
-                .avatar-circle {
-                    width: 40px;
-                    height: 40px;
-                    border-radius: 50%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    color: white;
-                    font-weight: 600;
-                    font-size: 0.9rem;
-                    text-transform: uppercase;
-                    flex-shrink: 0;
-                }
-                .avatar-circle-sm {
-                    width: 32px;
-                    height: 32px;
-                    font-size: 0.8rem;
-                }
-
-                /* --- Table Styles (Desktop) --- */
-                .table-saas thead th {
-                    font-size: 0.75rem;
-                    text-transform: uppercase;
-                    letter-spacing: 0.05em;
-                    font-weight: 600;
-                    color: #64748b;
-                    background-color: #f8fafc;
-                    border-bottom: 1px solid #e2e8f0;
-                    padding-top: 12px;
-                    padding-bottom: 12px;
-                }
-                .table-saas tbody td {
-                    vertical-align: middle;
-                    padding-top: 12px;
-                    padding-bottom: 12px;
-                    border-bottom: 1px solid #f1f5f9;
-                }
-                .table-saas tbody tr {
-                    transition: background-color 0.15s ease-in-out;
-                }
-                .table-saas tbody tr:hover {
-                    background-color: #e2e8f0 !important; /* Visualmente más fuerte */
-                    cursor: pointer;
-                }
-                .patient-name {
-                    font-weight: 600;
-                    color: #1e293b;
-                    display: block;
-                }
-                .patient-meta {
-                    font-size: 0.8rem;
-                    color: #64748b;
-                }
-
-                /* --- Action Buttons --- */
-                .actions-group {
-                    opacity: 0.4;
-                    transition: opacity 0.2s;
-                }
-                .table-saas tbody tr:hover .actions-group {
-                    opacity: 1;
-                }
-
-                /* --- Mobile Cards --- */
-                .card-patient-mobile {
-                    border: 1px solid #e2e8f0;
-                    border-radius: 0.75rem;
-                    transition: transform 0.2s;
-                    background: white;
-                }
-                .card-patient-mobile:active {
-                    transform: scale(0.98);
-                }
-                
-                /* --- Stats Cards Small --- */
-                /* --- Stats Cards Small --- */
-                .stat-card-small {
-                    text-align: center;
-                    padding: 0.75rem;
-                    transition: transform 0.2s;
-                }
-                .stat-card-small:hover {
-                    transform: translateY(-2px);
-                }
-                .stat-icon-small {
-                    width: 42px;
-                    height: 42px;
-                    border-radius: 0.75rem;
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 1.1rem;
-                    margin-bottom: 0.25rem;
-                }
-                .stat-value-small {
-                    font-size: 1.5rem;
-                    font-weight: 700;
-                    line-height: 1;
-                    margin-bottom: 0.1rem;
-                }
-                .stat-label-small {
-                    color: #64748b;
-                    font-size: 0.7rem;
-                    font-weight: 500;
-                    text-transform: uppercase;
-                    letter-spacing: 0.05em;
-                }
-                
-                /* --- Sortable Headers --- */
-                .sortable {
-                    cursor: pointer;
-                    user-select: none;
-                    transition: background-color 0.2s;
-                }
-                .sortable:hover {
-                    background-color: #e2e8f0;
-                }
-                .sort-icon {
-                    font-size: 0.8em;
-                    margin-left: 0.25rem;
-                }
-
-                /* --- Mobile Optimization --- */
-                @media (max-width: 767.98px) {
-                    /* Stats compactas horizontalmente - Grid 2x2 */
-                    .stat-card-small {
-                        padding: 0.75rem;
-                        display: flex;
-                        flex-direction: row;
-                        align-items: center;
-                        text-align: left;
-                        border: 1px solid #f1f5f9;
-                        border-radius: 0.75rem;
-                        min-height: auto;
-                    }
-                    .stat-icon-small {
-                        width: 36px;
-                        height: 36px;
-                        font-size: 1rem;
-                        margin-bottom: 0;
-                        margin-right: 0.5rem;
-                        flex-shrink: 0;
-                        border-radius: 8px !important; /* Iconos un poco más cuadrados */
-                    }
-                    .stat-content {
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: center;
-                        min-width: 0; /* Permite truncar texto si es necesario */
-                    }
-                    .stat-value-small {
-                        font-size: 1.25rem;
-                        font-weight: 700;
-                        line-height: 1;
-                        margin-bottom: 0.1rem;
-                    }
-                    .stat-label-small {
-                        font-size: 0.65rem;
-                        line-height: 1.1;
-                        color: #64748b;
-                        white-space: nowrap;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                    }
-                    
-                    /* Contenedor de filtros con scroll seguro */
-                    .filters-scroll-container {
-                        display: flex;
-                        overflow-x: auto;
-                        white-space: nowrap;
-                        padding-bottom: 0.5rem;
-                        flex-wrap: nowrap !important;
-                        gap: 0.5rem !important;
-                        -webkit-overflow-scrolling: touch;
-                        width: 100%;
-                    }
-                    
-                    /* Asegurar que las selects no sean demasiado anchas */
-                    .filters-scroll-container select {
-                        max-width: 200px;
-                    }
-                }
-
-                /* =========================================
-                   DARK MODE OVERRIDES
-                   ========================================= */
-                html[data-theme="dark"] .bg-white {
-                    background-color: #1e293b !important; /* Slate-800 */
-                    border-color: rgba(255,255,255,0.1) !important;
-                    color: #f8fafc;
-                }
-                html[data-theme="dark"] .table-saas thead th {
-                    background-color: #0f172a !important; /* Slate-900 */
-                    color: #94a3b8 !important;
-                    border-bottom-color: rgba(255,255,255,0.1) !important;
-                }
-                html[data-theme="dark"] .table-saas tbody td {
-                    border-bottom-color: rgba(255,255,255,0.05) !important;
-                }
-                html[data-theme="dark"] .table-saas tbody tr:hover {
-                    background-color: #334155 !important; /* Slate-700 */
-                }
-                
-                /* Text Fixes */
-                html[data-theme="dark"] .patient-name { color: #f8fafc !important; }
-                html[data-theme="dark"] .text-dark { color: #e2e8f0 !important; }
-                html[data-theme="dark"] .text-muted { color: #94a3b8 !important; }
-                
-                /* Input & Forms Dark Mode */
-                html[data-theme="dark"] .input-group-text,
-                html[data-theme="dark"] .form-control,
-                html[data-theme="dark"] .form-select {
-                    background-color: #0f172a !important;
-                    border-color: rgba(255,255,255,0.1) !important;
-                    color: #e2e8f0 !important;
-                }
-                html[data-theme="dark"] .form-control::placeholder { color: #64748b; }
-                
-                /* Cards Mobile */
-                html[data-theme="dark"] .card-patient-mobile {
-                    background-color: #1e293b !important;
-                    border-color: rgba(255,255,255,0.1) !important;
-                }
-                /* Buttons light override (e.g. edit/delete circle buttons) */
-                html[data-theme="dark"] .btn-light {
-                    background-color: #334155 !important;
-                    border-color: #475569 !important;
-                    color: #e2e8f0 !important;
-                }
-
-                /* Filter Container BG */
-                html[data-theme="dark"] .bg-light {
-                    background-color: rgba(255,255,255,0.05) !important;
-                }
-            </style>
-
-            <!-- Mini-Dashboard de Estadísticas -->
-            <div class="p-4 border-bottom">
-                <div class="row g-3 mb-0">
-                    <div class="col-6 col-md-3">
-                        <div class="stat-card-small">
-                            <div class="stat-icon-small" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                                <i class="bi bi-people text-white"></i>
-                            </div>
-                            <div class="stat-content">
-                                <div class="stat-value-small text-dark">{{ total_pacientes }}</div>
-                                <div class="stat-label-small">Total Pacientess</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-6 col-md-3">
-                        <div class="stat-card-small">
-                            <div class="stat-icon-small" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                                <i class="bi bi-person-plus text-white"></i>
-                            </div>
-                            <div class="stat-content">
-                                <div class="stat-value-small text-dark">{{ nuevos_mes }}</div>
-                                <div class="stat-label-small">Nuevos/Mes</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-6 col-md-3">
-                        <div class="stat-card-small">
-                            <div class="stat-icon-small" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-                                <i class="bi bi-cake2 text-white"></i>
-                            </div>
-                            <div class="stat-content">
-                                <div class="stat-value-small text-dark">{{ proximos_cumpleanos }}</div>
-                                <div class="stat-label-small">Cumpleaños</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-6 col-md-3">
-                        <div class="stat-card-small">
-                            <div class="stat-icon-small" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
-                                <i class="bi bi-activity text-white"></i>
-                            </div>
-                            <div class="stat-content">
-                                <div class="stat-value-small text-dark">{{ pacientes_activos }}</div>
-                                <div class="stat-label-small">Activos</div>
-                            </div>
-                        </div>
-                    </div>
+        <div class="dashboard-container">
+            <!-- Toolbar -->
+            <div class="dashboard-toolbar gap-3">
+                <!-- Group 1: Vistas Rápidas (Tabs) -->
+                <div class="view-tabs flex-shrink-0" id="filterTabs">
+                    <button class="view-tab active" onclick="setTabFilter('all', this)">Todos</button>
+                    <button class="view-tab" onclick="setTabFilter('recent', this)">Nuevos <span class="badge bg-secondary ms-1 rounded-pill" style="font-size: 0.6em;">{{ nuevos_mes }}</span></button>
+                    <button class="view-tab" onclick="setTabFilter('birthday', this)">🎂 Cumpleaños <span class="badge bg-warning text-dark ms-1 rounded-pill" style="font-size: 0.6em;">{{ proximos_cumpleanos }}</span></button>
                 </div>
-            </div>
-
-            <!-- Barra de búsqueda Estilizada -->
-            <div class="p-4 border-bottom bg-light bg-opacity-10">
-                <form method="get" class="d-flex gap-2">
-                    <div class="input-group">
-                        <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                        <input type="text" name="q" class="form-control border-start-0 ps-0" 
-                               placeholder="Buscar por nombre, apellidos o DNI..." 
-                               value="{{ request.GET.q }}">
-                    </div>
-                    <button class="btn btn-primary px-4" type="submit">Buscar</button>
-                    {% if request.GET.q %}
-                    <a href="{% url 'pacientes:lista' %}" class="btn btn-outline-secondary" title="Limpiar"><i class="bi bi-x-lg"></i></a>
-                    {% endif %}
-                </form>
                 
-                <!-- Filtros Avanzados -->
-                <div class="d-flex gap-2 mt-3 filters-scroll-container">
-                    <select id="ageFilter" class="form-select form-select-sm" style="width: auto;">
-                        <option value="all">📅 Todas las edades</option>
-                        <option value="0-18">0-18 años</option>
-                        <option value="19-35">19-35 años</option>
-                        <option value="36-60">36-60 años</option>
-                        <option value="61-999">60+ años</option>
+                <div class="vr opacity-25 d-none d-lg-block"></div>
+
+                <!-- Group 2: Filtros Dropdown (Restaurados) -->
+                <div class="d-flex gap-2 flex-grow-1 flex-xl-grow-0 overflow-auto py-1" id="dropdownFilters">
+                     <select id="ageFilter" class="form-select form-select-sm" style="width: auto; max-width: 140px; font-size: 0.85rem;" onchange="applyAllFilters()">
+                        <option value="all">📅 Edades</option>
+                        <option value="0-18">0-18 niños</option>
+                        <option value="19-35">19-35 joven</option>
+                        <option value="36-60">36-60 adulto</option>
+                        <option value="61-999">60+ mayor</option>
                     </select>
                     
-                    <select id="genderFilter" class="form-select form-select-sm" style="width: auto;">
-                        <option value="all">👤 Todos los géneros</option>
+                    <select id="genderFilter" class="form-select form-select-sm" style="width: auto; max-width: 140px; font-size: 0.85rem;" onchange="applyAllFilters()">
+                        <option value="all">👤 Género</option>
                         <option value="M">Masculino</option>
                         <option value="F">Femenino</option>
                     </select>
                     
-                    <select id="statusFilter" class="form-select form-select-sm" style="width: auto;">
-                        <option value="all">⚡ Todos los estados</option>
+                    <select id="statusFilter" class="form-select form-select-sm" style="width: auto; max-width: 140px; font-size: 0.85rem;" onchange="applyAllFilters()">
+                        <option value="all">⚡ Estado</option>
                         <option value="activo">Activos</option>
                         <option value="inactivo">Inactivos</option>
                     </select>
                 </div>
+
+                <!-- Group 3: Search & Actions -->
+                <div class="d-flex gap-2 ms-auto flex-grow-1 justify-content-end align-items-center">
+                    <!-- Buscador -->
+                    <div class="search-wrapper w-100" style="max-width: 300px;">
+                        <i class="bi bi-search search-icon"></i>
+                        <form method="get" class="m-0" onsubmit="return false;"> <!-- Evitar submit, usar JS local si es posible o mantener GET -->
+                             <!-- Nota: Mantenemos el input 'q' para búsqueda backend si se desea, 
+                                  pero para efecto inmediato 'Power Dashboard' usaremos filtrado JS sobre la tabla actual -->
+                            <input type="text" id="searchInput" class="search-input" 
+                                   placeholder="Buscar..." 
+                                   onkeyup="applyAllFilters()">
+                        </form>
+                    </div>
+                    
+                    <!-- Botón Link Registro (Restaurado) -->
+                    <button class="btn btn-info btn-sm text-white fw-medium d-flex align-items-center gap-2 flex-shrink-0" onclick="enviarLinkWhatsApp()">
+                        <i class="bi bi-whatsapp"></i>
+                        <span class="d-none d-lg-inline">Enviar Link</span>
+                    </button>
+                </div>
             </div>
 
-            {% if pacientes %}
-                <!-- VISTA DE TABLA (Desktop >= 768px) -->
-                <div class="d-none d-md-block">
-                    <div class="table-responsive">
-                        <table class="table table-saas mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th class="ps-4 sortable" data-sort="nombre">
-                                        Paciente <i class="bi bi-arrow-down-up sort-icon opacity-25"></i>
-                                    </th>
-                                    <th class="sortable" data-sort="edad">
-                                        Edad / Cumple <i class="bi bi-arrow-down-up sort-icon opacity-25"></i>
-                                    </th>
-                                    <th class="sortable" data-sort="telefono">
-                                        Contacto <i class="bi bi-arrow-down-up sort-icon opacity-25"></i>
-                                    </th>
-                                    <th class="text-end pe-4">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for paciente in pacientes %}
-                                <tr style="cursor: pointer;" 
-                                    onclick="window.location='{% url 'pacientes:detalle' paciente.pk %}'"
-                                    data-age="{{ paciente.edad|default:0 }}"
-                                    data-gender="{{ paciente.genero }}"
-                                    data-telefono="{{ paciente.telefono }}"
-                                    data-fecha="{{ paciente.creado_en|date:'Y-m-d' }}"
-                                    data-status="activo">
-                                    <!-- Columna Paciente (Avatar + Nombre + DNI) -->
-                                    <td class="ps-4">
-                                        <div class="d-flex align-items-center">
-                                            <div class="avatar-circle me-3" style="background-color: {{ paciente.nombre_completo|avatar_color }};">
-                                                {{ paciente.nombre_completo|initials_avatar }}
-                                            </div>
-                                            <div>
-                                                <span class="patient-name">{{ paciente.nombre_completo }}</span>
-                                                <span class="patient-meta">
-                                                    <i class="bi bi-person-vcard"></i> {{ paciente.dni }}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    
-                                    <!-- Columna Edad/Cumple -->
-                                    <td>
-                                        <div class="d-flex flex-column">
-                                            <span class="fw-medium text-dark">{{ paciente.edad }} años</span>
-                                            {% if paciente.dias_hasta_cumple == 0 %}
-                                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill mt-1 w-auto align-self-start">
-                                                    🎂 ¡Es Hoy!
-                                                </span>
-                                            {% elif paciente.dias_hasta_cumple <= 30 %}
-                                                <span class="badge bg-warning bg-opacity-10 text-warning-emphasis border border-warning border-opacity-25 rounded-pill mt-1 w-auto align-self-start">
-                                                    🎂 {{ paciente.dias_hasta_cumple }} días
-                                                </span>
-                                            {% endif %}
-                                        </div>
-                                    </td>
-                                    
-                                    <!-- Columna Contacto -->
-                                    <td>
-                                        {% if paciente.telefono %}
-                                            <span class="text-dark">{{ paciente.telefono }}</span>
-                                        {% else %}
-                                            <span class="text-muted small">sin teléfono</span>
-                                        {% endif %}
-                                    </td>
-                                    
-                                    <!-- Columna Acciones -->
-                                    <td class="text-end pe-4" onclick="event.stopPropagation()">
-                                        <div class="actions-group">
-                                            <button class="btn btn-icon btn-sm text-success btn-light rounded-circle me-1" 
-                                                    onclick="event.stopPropagation(); abrirModalWhatsApp('{{ paciente.telefono|default_if_none:''|escapejs }}', '{{ paciente.nombre_completo|escapejs }}', 'GENERAL')"
-                                                    title="Enviar WhatsApp" data-bs-toggle="tooltip">
-                                                <i class="bi bi-whatsapp"></i>
-                                            </button>
-                                            
-                                            <a href="{% url 'pacientes:editar' paciente.pk %}" class="btn btn-icon btn-sm text-primary btn-light rounded-circle me-1" title="Editar">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </a>
-                                            
-                                            <a href="{% url 'pacientes:eliminar' paciente.pk %}" 
-                                               class="btn btn-icon btn-sm text-danger btn-light rounded-circle"
-                                               onclick="return confirm('¿Eliminar al paciente {{ paciente.nombre_completo }}?\n⚠️ Esta acción eliminará también sus historias, tratamientos y pagos asociados.')"
-                                               title="Eliminar">
-                                                <i class="bi bi-trash"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            <!-- Data Grid -->
+            <div class="table-container">
+                <table class="data-grid" id="patientsTable">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">Paciente</th>
+                            <th>Odontograma</th>
+                            <th>Edad / Cumple</th>
+                            <th>Contacto</th>
+                            <th>Registro</th>
+                            <th class="text-end pe-4">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for paciente in pacientes %}
+                        <!-- Added data-gender, data-age, data-status for JS filters -->
+                        <tr class="patient-row" 
+                            data-new="{% if paciente.es_nuevo_mes %}true{% else %}false{% endif %}"
+                            data-bday="{% if paciente.dias_hasta_cumple <= 30 %}true{% else %}false{% endif %}"
+                            data-gender="{{ paciente.genero }}"
+                            data-age="{{ paciente.edad }}"
+                            data-status="{% if paciente.esta_activo %}activo{% else %}inactivo{% endif %}">
+                            
+                            <!-- Paciente -->
+                            <td class="ps-4" style="cursor: pointer;" onclick="window.location='{% url 'pacientes:detalle' paciente.pk %}'">
+                                <div class="avatar-chip">
+                                    <div class="avatar-square" style="background-color: {{ paciente.nombre_completo|avatar_color }};">
+                                        {{ paciente.nombre_completo|initials_avatar }}
+                                    </div>
+                                    <div class="d-flex flex-column">
+                                        <!-- Add class specifically for name filtering -->
+                                        <span class="fw-semibold text-primary-emphasis patient-name">{{ paciente.nombre_completo }}</span>
+                                        <span class="font-mono-num small text-muted patient-dni">{{ paciente.dni }}</span>
+                                    </div>
+                                </div>
+                            </td>
 
-                <!-- VISTA MÓVIL (Cards Compactas) -->
-                <div class="d-md-none p-3 bg-light">
-                    {% for paciente in pacientes %}
-                    <div class="card-patient-mobile p-3 mb-2 d-flex align-items-center shadow-sm" onclick="window.location='{% url 'pacientes:detalle' paciente.pk %}'">
-                        <!-- Avatar -->
-                        <div class="avatar-circle avatar-circle-sm me-3" style="background-color: {{ paciente.nombre_completo|avatar_color }};">
-                            {{ paciente.nombre_completo|initials_avatar }}
-                        </div>
-                        
-                        <!-- Info -->
-                        <div class="flex-grow-1 min-w-0">
-                            <h6 class="mb-0 text-truncate fw-bold text-dark">{{ paciente.nombre_completo }}</h6>
-                            <div class="d-flex align-items-center text-muted small mt-1">
-                                <span class="me-2">{{ paciente.edad }} años</span>
-                                {% if paciente.dias_hasta_cumple == 0 %}
-                                    <span class="text-success fw-bold">🎂 Hoy</span>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <!-- Actions Mobile -->
-                        <div class="d-flex ms-2" onclick="event.stopPropagation()">
-                            <button class="btn btn-sm btn-light border text-success rounded-circle me-2" 
-                                    style="width: 38px; height: 38px;"
-                                    onclick="abrirModalWhatsApp('{{ paciente.telefono|default_if_none:''|escapejs }}', '{{ paciente.nombre_completo|escapejs }}', 'GENERAL')">
-                                <i class="bi bi-whatsapp"></i>
-                            </button>
-                            <a href="{% url 'pacientes:detalle' paciente.pk %}" class="btn btn-sm btn-light border text-primary rounded-circle" style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;">
-                                <i class="bi bi-chevron-right"></i>
-                            </a>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
+                            <!-- Odontograma (Antes Estado) -->
+                            <td>
+                                <a href="{% url 'odontograma:ver_odontograma' paciente.pk %}" class="btn btn-sm btn-outline-primary border-0 bg-primary-subtle text-primary fw-medium px-3" style="font-size: 0.8rem;">
+                                    <i class="bi bi-grid-3x3 me-1"></i> Ver
+                                </a>
+                            </td>
 
-                <!-- Paginación -->
+                            <!-- Edad -->
+                            <td onclick="window.location='{% url 'pacientes:detalle' paciente.pk %}'" style="cursor: pointer;">
+                                <div class="d-flex flex-column">
+                                    <span class="fw-medium">{{ paciente.edad }} años</span>
+                                    {% if paciente.fecha_nacimiento %}
+                                    <span class="font-mono-num small">{{ paciente.fecha_nacimiento|date:"d M" }}</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+
+                            <!-- Contacto -->
+                            <td class="font-mono-num patient-phone">
+                                {{ paciente.telefono|default_if_none:"--" }}
+                            </td>
+                            
+                             <!-- Registro (Antes Ubicación) -->
+                            <td class="small text-muted font-mono-num">
+                                {{ paciente.creado_en|date:"d M Y" }}
+                            </td>
+
+                            <!-- Acciones -->
+                            <td class="action-cell pe-4">
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-icon text-success" 
+                                            onclick="abrirModalWhatsApp('{{ paciente.telefono|default_if_none:''|escapejs }}', '{{ paciente.nombre_completo|escapejs }}', 'GENERAL')"
+                                            title="WhatsApp">
+                                        <i class="bi bi-whatsapp"></i>
+                                    </button>
+                                    <a href="{% url 'pacientes:editar' paciente.pk %}" class="btn btn-sm btn-icon text-secondary" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="{% url 'pacientes:eliminar' paciente.pk %}" 
+                                       onclick="return confirm('¿Eliminar al paciente?')"
+                                       class="btn btn-sm btn-icon text-danger" title="Eliminar">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr id="noResultsRow">
+                            <td colspan="6" class="text-center py-5">
+                                <div class="d-flex flex-column align-items-center opacity-50">
+                                    <i class="bi bi-inbox fs-1 mb-2"></i>
+                                    <span>No se encontraron pacientes</span>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Footer (Paginación) -->
+            <div class="dashboard-footer">
+                <div>
+                   <span id="visibleCount">{{ pacientes|length }}</span> pacientes visibles (de {{ pacientes|length }})
+                </div>
                 {% if is_paginated %}
-                    <div class="mt-4 pt-3 border-top">
-                        <nav aria-label="Paginación">
-                            <ul class="pagination justify-content-center mb-0">
-                                {% if page_obj.has_previous %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">« Primero</a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">‹ Anterior</a>
-                                    </li>
-                                {% endif %}
-
-                                <li class="page-item active">
-                                    <span class="page-link">
-                                        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
-                                    </span>
-                                </li>
-
-                                {% if page_obj.has_next %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Siguiente ›</a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Último »</a>
-                                    </li>
-                                {% endif %}
-                            </ul>
-                        </nav>
-                    </div>
-                {% endif %}
-
-            {% else %}
-                <div class="text-center py-5">
-                    <p class="text-muted mb-3">No hay pacientes registrados.</p>
-                    <a href="{% url 'pacientes:crear' %}" class="btn btn-success">➕ Registrar Primer Paciente</a>
+                <!-- Pagination kept for backend paging context -->
+                <div class="btn-group btn-group-sm">
+                    {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="btn btn-outline-secondary">Anterior</a>
+                    {% endif %}
+                    <button class="btn btn-outline-secondary" disabled>{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</button>
+                    {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="btn btn-outline-secondary">Siguiente</a>
+                    {% endif %}
                 </div>
-            {% endif %}
+                {% endif %}
+            </div>
         </div>
+
     </div>
 </div>
 
-{% load static %}
 <script>
-/**
- * Pacientes List - Filtros y Ordenamiento (Inline)
- */
-(function() {
-    'use strict';
+    // Estado global de filtros
+    let appState = {
+        tab: 'all', // all, recent, birthday
+        search: '',
+        age: 'all',
+        gender: 'all',
+        status: 'all'
+    };
 
-    let currentSort = { column: null, direction: 'asc' };
-
-    function initFilters() {
-        const searchInput = document.querySelector('input[name="q"]');
-        const ageFilter = document.getElementById('ageFilter');
-        const genderFilter = document.getElementById('genderFilter');
-        const statusFilter = document.getElementById('statusFilter');
-
-        if (searchInput) searchInput.addEventListener('input', debounce(applyFilters, 300));
-        if (ageFilter) ageFilter.addEventListener('change', applyFilters);
-        if (genderFilter) genderFilter.addEventListener('change', applyFilters);
-        if (statusFilter) statusFilter.addEventListener('change', applyFilters);
+    // 1. Manejo de Tabs
+    function setTabFilter(selectedTab, btnElement) {
+        // Update visual state
+        document.querySelectorAll('.view-tab').forEach(b => b.classList.remove('active'));
+        btnElement.classList.add('active');
+        
+        // Update state
+        appState.tab = selectedTab;
+        
+        // Apply logic
+        applyAllFilters();
     }
 
-    function applyFilters() {
-        const searchTerm = document.querySelector('input[name="q"]')?.value.toLowerCase() || '';
-        const ageRange = document.getElementById('ageFilter')?.value || 'all';
-        const gender = document.getElementById('genderFilter')?.value || 'all';
-        const status = document.getElementById('statusFilter')?.value || 'all';
+    // 2. Lógica Unificada de Filtrado
+    function applyAllFilters() {
+        // Get values from DOM inputs if changed directly
+        appState.search = document.getElementById('searchInput').value.toLowerCase();
+        appState.age = document.getElementById('ageFilter').value;
+        appState.gender = document.getElementById('genderFilter').value;
+        appState.status = document.getElementById('statusFilter').value;
 
-        const rows = document.querySelectorAll('.table-saas tbody tr');
+        const rows = document.querySelectorAll('.patient-row');
         let visibleCount = 0;
 
         rows.forEach(row => {
-            const name = row.querySelector('.patient-name')?.textContent.toLowerCase() || '';
-            const dni = row.querySelector('.patient-meta')?.textContent.toLowerCase() || '';
-            const age = parseInt(row.dataset.age) || 0;
-            const rowGender = row.dataset.gender || '';
-            const rowStatus = row.dataset.status || '';
+            // --- Criterio 1: Tab ---
+            let matchTab = true;
+            if (appState.tab === 'recent') matchTab = row.getAttribute('data-new') === 'true';
+            if (appState.tab === 'birthday') matchTab = row.getAttribute('data-bday') === 'true';
 
-            const matchesSearch = searchTerm === '' || name.includes(searchTerm) || dni.includes(searchTerm);
-            
-            let matchesAge = true;
-            if (ageRange !== 'all') {
-                const [min, max] = ageRange.split('-').map(Number);
-                if (max) { matchesAge = age >= min && age <= max; } 
-                else { matchesAge = age >= min; }
+            // --- Criterio 2: Search (Nombre, DNI, Teléfono) ---
+            let matchSearch = true;
+            if (appState.search) {
+                const name = row.querySelector('.patient-name')?.innerText.toLowerCase() || '';
+                const dni = row.querySelector('.patient-dni')?.innerText.toLowerCase() || '';
+                const phone = row.querySelector('.patient-phone')?.innerText.toLowerCase() || '';
+                matchSearch = name.includes(appState.search) || dni.includes(appState.search) || phone.includes(appState.search);
             }
 
-            const matchesGender = gender === 'all' || rowGender === gender;
-            const matchesStatus = status === 'all' || rowStatus === status;
-
-            if (matchesSearch && matchesAge && matchesGender && matchesStatus) {
-                row.style.display = '';
-                visibleCount++;
-            } else {
-                row.style.display = 'none';
+            // --- Criterio 3: Edad ---
+            let matchAge = true;
+            const age = parseInt(row.getAttribute('data-age')) || 0;
+            if (appState.age !== 'all') {
+                const [min, max] = appState.age.split('-').map(Number);
+                if (max) { matchAge = age >= min && age <= max; } 
+                else { matchAge = age >= min; }
             }
+
+            // --- Criterio 4: Género ---
+            let matchGender = true;
+            if (appState.gender !== 'all') {
+                matchGender = row.getAttribute('data-gender') === appState.gender;
+            }
+
+            // --- Criterio 5: Estado ---
+            let matchStatus = true;
+            if (appState.status !== 'all') {
+                // Assuming 'activo' data is populated
+                const st = row.getAttribute('data-status'); 
+                matchStatus = st === appState.status;
+            }
+
+            // --- Resultado Final ---
+            const isVisible = matchTab && matchSearch && matchAge && matchGender && matchStatus;
+            row.style.display = isVisible ? '' : 'none';
+            if(isVisible) visibleCount++;
         });
 
-        updateEmptyState(visibleCount);
+        // Actualizar contador y estado vacío
+        const countSpan = document.getElementById('visibleCount');
+        if(countSpan) countSpan.innerText = visibleCount;
     }
 
-    function updateEmptyState(count) {
-        let emptyState = document.getElementById('emptyState');
-        if (count === 0) {
-            if (!emptyState) {
-                emptyState = document.createElement('tr');
-                emptyState.id = 'emptyState';
-                emptyState.innerHTML = '<td colspan="100%" class="text-center py-5 text-muted"><i class="bi bi-search fs-1 opacity-25"></i><p class="mb-0 mt-2">No se encontraron pacientes con los filtros aplicados</p></td>';
-                document.querySelector('.table-saas tbody').appendChild(emptyState);
-            }
-            emptyState.style.display = '';
-        } else if (emptyState) {
-            emptyState.style.display = 'none';
-        }
+    function enviarLinkWhatsApp() {
+        // ... (Misma función anterior) ...
+        const registroUrl = window.location.origin + "{% url 'pacientes:registro_publico' %}";
+        const mensaje = `Hola! 👋\n\nPor favor completa tus datos en este formulario de registro:\n\n${registroUrl}\n\nGracias!`;
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+        window.open(whatsappUrl, '_blank');
     }
-
-    function initSorting() {
-        document.querySelectorAll('.sortable').forEach(header => {
-            header.style.cursor = 'pointer';
-            header.addEventListener('click', () => sortTable(header.dataset.sort));
-        });
-    }
-
-    function sortTable(column) {
-        const tbody = document.querySelector('.table-saas tbody');
-        const rows = Array.from(tbody.querySelectorAll('tr:not(#emptyState)'));
-
-        if (currentSort.column === column) {
-            currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
-        } else {
-            currentSort.column = column;
-            currentSort.direction = 'asc';
-        }
-
-        rows.sort((a, b) => {
-            let aVal, bVal;
-            switch(column) {
-                case 'nombre':
-                    aVal = a.querySelector('.patient-name')?.textContent || '';
-                    bVal = b.querySelector('.patient-name')?.textContent || '';
-                    break;
-                case 'edad':
-                    aVal = parseInt(a.dataset.age) || 0;
-                    bVal = parseInt(b.dataset.age) || 0;
-                    break;
-                case 'fecha': // Fecha creación
-                    aVal = new Date(a.dataset.fecha || 0);
-                    bVal = new Date(b.dataset.fecha || 0);
-                    break;
-                default: return 0;
-            }
-            // Simple sort string/number handled inside
-            if (column === 'nombre') return currentSort.direction === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
-            return currentSort.direction === 'asc' ? aVal - bVal : bVal - aVal;
-        });
-
-        rows.forEach(row => tbody.appendChild(row));
-        updateSortIndicators(column);
-    }
-
-    function updateSortIndicators(column) {
-        document.querySelectorAll('.sortable').forEach(header => {
-            const icon = header.querySelector('.sort-icon');
-            if (icon) {
-                if (header.dataset.sort === column) {
-                    icon.className = currentSort.direction === 'asc' ? 'bi bi-arrow-up sort-icon' : 'bi bi-arrow-down sort-icon';
-                    icon.classList.remove('opacity-25');
-                } else {
-                    icon.className = 'bi bi-arrow-down-up sort-icon opacity-25';
-                }
-            }
-        });
-    }
-
-    function debounce(func, wait) {
-        let timeout;
-        return function(...args) {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func(...args), wait);
-        };
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => { initFilters(); initSorting(); });
-    } else {
-        initFilters();
-        initSorting();
-    }
-})();
 </script>
-<script>
-function enviarLinkWhatsApp() {
-    // Obtener la URL completa del formulario de registro
-    const registroUrl = window.location.origin + "{% url 'pacientes:registro_publico' %}";
-    
-    // Mensaje pre-escrito para WhatsApp
-    const mensaje = `Hola! 👋\n\nPor favor completa tus datos en este formulario de registro:\n\n${registroUrl}\n\nGracias!`;
-    
-    // Abrir WhatsApp con el mensaje
-    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
-    window.open(whatsappUrl, '_blank');
-}
-</script>
+
 {% endblock %}
