@@ -1,243 +1,333 @@
-<!-- pacientes/templates/pacientes/crear_paciente.html -->
 {% extends 'base.html' %}
 {% load static %}
 
 {% block title %}Nuevo Paciente{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="mb-0">➕ Registrar Nuevo Paciente</h2>
-    <a href="{% url 'pacientes:lista' %}" class="btn btn-outline-secondary btn-sm">← Volver a la lista</a>
-</div>
+<style>
+    /* Estilos Premium Formulario */
+    .form-card {
+        background: #ffffff;
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+        max-width: 900px;
+        margin: 0 auto;
+        overflow: hidden;
+    }
 
-<!-- Contenedor centrado con ancho máximo -->
-<div class="d-flex justify-content-center">
-    <div class="col-lg-8">
-        <form method="post" class="bg-white p-4 p-md-5 rounded shadow-sm border">
+    .form-header {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 25px 30px;
+        border-bottom: 1px solid #edf2f7;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .section-title {
+        color: #2d3748;
+        font-size: 0.95rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #edf2f7;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .section-title i {
+        color: #3b82f6; /* Azul primario */
+        font-size: 1.1rem;
+    }
+
+    .form-label {
+        color: #4a5568;
+        font-weight: 600;
+        font-size: 0.85rem;
+        margin-bottom: 6px;
+    }
+
+    .form-control, .form-select {
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        padding: 10px 12px;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+        background-color: #f8fafc;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        background-color: #fff;
+    }
+
+    .form-text {
+        font-size: 0.75rem;
+        color: #718096;
+    }
+
+    .btn-action {
+        padding: 10px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+    }
+
+    /* Animación para sección tutor */
+    #tutor-section {
+        transition: all 0.3s ease-in-out;
+        background-color: #fff8e1; /* Fondo suave alerta */
+        border-left: 4px solid #f6c23e;
+        border-radius: 8px;
+    }
+    
+    .required-asterisk {
+        color: #e53e3e;
+        margin-left: 3px;
+    }
+</style>
+
+<div class="py-4">
+    <div class="form-card">
+        <!-- Header -->
+        <div class="form-header">
+            <div>
+                <h4 class="mb-1 fw-bold text-dark">Registrar Nuevo Paciente</h4>
+                <p class="mb-0 text-muted small">Complete la información para crear un nuevo historial clínico.</p>
+            </div>
+            <button type="button" class="btn btn-outline-secondary btn-sm btn-action border-0 bg-white shadow-sm text-dark" onclick="if(window.history.length > 1){window.history.back()}else{window.location.href='{% url 'pacientes:lista' %}'}">
+                <i class="bi bi-arrow-left me-1"></i> Volver Atrás
+            </button>
+        </div>
+
+        <!-- Formulario -->
+        <form method="post" class="p-4 p-md-5">
             {% csrf_token %}
             
-            <div class="row g-3">
-                <!-- Nombre completo -->
-                <div class="col-12">
-                    <label class="form-label">Nombre completo del paciente</label>
-                    {{ form.nombre_completo }}
-                    {% if form.nombre_completo.help_text %}
-                        <small class="form-text text-muted">{{ form.nombre_completo.help_text }}</small>
-                    {% endif %}
-                    {% for error in form.nombre_completo.errors %}
-                        <div class="text-danger mt-1">{{ error }}</div>
-                    {% endfor %}
-                </div>
-
-                <!-- DNI -->
-                <div class="col-md-6">
-                    <label class="form-label">{{ form.dni.label }}</label>
-                    {{ form.dni }}
-                    {% if form.dni.help_text %}
-                        <small class="form-text text-muted">{{ form.dni.help_text }}</small>
-                    {% endif %}
-                    {% for error in form.dni.errors %}
-                        <div class="text-danger mt-1">{{ error }}</div>
-                    {% endfor %}
-                </div>
-
-                <!-- Fecha de nacimiento -->
-                <div class="col-md-6">
-                    <label class="form-label">{{ form.fecha_nacimiento.label }}</label>
-                    {{ form.fecha_nacimiento }}
-                    {% for error in form.fecha_nacimiento.errors %}
-                        <div class="text-danger mt-1">{{ error }}</div>
-                    {% endfor %}
-                </div>
-
-                <!-- Género -->
-                <div class="col-md-6">
-                    <label class="form-label">{{ form.genero.label }}</label>
-                    {{ form.genero }}
-                    {% for error in form.genero.errors %}
-                        <div class="text-danger mt-1">{{ error }}</div>
-                    {% endfor %}
-                </div>
-
-                <!-- Estado civil -->
-                <div class="col-md-6">
-                    <label class="form-label">{{ form.estado_civil.label }}</label>
-                    {{ form.estado_civil }}
-                    {% for error in form.estado_civil.errors %}
-                        <div class="text-danger mt-1">{{ error }}</div>
-                    {% endfor %}
-                </div>
-
-                <!-- Teléfono -->
-                <div class="col-md-6">
-                    <label class="form-label">{{ form.telefono.label }}</label>
-                    {{ form.telefono }}
-                    {% for error in form.telefono.errors %}
-                        <div class="text-danger mt-1">{{ error }}</div>
-                    {% endfor %}
-                </div>
-
-                <!-- Distrito -->
-                <div class="col-md-6">
-                    <label class="form-label">{{ form.distrito.label }}</label>
-                    {{ form.distrito }}
-                    {% for error in form.distrito.errors %}
-                        <div class="text-danger mt-1">{{ error }}</div>
-                    {% endfor %}
-                </div>
-
-                <!-- Dirección -->
-                <div class="col-12">
-                    <label class="form-label">{{ form.direccion.label }}</label>
-                    {{ form.direccion }}
-                    {% for error in form.direccion.errors %}
-                        <div class="text-danger mt-1">{{ error }}</div>
-                    {% endfor %}
-                </div>
-
-                <!-- Email -->
-                <div class="col-md-6">
-                    <label class="form-label">{{ form.email.label }}</label>
-                    {{ form.email }}
-                    {% for error in form.email.errors %}
-                        <div class="text-danger mt-1">{{ error }}</div>
-                    {% endfor %}
-                </div>
-
-                <!-- Ocupación -->
-                <div class="col-md-6">
-                    <label class="form-label">{{ form.ocupacion.label }}</label>
-                    {{ form.ocupacion }}
-                    {% for error in form.ocupacion.errors %}
-                        <div class="text-danger mt-1">{{ error }}</div>
-                    {% endfor %}
-                </div>
-
-                <!-- Campos de tutor (para menores de edad) -->
-                <div id="tutor-section" style="display: none;">
-                    <div class="col-12">
-                        <div class="alert alert-warning">
-                            <strong>⚠️ Menor de Edad Detectado</strong>
-                            <p class="mb-0">Por favor ingresa los datos del padre, madre o apoderado responsable.</p>
+            {% if form.errors %}
+                <div class="alert alert-danger mb-4 shadow-sm border-0">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+                        <div>
+                            <h6 class="alert-heading fw-bold mb-1">Por favor corrige los siguientes errores:</h6>
+                            <ul class="mb-0 ps-3 small">
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                            </ul>
                         </div>
                     </div>
-                    
-                    <!-- Nombre del tutor -->
-                    <div class="col-md-6">
-                        <label class="form-label">{{ form.nombre_tutor.label }}</label>
-                        {{ form.nombre_tutor }}
-                        {% for error in form.nombre_tutor.errors %}
-                            <div class="text-danger mt-1">{{ error }}</div>
-                        {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="row g-4">
+                
+                <!-- SECCIÓN 1: DATOS PERSONALES -->
+                <div class="col-12">
+                    <div class="section-title">
+                        <i class="bi bi-person-vcard"></i> Datos Personales
                     </div>
-                    
-                    <!-- Teléfono del tutor -->
-                    <div class="col-md-6">
-                        <label class="form-label">Teléfono del tutor</label>
-                        {{ form.telefono_tutor }}
-                        {% for error in form.telefono_tutor.errors %}
-                            <div class="text-danger mt-1">{{ error }}</div>
-                        {% endfor %}
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label">Nombre Completo <span class="required-asterisk">*</span></label>
+                            {{ form.nombre_completo }}
+                            {% if form.nombre_completo.help_text %}
+                                <div class="form-text">{{ form.nombre_completo.help_text }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">DNI <span class="required-asterisk">*</span></label>
+                            {{ form.dni }}
+                            <div id="dni-feedback" class="form-text">8 dígitos numéricos.</div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Fecha de Nacimiento <span class="required-asterisk">*</span></label>
+                            {{ form.fecha_nacimiento }}
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Género <span class="required-asterisk">*</span></label>
+                            {{ form.genero }}
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Estado Civil</label>
+                            {{ form.estado_civil }}
+                        </div>
                     </div>
                 </div>
 
-                <!-- Enfermedades previas -->
-                <div class="col-12">
-                    <label class="form-label">{{ form.enfermedades_previas.label }}</label>
-                    {{ form.enfermedades_previas }}
-                    {% for error in form.enfermedades_previas.errors %}
-                        <div class="text-danger mt-1">{{ error }}</div>
-                    {% endfor %}
+                <!-- SECCIÓN: TUTOR (Condicional) -->
+                <div id="tutor-section" class="col-12 p-3 mt-3" style="display: none;">
+                    <div class="d-flex align-items-start mb-3">
+                         <i class="bi bi-exclamation-circle-fill text-warning fs-5 me-2"></i>
+                         <div>
+                             <h6 class="fw-bold mb-0 text-dark">Paciente Menor de Edad</h6>
+                             <small class="text-muted">Es obligatorio registrar los datos de un apoderado.</small>
+                         </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-7">
+                            <label class="form-label">Nombre del Tutor / Apoderado</label>
+                            {{ form.nombre_tutor }}
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label">Teléfono del Tutor</label>
+                            {{ form.telefono_tutor }}
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Alergias -->
-                <div class="col-12">
-                    <label class="form-label">{{ form.alergias.label }}</label>
-                    {{ form.alergias }}
-                    {% for error in form.alergias.errors %}
-                        <div class="text-danger mt-1">{{ error }}</div>
-                    {% endfor %}
+                <!-- SECCIÓN 2: CONTACTO -->
+                <div class="col-12 mt-5">
+                    <div class="section-title">
+                        <i class="bi bi-geo-alt"></i> Contacto y Ubicación
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Teléfono Móvil</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-whatsapp"></i></span>
+                                {{ form.telefono }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Correo Electrónico</label>
+                             <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-envelope"></i></span>
+                                {{ form.email }}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Ocupación</label>
+                            {{ form.ocupacion }}
+                        </div>
+                        <div class="col-md-8">
+                             <label class="form-label">Distrito / Ciudad</label>
+                             {{ form.distrito }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Dirección Domiciliaria</label>
+                            {{ form.direccion }}
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Grupo sanguíneo -->
-                <div class="col-md-6">
-                    <label class="form-label">{{ form.grupo_sanguineo.label }}</label>
-                    {{ form.grupo_sanguineo }}
-                    {% for error in form.grupo_sanguineo.errors %}
-                        <div class="text-danger mt-1">{{ error }}</div>
-                    {% endfor %}
+                <!-- SECCIÓN 3: ANTECEDENTES -->
+                <div class="col-12 mt-5">
+                    <div class="section-title">
+                        <i class="bi bi-activity"></i> Antecedentes Médicos
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Grupo Sanguíneo</label>
+                            {{ form.grupo_sanguineo }}
+                        </div>
+                        <div class="col-md-12"></div> <!-- Spacer -->
+                        
+                        <div class="col-md-6">
+                            <label class="form-label text-danger"><i class="bi bi-virus me-1"></i> Enfermedades Previas</label>
+                            {{ form.enfermedades_previas }}
+                            <div class="form-text">Separe con comas si hay múltiples.</div>
+                        </div>
+                         <div class="col-md-6">
+                            <label class="form-label text-warning-emphasis"><i class="bi bi-exclamation-octagon me-1"></i> Alergias</label>
+                            {{ form.alergias }}
+                            <div class="form-text">Importante para medicación (ej: Penicilina).</div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Tratamientos previos -->
-                <div class="col-12">
-                    <label class="form-label">{{ form.tratamientos_previos.label }}</label>
-                    {{ form.tratamientos_previos }}
-                    {% for error in form.tratamientos_previos.errors %}
-                        <div class="text-danger mt-1">{{ error }}</div>
-                    {% endfor %}
+                <!-- SECCIÓN 4: HISTORIA DENTAL -->
+                <div class="col-12 mt-5">
+                    <div class="section-title">
+                        <i class="bi bi-journal-medical"></i> Perfil Dental Inicial
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Tratamientos Previos</label>
+                            {{ form.tratamientos_previos }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Experiencias Dentales (Ansiedad, Miedo)</label>
+                            {{ form.experiencias_dentales }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Observaciones Generales / Motivo Consulta</label>
+                            {{ form.observaciones }}
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Experiencias dentales -->
-                <div class="col-12">
-                    <label class="form-label">{{ form.experiencias_dentales.label }}</label>
-                    {{ form.experiencias_dentales }}
-                    {% for error in form.experiencias_dentales.errors %}
-                        <div class="text-danger mt-1">{{ error }}</div>
-                    {% endfor %}
-                </div>
-
-                <!-- Observaciones -->
-                <div class="col-12">
-                    <label class="form-label">{{ form.observaciones.label }}</label>
-                    {{ form.observaciones }}
-                    {% for error in form.observaciones.errors %}
-                        <div class="text-danger mt-1">{{ error }}</div>
-                    {% endfor %}
-                </div>
             </div>
 
-            <!-- Botones -->
-            <div class="d-flex justify-content-end mt-4 pt-3 border-top">
-                <a href="{% url 'pacientes:lista' %}" class="btn btn-secondary me-2">Cancelar</a>
-                <button type="submit" class="btn btn-success">✅ Guardar Paciente</button>
+            <!-- Footer Actions -->
+            <div class="d-flex justify-content-end align-items-center mt-5 pt-4 border-top gap-3">
+                <a href="{% url 'pacientes:lista' %}" class="btn btn-link text-decoration-none text-muted">Cancelar</a>
+                <button type="submit" class="btn btn-primary btn-action shadow-sm">
+                    <i class="bi bi-check-lg me-2"></i>Guardar Paciente
+                </button>
             </div>
         </form>
     </div>
 </div>
 
 <script>
-// Detectar si es menor de edad y mostrar campos de tutor
-document.addEventListener('DOMContentLoaded', function() {
-    const fechaNacimiento = document.getElementById('id_fecha_nacimiento');
-    const tutorSection = document.getElementById('tutor-section');
-    
-    function verificarEdad() {
-        const fechaNac = new Date(fechaNacimiento.value);
-        const hoy = new Date();
-        let edad = hoy.getFullYear() - fechaNac.getFullYear();
-        const mes = hoy.getMonth() - fechaNac.getMonth();
+    document.addEventListener('DOMContentLoaded', function() {
+        // Estilizar Inputs de Django automáticamente si no tienen clases
+        document.querySelectorAll('input, select, textarea').forEach(el => {
+            if (!el.classList.contains('form-check-input')) {
+                el.classList.add('form-control');
+                if(el.tagName === 'SELECT') {
+                    el.classList.replace('form-control', 'form-select');
+                }
+            }
+        });
+
+        // Lógica Menor de Edad
+        const fechaNacimiento = document.getElementById('id_fecha_nacimiento');
+        const tutorSection = document.getElementById('tutor-section');
         
-        if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNac.getDate())) {
-            edad--;
+        function verificarEdad() {
+            if (!fechaNacimiento.value) return;
+            
+            const fechaNac = new Date(fechaNacimiento.value);
+            const hoy = new Date();
+            let edad = hoy.getFullYear() - fechaNac.getFullYear();
+            const mes = hoy.getMonth() - fechaNac.getMonth();
+            
+            if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNac.getDate())) {
+                edad--;
+            }
+            
+            // Mostrar sección de tutor si es menor de 18 años
+            if (edad < 18 && !isNaN(edad)) {
+                tutorSection.style.display = 'block';
+                // Animación simple de entrada
+                tutorSection.style.opacity = '0';
+                setTimeout(() => tutorSection.style.opacity = '1', 50);
+            } else {
+                tutorSection.style.display = 'none';
+            }
         }
         
-        // Mostrar sección de tutor si es menor de 18 años
-        if (edad < 18 && !isNaN(edad)) {
-            tutorSection.style.display = 'block';
-        } else {
-            tutorSection.style.display = 'none';
-        }
-    }
-    
-    if (fechaNacimiento) {
-        // Verificar al cargar la página
-        if (fechaNacimiento.value) {
+        if (fechaNacimiento) {
             verificarEdad();
+            fechaNacimiento.addEventListener('change', verificarEdad);
+            fechaNacimiento.addEventListener('blur', verificarEdad);
         }
-        
-        // Verificar al cambiar la fecha
-        fechaNacimiento.addEventListener('change', verificarEdad);
-    }
-});
+    });
 </script>
 {% endblock %}
