@@ -61,6 +61,10 @@ def guardar_odontograma(request, paciente_id):
         # Esto permite borrar cosas (si el usuario pone "Sano" y enviamos nada).
         # Pero el JS debe enviar EL ESTADO COMPLETO de la boca.
         
+        # Guardar observaciones generales
+        odontograma.observaciones = data.get('observaciones', '')
+        odontograma.save()
+
         hallazgos_data = data.get('hallazgos', [])
         
         # Limpiamos previos (Drástico pero efectivo para sincronización total)

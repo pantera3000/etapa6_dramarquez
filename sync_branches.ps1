@@ -13,7 +13,7 @@ param(
 )
 
 Write-Host "`n========================================" -ForegroundColor Cyan
-Write-Host "  SINCRONIZACIÓN DE RAMAS GIT" -ForegroundColor Cyan
+Write-Host "  SINCRONIZACION DE RAMAS GIT" -ForegroundColor Cyan
 Write-Host "========================================`n" -ForegroundColor Cyan
 
 # Verificar que estamos en un repositorio Git
@@ -65,6 +65,17 @@ try {
     # Verificar si hay cambios
     $status = git status --porcelain
     if ($status) {
+        Show-Info "Archivos modificados detectados."
+        
+        $confirmaDev = Read-Host "¿Confirmas subir estos cambios a 'version_desarrollo'? (S/N)"
+        if ($confirmaDev -ne "S" -and $confirmaDev -ne "s") {
+            Write-Host "Operacion cancelada por el usuario. No se subieron cambios a desarrollo." -ForegroundColor Yellow
+            
+            # Volver a rama original antes de salir
+            git checkout $ramaActual
+            exit 0
+        }
+
         Show-Info "Agregando archivos modificados..."
         git add .
         
@@ -77,6 +88,13 @@ try {
         Show-Success "Cambios guardados en version_desarrollo"
     } else {
         Show-Info "No hay cambios nuevos en version_desarrollo"
+        # Si no hay cambios pero queremos sincronizar, preguntamos si continuar
+        $continuar = Read-Host "¿Deseas continuar con la sincronizacion a otras ramas aunque no haya cambios nuevos? (S/N)"
+        if ($continuar -ne "S" -and $continuar -ne "s") {
+             # Volver a rama original antes de salir
+            git checkout $ramaActual
+            exit 0
+        }
     }
 
     # ============================================
@@ -84,49 +102,57 @@ try {
     # ============================================
     Write-Host "`n[4/6] Sincronizando con version_mejorada_para_pythonanywhere..." -ForegroundColor Cyan
     
-    git checkout version_mejorada_para_pythonanywhere
-    if ($LASTEXITCODE -ne 0) { Show-Error "No se pudo cambiar a version_mejorada_para_pythonanywhere" }
-    
-    Show-Info "Haciendo merge desde version_desarrollo..."
-    git merge version_desarrollo -m "merge: sincronizar con desarrollo - $mensaje"
-    
-    if ($LASTEXITCODE -eq 0) {
-        Show-Info "Subiendo a GitHub..."
-        git push origin version_mejorada_para_pythonanywhere
-        if ($LASTEXITCODE -ne 0) { Show-Error "No se pudo hacer push a version_mejorada_para_pythonanywhere" }
-        Show-Success "Sincronizado con PythonAnywhere"
+    $confirmaPAW = Read-Host "¿Deseas sincronizar con PythonAnywhere? (S/N)"
+    if ($confirmaPAW -eq "S" -or $confirmaPAW -eq "s") {
+        git checkout version_mejorada_para_pythonanywhere
+        if ($LASTEXITCODE -ne 0) { Show-Error "No se pudo cambiar a version_mejorada_para_pythonanywhere" }
+        
+        Show-Info "Haciendo merge desde version_desarrollo..."
+        git merge version_desarrollo -m "merge: sincronizar con desarrollo - $mensaje"
+        
+        if ($LASTEXITCODE -eq 0) {
+            Show-Info "Subiendo a GitHub..."
+            git push origin version_mejorada_para_pythonanywhere
+            if ($LASTEXITCODE -ne 0) { Show-Error "No se pudo hacer push a version_mejorada_para_pythonanywhere" }
+            Show-Success "Sincronizado con PythonAnywhere"
+        } else {
+            Write-Host "`nCONFLICTO DETECTADO en version_mejorada_para_pythonanywhere" -ForegroundColor Yellow
+            Write-Host "Resuelve los conflictos manualmente." -ForegroundColor Yellow
+            # Intentar volver
+            git checkout $ramaActual
+            exit 1
+        }
     } else {
-        Write-Host "`nCONFLICTO DETECTADO en version_mejorada_para_pythonanywhere" -ForegroundColor Yellow
-        Write-Host "Resuelve los conflictos manualmente y luego ejecuta:" -ForegroundColor Yellow
-        Write-Host "  git add ." -ForegroundColor White
-        Write-Host "  git commit -m 'merge: resolver conflictos'" -ForegroundColor White
-        Write-Host "  git push origin version_mejorada_para_pythonanywhere" -ForegroundColor White
-        exit 1
+        Show-Info "Omitiendo PythonAnywhere..."
     }
 
     # ============================================
-    # PASO 5: Sincronizar con Hosting Compartido
+    # PASO 5: Sincronizar con Hosting Compartido (PRODUCCION)
     # ============================================
-    Write-Host "`n[5/6] Sincronizando con para_hosting_compartido_v2..." -ForegroundColor Cyan
+    Write-Host "`n[5/6] Sincronizando con para_hosting_compartido_v2 (PRODUCCION)..." -ForegroundColor Cyan
     
-    git checkout para_hosting_compartido_v2
-    if ($LASTEXITCODE -ne 0) { Show-Error "No se pudo cambiar a para_hosting_compartido_v2" }
-    
-    Show-Info "Haciendo merge desde version_desarrollo..."
-    git merge version_desarrollo -m "merge: sincronizar con desarrollo - $mensaje"
-    
-    if ($LASTEXITCODE -eq 0) {
-        Show-Info "Subiendo a GitHub..."
-        git push origin para_hosting_compartido_v2
-        if ($LASTEXITCODE -ne 0) { Show-Error "No se pudo hacer push a para_hosting_compartido_v2" }
-        Show-Success "Sincronizado con Hosting Compartido"
+    $confirmaProd = Read-Host "⚠️  ¿CONFIRMAS DESPLEGAR EN PRODUCCION (para_hosting_compartido_v2)? (S/N)"
+    if ($confirmaProd -eq "S" -or $confirmaProd -eq "s") {
+        git checkout para_hosting_compartido_v2
+        if ($LASTEXITCODE -ne 0) { Show-Error "No se pudo cambiar a para_hosting_compartido_v2" }
+        
+        Show-Info "Haciendo merge desde version_desarrollo..."
+        git merge version_desarrollo -m "merge: sincronizar con desarrollo - $mensaje"
+        
+        if ($LASTEXITCODE -eq 0) {
+            Show-Info "Subiendo a GitHub..."
+            git push origin para_hosting_compartido_v2
+            if ($LASTEXITCODE -ne 0) { Show-Error "No se pudo hacer push a para_hosting_compartido_v2" }
+            Show-Success "Sincronizado con Hosting Compartido"
+        } else {
+            Write-Host "`nCONFLICTO DETECTADO en para_hosting_compartido_v2" -ForegroundColor Yellow
+            Write-Host "Resuelve los conflictos manualmente." -ForegroundColor Yellow
+             # Intentar volver
+            git checkout $ramaActual
+            exit 1
+        }
     } else {
-        Write-Host "`nCONFLICTO DETECTADO en para_hosting_compartido_v2" -ForegroundColor Yellow
-        Write-Host "Resuelve los conflictos manualmente y luego ejecuta:" -ForegroundColor Yellow
-        Write-Host "  git add ." -ForegroundColor White
-        Write-Host "  git commit -m 'merge: resolver conflictos'" -ForegroundColor White
-        Write-Host "  git push origin para_hosting_compartido_v2" -ForegroundColor White
-        exit 1
+        Write-Host "⛔ Despliegue en PRODUCCION cancelado/omitido." -ForegroundColor Yellow
     }
 
     # ============================================
@@ -141,21 +167,29 @@ try {
     # RESUMEN FINAL
     # ============================================
     Write-Host "`n========================================" -ForegroundColor Green
-    Write-Host "  SINCRONIZACIÓN COMPLETADA" -ForegroundColor Green
+    Write-Host "  SINCRONIZACION COMPLETADA" -ForegroundColor Green
     Write-Host "========================================`n" -ForegroundColor Green
 
     Write-Host "Resumen:" -ForegroundColor Cyan
     Write-Host "  - Mensaje: $mensaje" -ForegroundColor White
     Write-Host "  - Rama actual: $ramaActual" -ForegroundColor White
-    Write-Host "  - Ramas sincronizadas:" -ForegroundColor White
-    Write-Host "    ✓ version_desarrollo" -ForegroundColor Green
-    Write-Host "    ✓ version_mejorada_para_pythonanywhere" -ForegroundColor Green
-    Write-Host "    ✓ para_hosting_compartido_v2" -ForegroundColor Green
-    Write-Host "`nTodo listo!`n" -ForegroundColor Green
+    Write-Host "  - Estado de Ramas:" -ForegroundColor White
+    
+    if ($status) { Write-Host "    [+] version_desarrollo (Actualizado)" -ForegroundColor Green }
+    else { Write-Host "    [-] version_desarrollo (Sin cambios)" -ForegroundColor Gray }
+    
+    if ($confirmaPAW -eq "S" -or $confirmaPAW -eq "s") { Write-Host "    [+] PythonAnywhere (Sincronizado)" -ForegroundColor Green }
+    else { Write-Host "    [-] PythonAnywhere (Omitido)" -ForegroundColor Gray }
+    
+    if ($confirmaProd -eq "S" -or $confirmaProd -eq "s") { Write-Host "    [+] PRODUCCION (Desplegado)" -ForegroundColor Red }
+    else { Write-Host "    [-] PRODUCCION (Omitido)" -ForegroundColor Gray }
+    
+    Write-Host "`nFin del script.`n" -ForegroundColor Green
 
 } catch {
     Write-Host "ERROR INESPERADO: $_" -ForegroundColor Red
     Write-Host "Volviendo a rama original..." -ForegroundColor Yellow
+    # Intentar volver a rama guardada si existe, sino no hacer nada
     if ($ramaActual) { git checkout $ramaActual }
     exit 1
 }

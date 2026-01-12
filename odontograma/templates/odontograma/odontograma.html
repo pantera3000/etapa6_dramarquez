@@ -12,10 +12,13 @@
     }
     
     .tooth-container {
-        display: inline-block;
-        margin: 2px;
-        text-align: center;
-        width: 40px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        margin: 3px;
+        width: 55px; /* Aumentado para escritorio */
+        height: 85px; /* Proporción ajustada */
         cursor: pointer;
         transition: transform 0.2s;
         position: relative;
@@ -44,27 +47,58 @@
     }
     
     /* Toolbar */
-    .tool-btn {
-        width: 100%;
-        margin-bottom: 8px;
-        text-align: left;
+    /* Toolbar Horizontal */
+    .toolbar-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        border: 1px solid #edf2f7;
+        padding: 10px 15px;
+        margin-bottom: 20px;
+    }
+    
+    .tool-group {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
-        padding: 8px 12px;
+        gap: 5px;
+    }
+    
+    .tool-group-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #718096;
+        text-transform: uppercase;
+        margin-right: 8px;
+        background: #f7fafc;
+        padding: 4px 8px;
+        border-radius: 4px;
+        border: 1px solid #edf2f7;
+    }
+
+    .tool-btn {
+        width: auto;
+        margin-bottom: 0;
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 10px;
         border: 1px solid #dee2e6;
         border-radius: 6px;
         background: white;
         transition: all 0.2s;
+        font-size: 0.85rem;
+        white-space: nowrap;
     }
     .tool-btn:hover {
         background: #f1f3f5;
-        transform: translateX(3px);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
     .tool-btn.active {
         background-color: #e7f5ff;
         border-color: #339af0;
         color: #1971c2;
-        font-weight: 500;
+        font-weight: 600;
         box-shadow: 0 0 0 2px rgba(51, 154, 240, 0.25);
     }
     .color-dot {
@@ -167,94 +201,110 @@
 
 <div class="container-fluid odontograma-container">
     <div id="tooth-tooltip"></div>
-    <div class="row g-3">
-        
-        <!-- COLUMNA IZQUIERDA: Herramientas -->
-        <div class="col-md-3">
-            <div class="sidebar-panel">
-                <div class="sidebar-header bg-primary text-white rounded-top">
-                    🛠️ Herramientas
-                </div>
-                <div class="sidebar-content">
-                    <p class="text-muted small fw-bold mb-2">ESTADOS BÁSICOS</p>
-                    <button class="tool-btn active select-tool" data-state="CARIES" data-color="#ff4d4f">
+    <!-- BARRA SUPERIOR: Herramientas -->
+    <div class="toolbar-container">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            
+            <!-- Grupo Izquierdo: Herramientas de Pintura -->
+            <div class="d-flex flex-wrap align-items-center gap-3">
+                
+                <!-- Básicos -->
+                <div class="tool-group">
+                    <span class="tool-group-label">Básicos</span>
+                    <button class="tool-btn active select-tool" data-state="CARIES" data-color="#ff4d4f" title="Caries">
                         <span class="color-dot" style="background: #ff4d4f;"></span> Caries
                     </button>
-                    <button class="tool-btn select-tool" data-state="OBTURADO" data-color="#1890ff">
+                    <button class="tool-btn select-tool" data-state="OBTURADO" data-color="#1890ff" title="Obturado">
                         <span class="color-dot" style="background: #1890ff;"></span> Obturado
                     </button>
-                    <button class="tool-btn select-tool" data-state="CORONA" data-color="#fadb14">
+                    <button class="tool-btn select-tool" data-state="CORONA" data-color="#fadb14" title="Corona">
                         <span class="color-dot" style="background: #fadb14; border: 1px solid #d4b106;"></span> Corona
                     </button>
-                    <button class="tool-btn select-tool" data-state="AUSENTE" data-color="#434343">
-                        <span class="color-dot" style="background: #434343;"></span> Ausente (X)
+                    <button class="tool-btn select-tool" data-state="AUSENTE" data-color="#434343" title="Ausente">
+                        <span class="color-dot" style="background: #434343;"></span> Ausente
                     </button>
-                    <button class="tool-btn select-tool" data-state="ENDODONCIA" data-color="#eb2f96">
-                        <span class="color-dot" style="background: #eb2f96;"></span> Endodoncia
+                    <button class="tool-btn select-tool" data-state="SANO" data-color="#ffffff" title="Borrar / Sano">
+                        <span class="color-dot" style="background: #ffffff; border: 1px solid #ccc;"></span> Borrar
                     </button>
-                    <button class="tool-btn select-tool" data-state="SELLANTE" data-color="#52c41a">
+                </div>
+
+                <div class="vr bg-secondary opacity-25" style="height: 25px;"></div>
+
+                <!-- Tratamientos y Ortodoncia -->
+                <div class="tool-group">
+                    <span class="tool-group-label">Tratamientos</span>
+                    <button class="tool-btn select-tool" data-state="ENDODONCIA" data-color="#eb2f96" title="Endodoncia">
+                        <span class="color-dot" style="background: #eb2f96;"></span> Endo
+                    </button>
+                    <button class="tool-btn select-tool" data-state="SELLANTE" data-color="#52c41a" title="Sellante">
                         <span class="color-dot" style="background: #52c41a;"></span> Sellante
                     </button>
-                    <button class="tool-btn select-tool" data-state="SANO" data-color="#ffffff">
-                        <span class="color-dot" style="background: #ffffff; border: 1px solid #ccc;"></span> Sano / Borrar
+                    <button class="tool-btn select-tool" data-state="IMPLANTE" data-color="#006d75" title="Implante">
+                        <span class="color-dot" style="background: #006d75;"></span> Implante
                     </button>
-
-                    <p class="text-muted small fw-bold mt-3 mb-2">ORTODONCIA</p>
-                    <button class="tool-btn select-tool" data-state="BRACKET" data-color="#722ed1">
+                    <button class="tool-btn select-tool" data-state="BRACKET" data-color="#722ed1" title="Bracket">
                         <span class="color-dot" style="background: #722ed1;"></span> Bracket
                     </button>
-                    <button class="tool-btn select-tool" data-state="RETENEDOR" data-color="#13c2c2">
-                         <span class="color-dot" style="background: #13c2c2;"></span> Retenedor
+                    <button class="tool-btn select-tool" data-state="RETENEDOR" data-color="#13c2c2" title="Retenedor">
+                        <span class="color-dot" style="background: #13c2c2;"></span> Retenedor
                     </button>
-                    <button class="tool-btn select-tool" data-state="APARATO_REMOVIBLE" data-color="#2f54eb">
+                     <button class="tool-btn select-tool" data-state="APARATO_REMOVIBLE" data-color="#2f54eb" title="Aparato Removible">
                          <span class="color-dot" style="background: #2f54eb;"></span> Ap. Removible
                     </button>
-                     <button class="tool-btn select-tool" data-state="EXTRACCION_PROGRAMADA" data-color="#fa541c">
-                         <span class="color-dot" style="background: #fa541c;"></span> Ext. Programada
-                    </button>
+                </div>
 
-                    <p class="text-muted small fw-bold mt-3 mb-2">ADICIONALES</p>
-                    <button class="tool-btn select-tool" data-state="FRACTURA" data-color="#cf1322">
+                <div class="vr bg-secondary opacity-25" style="height: 25px;"></div>
+
+                 <!-- Adicionales -->
+                 <div class="tool-group">
+                    <span class="tool-group-label">Adicionales</span>
+                    <button class="tool-btn select-tool" data-state="EXTRACCION_PROGRAMADA" data-color="#fa541c" title="Extracción Programada">
+                        <span class="color-dot" style="background: #fa541c;"></span> Ext. Prog.
+                    </button>
+                    <button class="tool-btn select-tool" data-state="FRACTURA" data-color="#cf1322" title="Fractura">
                         <span class="color-dot" style="background: #cf1322;"></span> Fractura
                     </button>
-                    <button class="tool-btn select-tool" data-state="IMPLANTE" data-color="#006d75">
-                         <span class="color-dot" style="background: #006d75;"></span> Implante
+                    <button class="tool-btn select-tool" data-state="PUENTE" data-color="#fa8c16" title="Puente">
+                        <span class="color-dot" style="background: #fa8c16;"></span> Puente
                     </button>
-                    <button class="tool-btn select-tool" data-state="PUENTE" data-color="#fa8c16">
-                         <span class="color-dot" style="background: #fa8c16;"></span> Puente
+                    <button class="tool-btn select-tool" data-state="PROTESIS_PARCIAL" data-color="#8c8c8c" title="Prótesis Parcial">
+                        <span class="color-dot" style="background: #8c8c8c;"></span> P. Parcial
                     </button>
-                    <button class="tool-btn select-tool" data-state="PROTESIS_PARCIAL" data-color="#8c8c8c">
-                         <span class="color-dot" style="background: #8c8c8c;"></span> Prótesis Parcial
+                    <button class="tool-btn select-tool" data-state="PROTESIS_TOTAL" data-color="#595959" title="Prótesis Total">
+                        <span class="color-dot" style="background: #595959;"></span> P. Total
                     </button>
-                     <button class="tool-btn select-tool" data-state="PROTESIS_TOTAL" data-color="#595959">
-                         <span class="color-dot" style="background: #595959;"></span> Prótesis Total
+                    <button class="tool-btn select-tool" data-state="EN_ERUPCION" data-color="#a0d911" title="En Erupción">
+                        <span class="color-dot" style="background: #a0d911;"></span> Erupción
                     </button>
-                    <button class="tool-btn select-tool" data-state="EN_ERUPCION" data-color="#a0d911">
-                         <span class="color-dot" style="background: #a0d911;"></span> En Erupción
-                    </button>
-                    <button class="tool-btn select-tool" data-state="DIENTE_RETENIDO" data-color="#d4380d">
-                         <span class="color-dot" style="background: #d4380d;"></span> Diente Retenido
-                    </button>
-
-                    <hr>
-                    <button class="btn btn-success w-100 py-2 fw-bold shadow-sm" id="btn-save">
-                        💾 GUARDAR CAMBIOS
-                    </button>
-                    <button class="btn btn-danger w-100 py-2 fw-bold shadow-sm mt-2" id="btn-pdf">
-                        📄 EXPORTAR PDF
-                    </button>
-                    <button class="btn btn-outline-secondary w-100 mt-2" id="btn-back">
-                        ← Volver al Paciente
+                    <button class="tool-btn select-tool" data-state="DIENTE_RETENIDO" data-color="#d4380d" title="Diente Retenido">
+                        <span class="color-dot" style="background: #d4380d;"></span> Retenido
                     </button>
                 </div>
             </div>
-        </div>
 
-        <!-- COLUMNA CENTRAL: Visualización -->
-        <div class="col-md-6">
+            <!-- Grupo Derecho: Acciones -->
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-secondary btn-sm" id="btn-back" title="Volver al Paciente">
+                    ← Volver
+                </button>
+                <button class="btn btn-danger btn-sm" id="btn-pdf" title="Exportar PDF">
+                    📄 PDF
+                </button>
+                <button class="btn btn-success btn-sm fw-bold px-3" id="btn-save" title="Guardar Cambios">
+                    💾 GUARDAR
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AREA PRINCIPAL -->
+    <div class="row g-3">
+        
+        <!-- COLUMNA CENTRAL: Visualización (Ampliada) -->
+        <div class="col-md-9">
             <div class="sidebar-panel" id="capture-area">
-                <div class="sidebar-header d-flex justify-content-between align-items-center">
-                    <span>🦷 Odontograma: <strong>{{ paciente.nombre }} {{ paciente.apellido }}</strong></span>
+                <div class="sidebar-header d-flex justify-content-between align-items-center py-2">
+                    <span class="h6 mb-0">🦷 Odontograma: <strong>{{ paciente.nombre }} {{ paciente.apellido }}</strong></span>
                     
                     <div class="btn-group btn-group-sm">
                         <button class="btn btn-outline-primary active" id="view-adult">Adulto</button>
@@ -381,6 +431,11 @@
                     <div id="findings-list" style="max-height: 400px; overflow-y: auto;">
                         <p class="text-muted text-center small mt-3">Sin hallazgos aún.</p>
                     </div>
+                </div>
+                <!-- Observaciones Generales -->
+                <div class="p-3 border-top bg-white">
+                    <label for="general-notes" class="small fw-bold text-uppercase text-muted mb-2">Observaciones Generales</label>
+                    <textarea class="form-control form-control-sm" id="general-notes" rows="4" placeholder="Escribe aquí observaciones generales del paciente...">{{ odontograma.observaciones|default:'' }}</textarea>
                 </div>
             </div>
         </div>
@@ -710,10 +765,12 @@
                     });
                 }
                 
+                const observaciones = document.getElementById('general-notes').value;
+                
                 fetch("{% url 'odontograma:guardar_odontograma' paciente.pk %}", {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
-                    body: JSON.stringify({ hallazgos: payload })
+                    body: JSON.stringify({ hallazgos: payload, observaciones: observaciones })
                 })
                 .then(res => res.json())
                 .then(data => {
