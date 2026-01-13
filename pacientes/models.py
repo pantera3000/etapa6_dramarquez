@@ -4,6 +4,7 @@ from django.db import models
 from django.urls import reverse
 from django.core.validators import MinLengthValidator
 from datetime import date
+from django.utils import timezone
 
 class Paciente(models.Model):
     # === DATOS PERSONALES ===
@@ -129,7 +130,7 @@ class Paciente(models.Model):
     
 
     # === METADATOS ===
-    creado_en = models.DateTimeField(auto_now_add=True)
+    creado_en = models.DateTimeField(default=timezone.now, verbose_name="Fecha de registro")
     actualizado_en = models.DateTimeField(auto_now=True)
 
     class Meta:

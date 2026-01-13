@@ -12,6 +12,10 @@ class PacienteForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'Ej: Juan Pérez López'
             }),
+            'creado_en': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date'
+            }, format='%Y-%m-%d'),
             'dni': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': '8 dígitos'

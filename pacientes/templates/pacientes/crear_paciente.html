@@ -158,11 +158,17 @@
                         </div>
 
                         <div class="col-md-4">
+                            <label class="form-label">Fecha de Registro</label>
+                            {{ form.creado_en }}
+                             <div class="form-text">Predeterminado: Hoy</div>
+                        </div>
+
+                        <div class="col-md-6">
                             <label class="form-label">Género <span class="required-asterisk">*</span></label>
                             {{ form.genero }}
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <label class="form-label">Estado Civil</label>
                             {{ form.estado_civil }}
                         </div>
@@ -327,6 +333,12 @@
             verificarEdad();
             fechaNacimiento.addEventListener('change', verificarEdad);
             fechaNacimiento.addEventListener('blur', verificarEdad);
+        }
+
+        // Preseleccionar Fecha de Registro (Hoy)
+        const fechaRegistro = document.getElementById('id_creado_en');
+        if (fechaRegistro && !fechaRegistro.value) {
+            fechaRegistro.valueAsDate = new Date();
         }
     });
 </script>
