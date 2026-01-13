@@ -6,485 +6,505 @@
 
 {% block content %}
 <style>
-    /* Dashboard Styles */
-    .dashboard-container {
-        padding: 2rem 1rem;
+    /* --- Premium Dashboard Variables --- */
+    :root {
+        --dash-bg: #f8f9fa;
+        --card-bg: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --accent-color: #3b82f6;
+        --radius-lg: 16px;
+        --radius-md: 12px;
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+        --shadow-hover: 0 10px 15px -3px rgba(0,0,0,0.1);
+    }
+
+    [data-theme="dark"] {
+        --dash-bg: #0f172a;
+        --card-bg: #1e293b;
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    /* --- Layout & Typography --- */
+    .dashboard-wrapper {
+        background-color: var(--dash-bg);
+        min-height: 100vh;
+        padding-bottom: 3rem;
+    }
+
+    .section-title {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    /* --- Hero Section --- */
+    .hero-section {
+        background: linear-gradient(135deg, var(--accent-color), #2563eb);
+        color: white;
+        padding: 2rem 1.5rem;
+        border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+        margin-bottom: 2rem;
+        margin-top: -1.5rem; /* Compensate for default container padding if any */
+        margin-left: -0.75rem;
+        margin-right: -0.75rem;
+        box-shadow: var(--shadow-md);
     }
     
-    /* Stats Cards */
-    .stat-card {
-        background: white;
-        border-radius: 1rem;
+    @media (min-width: 768px) {
+        .hero-section {
+            border-radius: var(--radius-lg);
+            margin: 0 0 2rem 0;
+            background: white; /* Desktop: clean look */
+            color: var(--text-primary);
+            box-shadow: none;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 1rem 0;
+        }
+        [data-theme="dark"] .hero-section {
+            background: transparent;
+            border-bottom-color: rgba(255,255,255,0.1);
+            color: var(--text-primary);
+        }
+    }
+
+    /* --- KPI Cards (Premium Clean) --- */
+    .kpi-card {
+        background: var(--card-bg);
+        border-radius: var(--radius-lg);
         padding: 1.5rem;
-        border: 1px solid #e2e8f0;
-        transition: all 0.3s ease;
+        height: 100%;
+        border: 1px solid rgba(0,0,0,0.05);
+        box-shadow: var(--shadow-sm);
+        transition: transform 0.2s, box-shadow 0.2s;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .kpi-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .kpi-icon-wrapper {
+        width: 48px;
+        height: 48px;
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .kpi-value {
+        font-size: 2.25rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        line-height: 1;
+        letter-spacing: -0.02em;
+    }
+
+    .kpi-label {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+        margin-top: 0.25rem;
+    }
+
+    /* --- Quick Actions (App Grid) --- */
+    .action-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+    }
+    
+    @media (min-width: 768px) {
+        .action-grid {
+            grid-template-columns: repeat(6, 1fr);
+            gap: 1.5rem;
+        }
+    }
+
+    .app-icon-card {
+        background: var(--card-bg);
+        border-radius: var(--radius-lg);
+        padding: 1.25rem 0.5rem;
+        text-align: center;
+        text-decoration: none;
+        transition: all 0.2s;
+        border: 1px solid rgba(0,0,0,0.05);
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
         height: 100%;
     }
-    
-    .stat-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        border-color: #cbd5e1;
+
+    .app-icon-card:hover {
+        background-color: var(--card-bg);
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-hover);
+        border-color: var(--accent-color);
     }
-    
-    .stat-icon {
-        width: 60px;
-        height: 60px;
-        border-radius: 1rem;
+
+    .app-icon-box {
+        width: 56px;
+        height: 56px;
+        border-radius: 18px; /* Squircleish */
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 1.75rem;
-        margin-bottom: 1rem;
+        background: #f1f5f9;
+        color: #475569;
+        transition: background 0.2s, color 0.2s;
     }
     
-    .stat-value {
-        font-size: 2.5rem;
-        font-weight: 700;
-        line-height: 1;
-        margin-bottom: 0.5rem;
+    [data-theme="dark"] .app-icon-box {
+        background: #334155;
+        color: #e2e8f0;
     }
-    
-    .stat-label {
-        color: #64748b;
-        font-size: 0.875rem;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
+
+    .app-icon-card:hover .app-icon-box {
+        background: var(--accent-color);
+        color: white;
     }
-    
-    /* Quick Actions */
-    .quick-action {
-        background: white;
-        border: 2px solid #e2e8f0;
-        border-radius: 1rem;
-        padding: 1.25rem;
-        text-align: center;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        display: block;
+
+    .app-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        line-height: 1.2;
+    }
+
+    /* --- Timeline Widget --- */
+    .widget-container {
+        background: var(--card-bg);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid rgba(0,0,0,0.05);
         height: 100%;
     }
-    
-    .quick-action:hover {
-        border-color: #3b82f6;
-        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+
+    .timeline-item {
+        position: relative;
+        padding-left: 2rem;
+        padding-bottom: 1.5rem;
+        border-left: 2px solid #e2e8f0;
     }
     
-    .quick-action i {
-        font-size: 2rem;
-        margin-bottom: 0.75rem;
-        display: block;
+    [data-theme="dark"] .timeline-item {
+        border-left-color: #334155;
+    }
+
+    .timeline-item:last-child {
+        border-left-color: transparent;
+        padding-bottom: 0;
+    }
+
+    .timeline-dot {
+        position: absolute;
+        left: -0.6rem; /* Center on line */
+        top: 0;
+        width: 1.2rem;
+        height: 1.2rem;
+        border-radius: 50%;
+        background: var(--card-bg);
+        border: 3px solid var(--accent-color);
+    }
+
+    .timeline-content {
+        margin-top: -0.25rem;
     }
     
-    .quick-action span {
-        font-weight: 600;
-        color: #1e293b;
-        font-size: 0.875rem;
+    .timeline-time {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        margin-bottom: 0.25rem;
     }
-    
-    /* Widget Cards */
-    .widget-card {
-        background: white;
-        border-radius: 1rem;
-        border: 1px solid #e2e8f0;
-        overflow: hidden;
-    }
-    
-    .widget-header {
-        padding: 1.25rem 1.5rem;
-        border-bottom: 1px solid #e2e8f0;
-        font-weight: 600;
-        color: #1e293b;
-        display: flex;
-        justify-content: between;
-        align-items: center;
-    }
-    
-    .widget-body {
-        padding: 1.5rem;
-        max-height: 400px;
-        overflow-y: auto;
-    }
-    
-    /* Birthday Item */
-    .birthday-item {
-        display: flex;
-        align-items: center;
-        padding: 0.75rem;
-        border-radius: 0.5rem;
-        margin-bottom: 0.5rem;
-        transition: background 0.2s;
-    }
-    
-    .birthday-item:hover {
-        background: #f8fafc;
-    }
-    
-    .birthday-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 0.5rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        color: white;
-        margin-right: 1rem;
-        flex-shrink: 0;
-    }
-    
-    /* Cita Item */
-    .cita-item {
-        padding: 1rem;
-        border-bottom: 1px solid #f1f5f9;
-        position: relative; /* Prevent stretched-link from affecting the whole page */
-    }
-    
-    .cita-item:last-child {
-        border-bottom: none;
-    }
-    
-    /* Responsive */
+
+    /* --- Responsive Helpers --- */
     @media (max-width: 767.98px) {
-        .dashboard-container {
-            padding: 1rem 0.5rem;
-        }
-        
-        .stat-value {
-            font-size: 2rem;
-        }
-        
-        .stat-icon {
-            width: 50px;
-            height: 50px;
-            font-size: 1.5rem;
-        }
-    }
-
-    /* =========================================
-       DARK MODE OVERRIDES
-       ========================================= */
-    [data-theme="dark"] .stat-card {
-        background-color: #1e293b !important;
-        border-color: rgba(255,255,255,0.1) !important;
-    }
-    [data-theme="dark"] .stat-value {
-        color: #f8fafc !important;
-    }
-    [data-theme="dark"] .stat-label {
-        color: #94a3b8 !important;
+        .kpi-value { font-size: 1.75rem; }
+        .kpi-card { padding: 1.25rem; }
+        .app-icon-box { width: 48px; height: 48px; font-size: 1.5rem; }
+        .section-title { font-size: 0.9rem; margin-left: 0.5rem; }
+        .widget-container { padding: 1rem; }
+        .hero-heading { font-size: 1.5rem; }
     }
     
-    /* Quick Actions Dark Mode */
-    [data-theme="dark"] .quick-action {
-        background: #1e293b !important;
-        border-color: rgba(255,255,255,0.1) !important;
-    }
-    [data-theme="dark"] .quick-action:hover {
-        background: #334155 !important;
-        border-color: #475569 !important;
-    }
-    [data-theme="dark"] .quick-action span {
-        color: #f8fafc !important;
-    }
-    [data-theme="dark"] .quick-action i {
-        /* Keep original colors but maybe brighten them slightly if needed, 
-           bootstrap colors usually work fine on dark */
-    }
-
-    /* Widgets Dark Mode */
-    [data-theme="dark"] .widget-card {
-        background-color: #1e293b !important;
-        border-color: rgba(255,255,255,0.1) !important;
-    }
-    [data-theme="dark"] .widget-header {
-        border-bottom-color: rgba(255,255,255,0.1) !important;
-        color: #f8fafc !important;
-    }
-    [data-theme="dark"] .cita-item {
-        border-bottom-color: rgba(255,255,255,0.05) !important;
-    }
-    [data-theme="dark"] .birthday-item:hover {
-        background-color: #334155 !important;
-    }
-    
-    /* Global Text Fixes */
-    [data-theme="dark"] .text-dark { color: #f1f5f9 !important; }
-    [data-theme="dark"] .text-muted { color: #94a3b8 !important; }
-    
-    /* Badges */
-    [data-theme="dark"] .badge.bg-light {
-        background-color: #334155 !important;
-        border-color: #475569 !important;
-        color: #e2e8f0 !important;
+    /* Chart Container Size */
+    .chart-wrapper {
+        position: relative;
+        height: 300px;
+        width: 100%;
     }
 </style>
 
-<div class="dashboard-container">
-    <div class="container-fluid">
-        <!-- Header -->
-        <div class="mb-4">
-            <h1 class="h2 fw-bold text-dark mb-1">👋 Bienvenido, {{ user.username }}</h1>
-            <p class="text-muted">Aquí tienes un resumen de tu consultorio</p>
-        </div>
+<div class="dashboard-wrapper">
+    <div class="container-fluid px-3 px-md-4">
         
-        <!-- Stats Grid -->
+        <!-- 1. Hero / Header -->
+        <div class="hero-section text-center text-md-start">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+                <div>
+                    <h1 class="hero-heading fw-bold mb-1">Hola, {{ user.first_name|default:user.username }} 👋</h1>
+                    <p class="mb-0 opacity-75 d-none d-md-block">Resumen de actividad para hoy, {% now "l j de F" %}</p>
+                    <p class="mb-0 opacity-90 d-md-none small">{% now "l j de F" %}</p>
+                </div>
+                <div class="d-none d-md-block">
+                     <a href="{% url 'configuracion:editar' %}" class="btn btn-light rounded-pill px-4 shadow-sm fw-bold text-dark border">
+                        <i class="bi bi-gear-fill me-2 text-secondary"></i> Configuración
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. KPI Cards -->
         <div class="row g-3 mb-4">
+            <!-- Pacientes -->
             <div class="col-6 col-md-3">
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                        <i class="bi bi-people text-white"></i>
+                <div class="kpi-card">
+                    <div class="kpi-icon-wrapper bg-primary bg-opacity-10 text-primary">
+                        <i class="bi bi-people-fill"></i>
                     </div>
-                    <div class="stat-value text-dark">{{ total_pacientes }}</div>
-                    <div class="stat-label">Pacientes</div>
+                    <div>
+                        <div class="kpi-value">{{ total_pacientes }}</div>
+                        <div class="kpi-label">Pacientes Totales</div>
+                    </div>
                 </div>
             </div>
             
+            <!-- Citas Hoy -->
             <div class="col-6 col-md-3">
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                        <i class="bi bi-calendar-check text-white"></i>
+                <div class="kpi-card">
+                    <div class="kpi-icon-wrapper bg-success bg-opacity-10 text-success">
+                        <i class="bi bi-calendar-check-fill"></i>
                     </div>
-                    <div class="stat-value text-dark">{{ citas_hoy }}</div>
-                    <div class="stat-label">Citas Hoy</div>
+                    <div>
+                        <div class="kpi-value">{{ citas_hoy }}</div>
+                        <div class="kpi-label">Citas Hoy</div>
+                    </div>
                 </div>
             </div>
             
+            <!-- Tratamientos Activos -->
             <div class="col-6 col-md-3">
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-                        <i class="bi bi-cake2 text-white"></i>
+                <div class="kpi-card">
+                    <div class="kpi-icon-wrapper bg-warning bg-opacity-10 text-warning">
+                        <i class="bi bi-tooth-fill"></i>
                     </div>
-                    <div class="stat-value text-dark">{{ cumpleanos_cercanos|length }}</div>
-                    <div class="stat-label">Cumpleaños</div>
+                    <div>
+                        <div class="kpi-value">{{ tratamientos_activos }}</div>
+                        <div class="kpi-label">En Tratamiento</div>
+                    </div>
                 </div>
             </div>
-            
+
+            <!-- Cumpleaños (o Ingresos si permitido) -->
             <div class="col-6 col-md-3">
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
-                        <i class="bi bi-bandaid text-white"></i>
+                <div class="kpi-card">
+                    <div class="kpi-icon-wrapper bg-danger bg-opacity-10 text-danger">
+                        <i class="bi bi-gift-fill"></i>
                     </div>
-                    <div class="stat-value text-dark">{{ tratamientos_activos }}</div>
-                    <div class="stat-label">Tratamientos</div>
+                    <div>
+                        <div class="kpi-value">{{ cumpleanos_cercanos|length }}</div>
+                        <div class="kpi-label">Cumpleaños (7 días)</div>
+                    </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Quick Actions -->
-        <div class="mb-4">
-            <h5 class="fw-bold text-dark mb-3">⚡ Accesos Rápidos</h5>
-            <div class="row g-3">
-                <div class="col-6 col-md-2">
-                    <a href="{% url 'pacientes:crear' %}" class="quick-action">
-                        <i class="bi bi-person-plus text-primary"></i>
-                        <span>Nuevo Paciente</span>
-                    </a>
-                </div>
-                <div class="col-6 col-md-2">
-                    <a href="{% url 'citas:calendario' %}" class="quick-action">
-                        <i class="bi bi-calendar-plus text-success"></i>
-                        <span>Nueva Cita</span>
-                    </a>
-                </div>
-                <div class="col-6 col-md-2">
-                    <a href="{% url 'notas:crear' %}" class="quick-action">
-                        <i class="bi bi-sticky text-warning"></i>
-                        <span>Nueva Nota</span>
-                    </a>
-                </div>
-                <div class="col-6 col-md-2">
-                    <a href="{% url 'citas:calendario' %}" class="quick-action">
-                        <i class="bi bi-calendar-week text-info"></i>
-                        <span>Calendario</span>
-                    </a>
-                </div>
-                <div class="col-6 col-md-2">
-                    <a href="{% url 'pacientes:lista' %}" class="quick-action">
-                        <i class="bi bi-people text-secondary"></i>
-                        <span>Ver Pacientes</span>
-                    </a>
-                </div>
-                <div class="col-6 col-md-2">
-                    <a href="{% url 'reportes:dashboard' %}" class="quick-action">
-                        <i class="bi bi-graph-up text-danger"></i>
-                        <span>Reportes</span>
-                    </a>
-                </div>
+
+        <!-- 3. App Grid (Quick Actions) -->
+        <div class="mb-5">
+            <h6 class="section-title"><i class="bi bi-grid-fill"></i> Accesos Rápidos</h6>
+            <div class="action-grid">
+                <a href="{% url 'pacientes:crear' %}" class="app-icon-card">
+                    <div class="app-icon-box fs-primary">
+                        <i class="bi bi-person-plus-fill"></i>
+                    </div>
+                    <span class="app-label">Nuevo<br>Paciente</span>
+                </a>
+                
+                <a href="{% url 'citas:calendario' %}" class="app-icon-card">
+                    <div class="app-icon-box">
+                        <i class="bi bi-calendar-plus-fill"></i>
+                    </div>
+                    <span class="app-label">Agendar<br>Cita</span>
+                </a>
+
+                <a href="{% url 'pacientes:lista' %}" class="app-icon-card">
+                     <div class="app-icon-box">
+                        <i class="bi bi-search"></i>
+                    </div>
+                    <span class="app-label">Buscar<br>Paciente</span>
+                </a>
+                
+                <a href="{% url 'notas:crear' %}" class="app-icon-card">
+                     <div class="app-icon-box">
+                        <i class="bi bi-sticky-fill"></i>
+                    </div>
+                    <span class="app-label">Nota<br>Rápida</span>
+                </a>
+
+                {% if permiso_grafico %}
+                <a href="{% url 'reportes:dashboard' %}" class="app-icon-card">
+                     <div class="app-icon-box">
+                        <i class="bi bi-bar-chart-fill"></i>
+                    </div>
+                    <span class="app-label">Reportes<br>Panel</span>
+                </a>
+                {% endif %}
+
+                 <a href="{% url 'citas:calendario' %}" class="app-icon-card">
+                     <div class="app-icon-box">
+                        <i class="bi bi-calendar-week-fill"></i>
+                    </div>
+                    <span class="app-label">Ver<br>Agenda</span>
+                </a>
             </div>
         </div>
-        
-        <!-- Widgets Grid -->
+
+        <!-- 4. Content Grid (Timeline + Chart) -->
         <div class="row g-4">
-            <!-- Últimos Pacientes Vistos -->
-            <div class="col-md-6">
-                <div class="widget-card">
-                    <div class="widget-header">
-                        <span>🕐 Últimos Pacientes Vistos</span>
+            
+            <!-- Activity Timeline -->
+            <div class="col-lg-5 col-xl-4">
+                <div class="widget-container">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h6 class="fw-bold mb-0 text-dark">🕑 Actividad Reciente</h6>
+                        <a href="{% url 'pacientes:lista' %}" class="btn btn-sm btn-link text-decoration-none p-0">Ver todo</a>
                     </div>
-                    <div class="widget-body">
+                    
+                    <div class="timeline-list">
                         {% if ultimos_pacientes %}
                             {% for paciente in ultimos_pacientes %}
-                                <div class="cita-item">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div class="d-flex align-items-center">
-                                            <div class="birthday-avatar" style="background-color: {{ paciente.nombre_completo|avatar_color }};">
-                                                {{ paciente.nombre_completo|initials_avatar }}
-                                            </div>
-                                            <div>
-                                                <a href="{% url 'pacientes:detalle' paciente.pk %}" class="fw-bold text-dark text-decoration-none stretched-link">
-                                                    {{ paciente.nombre_completo }}
-                                                </a>
-                                                <div class="small text-muted">
-                                                    <i class="bi bi-clock-history me-1"></i> Editado: {{ paciente.actualizado_en|date:"d/m/Y H:i" }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="text-end">
-                                            <i class="bi bi-chevron-right text-muted small"></i>
-                                        </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-dot"></div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-time">{{ paciente.actualizado_en|date:"H:i" }} · {{ paciente.actualizado_en|date:"d M" }}</div>
+                                        <a href="{% url 'pacientes:detalle' paciente.pk %}" class="fw-bold text-dark text-decoration-none d-block mb-1">
+                                            {{ paciente.nombre_completo }}
+                                        </a>
+                                        <p class="small text-muted mb-0">
+                                            Actualización de historia clínica
+                                        </p>
                                     </div>
                                 </div>
                             {% endfor %}
                         {% else %}
-                            <div class="text-center py-4 text-muted">
-                                <i class="bi bi-person-x fs-1 opacity-25"></i>
-                                <p class="mb-0 mt-2">No hay pacientes recientes</p>
-                            </div>
+                             <p class="text-muted small text-center">Sin actividad reciente.</p>
                         {% endif %}
                     </div>
                 </div>
+            </div>
+
+            <!-- Financial Chart / Debt Widget -->
+            <div class="col-lg-7 col-xl-8">
+                {% if permiso_grafico %}
+                    <div class="widget-container mb-4">
+                         <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h6 class="fw-bold mb-0 text-dark">📊 Ingresos (Últimos 6 meses)</h6>
+                        </div>
+                        <div class="chart-wrapper">
+                             <canvas id="ingresosChart"></canvas>
+                        </div>
+                    </div>
+                {% endif %}
+                
+                {% if permiso_cobranza and tratamientos_deuda %}
+                    <div class="widget-container bg-danger bg-opacity-10 border-danger border-opacity-25">
+                         <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold mb-0 text-danger"><i class="bi bi-exclamation-octagon me-2"></i>Deudas Pendientes</h6>
+                             <a href="{% url 'tratamientos:lista' %}?estado_pago=pendiente" class="btn btn-sm btn-danger rounded-pill px-3">Gestionar</a>
+                        </div>
+                        <div class="row g-2">
+                             {% for t in tratamientos_deuda|slice:":3" %}
+                                <div class="col-md-4">
+                                    <div class="bg-white p-3 rounded-3 shadow-sm border border-danger border-opacity-10 h-100">
+                                        <div class="small text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">{{ t.paciente.nombre_completo|truncatechars:18 }}</div>
+                                        <div class="fw-bold text-danger fs-5 mt-1">S/ {{ t.saldo_pendiente|floatformat:0 }}</div>
+                                        <div class="small text-muted mt-1 text-truncate">{{ t.nombre }}</div>
+                                    </div>
+                                </div>
+                             {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
             </div>
             
-            <!-- Cobranza Pendiente (Pagos Pendientes) -->
-            {% if permiso_cobranza %}
-            <div class="col-md-6">
-                <div class="widget-card h-100">
-                    <div class="widget-header d-flex justify-content-between align-items-center">
-                        <span class="text-danger"><i class="bi bi-exclamation-circle me-2"></i>Cobranza Pendiente (Top 5)</span>
-                        <a href="{% url 'tratamientos:lista' %}?estado_pago=pendiente" class="btn btn-sm btn-outline-danger" style="font-size: 0.75rem;">Ver Todo</a>
-                    </div>
-                    <div class="widget-body">
-                        {% if tratamientos_deuda %}
-                            {% for tratamiento in tratamientos_deuda %}
-                                <div class="cita-item">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div class="d-flex align-items-center">
-                                            <div class="birthday-avatar bg-danger bg-opacity-10 text-danger">
-                                                <i class="bi bi-cash"></i>
-                                            </div>
-                                            <div>
-                                                <a href="{% url 'tratamientos:detalle' tratamiento.pk %}" class="fw-bold text-dark text-decoration-none stretched-link">
-                                                    {{ tratamiento.paciente.nombre_completo|truncatechars:20 }}
-                                                </a>
-                                                <div class="small text-muted">
-                                                    {{ tratamiento.nombre }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="text-end">
-                                            <div class="fw-bold text-danger">S/ {{ tratamiento.saldo_pendiente|floatformat:2 }}</div>
-                                            <div class="small text-muted" style="font-size: 0.7rem;">Deuda</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        {% else %}
-                            <div class="text-center py-4 text-muted">
-                                <i class="bi bi-check-circle fs-1 opacity-25 text-success"></i>
-                                <p class="mb-0 mt-2">¡Todo al día! No hay deudas pendientes.</p>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            {% endif %}
         </div>
-        
-        <!-- ROW 4: Gráfico Financiero -->
-        {% if permiso_grafico %}
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="widget-card">
-                    <div class="widget-header">
-                        <span>📊 Ingresos Mensuales (Últimos 6 meses)</span>
-                    </div>
-                    <div class="widget-body" style="height: 300px; max-height: 300px;">
-                        <canvas id="ingresosChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endif %}
     </div>
 </div>
 
+<!-- Scripts (Keep existing logic, just re-attach) -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Datos desde Django Views
-        // Solo inicializar si el canvas existe (validación por permisos)
         const canvas = document.getElementById('ingresosChart');
         if (canvas) {
             const ctx = canvas.getContext('2d');
             const labels = JSON.parse('{{ chart_labels|safe }}');
             const data = JSON.parse('{{ chart_data|safe }}');
             
-            // Detectar modo oscuro para ajustar colores del gráfico
             const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
             const textColor = isDark ? '#94a3b8' : '#64748b';
 
             new Chart(ctx, {
-                type: 'bar',
+                type: 'line', // Switch to Line for better trend visualization
                 data: {
                     labels: labels,
                     datasets: [{
                         label: 'Ingresos (S/)',
                         data: data,
-                        backgroundColor: 'rgba(59, 130, 246, 0.2)', // Blue-500 alpha
-                        borderColor: 'rgba(59, 130, 246, 1)',     // Blue-500
-                        borderWidth: 1,
-                        borderRadius: 4,
-                        barThickness: 30,
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#3b82f6',
+                        pointRadius: 4,
+                        fill: true,
+                        tension: 0.4
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            mode: 'index',
+                        legend: { display: false },
+                        tooltip: { 
+                            mode: 'index', 
                             intersect: false,
+                            backgroundColor: isDark ? '#1e293b' : '#ffffff',
+                            titleColor: isDark ? '#f8fafc' : '#1e293b',
+                            bodyColor: isDark ? '#cbd5e1' : '#475569',
+                            borderColor: isDark ? '#334155' : '#e2e8f0',
+                            borderWidth: 1,
+                            padding: 10
                         }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
-                            grid: {
-                                color: gridColor,
-                                drawBorder: false,
-                            },
-                            ticks: {
-                                color: textColor,
-                                callback: function(value) {
-                                    return 'S/ ' + value;
-                                }
-                            }
+                            grid: { color: gridColor, drawBorder: false },
+                            ticks: { color: textColor, callback: v => 'S/ ' + v }
                         },
                         x: {
-                            grid: {
-                                display: false,
-                                drawBorder: false,
-                            },
-                            ticks: {
-                                color: textColor
-                            }
+                            grid: { display: false },
+                            ticks: { color: textColor }
                         }
                     }
                 }
