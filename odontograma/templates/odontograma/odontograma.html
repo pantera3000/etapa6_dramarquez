@@ -3,303 +3,311 @@
 
 {% block content %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 <style>
-    /* Estilos Odontograma */
+    /* Estilos Odontograma v2 - iPad Style */
+    :root {
+        --primary-teal: #20c997;
+        --soft-gray: #f8f9fa;
+        --border-color: #e9ecef;
+    }
+
+    body {
+        background-color: #f1f3f5;
+    }
+
     .odontograma-container {
-        background-color: #f8f9fa;
-        min-height: calc(100vh - 100px);
-        padding: 20px;
+        background-color: white;
+        min-height: calc(100vh - 80px);
+        padding: 30px;
+        border-radius: 20px;
+        margin: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.04);
     }
     
+    /* Diente Híbrido */
     .tooth-container {
         display: inline-flex;
         justify-content: center;
         align-items: center;
         flex-direction: column;
-        margin: 3px;
-        width: 55px; /* Aumentado para escritorio */
-        height: 85px; /* Proporción ajustada */
+        margin: 4px;
+        width: 60px;
+        height: 90px;
         cursor: pointer;
-        transition: transform 0.2s;
         position: relative;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
     .tooth-container:hover {
-        transform: scale(1.05);
-        z-index: 10;
+        transform: translateY(-5px);
     }
-    
     .tooth-svg {
         width: 100%;
         height: auto;
-        filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.2));
+        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
     }
     
-    .tooth-polygon {
-        fill: #ffffff;
-        stroke: #333;
-        stroke-width: 1.5;
-        transition: fill 0.1s;
-    }
-    .tooth-polygon:hover {
-        fill: #e2e6ea;
-        opacity: 0.8;
-        stroke: #000;
-    }
+    /* Capas del Diente */
+    .tooth-base { fill: #ffffff; stroke: #adb5bd; stroke-width: 1; }
+    .tooth-face { fill: transparent; transition: fill 0.2s; cursor: pointer; }
+    .tooth-face:hover { fill: rgba(32, 201, 151, 0.2); }
     
-    /* Toolbar */
-    /* Toolbar Horizontal */
-    .toolbar-container {
+    /* Decoradores (Implante, Corona) */
+    .implant-screw { fill: #868e96; display: none; }
+    .crown-contour { fill: none; stroke: #fcc419; stroke-width: 3; display: none; }
+
+    /* Menu Contextual (Mega Popover) */
+    .ctx-menu {
+        position: absolute;
         background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        border: 1px solid #edf2f7;
-        padding: 10px 15px;
-        margin-bottom: 20px;
-    }
-    
-    .tool-group {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 5px;
-    }
-    
-    .tool-group-label {
-        font-size: 0.7rem;
-        font-weight: 700;
-        color: #718096;
-        text-transform: uppercase;
-        margin-right: 8px;
-        background: #f7fafc;
-        padding: 4px 8px;
-        border-radius: 4px;
-        border: 1px solid #edf2f7;
-    }
-
-    .tool-btn {
-        width: auto;
-        margin-bottom: 0;
-        display: inline-flex;
-        align-items: center;
-        padding: 6px 10px;
-        border: 1px solid #dee2e6;
-        border-radius: 6px;
-        background: white;
-        transition: all 0.2s;
-        font-size: 0.85rem;
-        white-space: nowrap;
-    }
-    .tool-btn:hover {
-        background: #f1f3f5;
-        transform: translateY(-1px);
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-    .tool-btn.active {
-        background-color: #e7f5ff;
-        border-color: #339af0;
-        color: #1971c2;
-        font-weight: 600;
-        box-shadow: 0 0 0 2px rgba(51, 154, 240, 0.25);
-    }
-    .color-dot {
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        margin-right: 10px;
-        border: 1px solid rgba(0,0,0,0.1);
-    }
-
-    /* Paneles Laterales */
-    .sidebar-panel {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        height: 100%;
-        border: 1px solid #edf2f7;
-    }
-    .sidebar-header {
-        padding: 15px;
-        border-bottom: 1px solid #edf2f7;
-        font-weight: 600;
-        color: #2d3748;
-    }
-    .sidebar-content {
-        padding: 15px;
-        max-height: calc(100vh - 200px);
-        overflow-y: auto;
-    }
-
-    /* Historial */
-    .history-item {
-        font-size: 0.85rem;
-        padding: 8px 0;
-        border-bottom: 1px dashed #edf2f7;
-    }
-    .history-time {
-        color: #718096;
-        font-size: 0.75rem;
-    }
-
-    /* Custom Tooltip */
-    #tooth-tooltip {
-        position: fixed;
-        background: rgba(33, 37, 41, 0.9);
-        color: white;
-        padding: 8px 12px;
-        border-radius: 6px;
-        font-size: 12px;
-        pointer-events: none;
-        z-index: 9999;
+        border-radius: 16px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.12), 0 5px 15px rgba(0,0,0,0.05);
+        padding: 0;
+        z-index: 1000;
+        width: 380px; /* Wider for tabs */
         display: none;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        max-width: 200px;
+        border: 1px solid rgba(0,0,0,0.05);
+        animation: ctxFadeIn 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+        overflow: hidden;
+    }
+    @keyframes ctxFadeIn { 
+        from { opacity: 0; transform: translateY(10px) scale(0.98); } 
+        to { opacity: 1; transform: translateY(0) scale(1); } 
+    }
+
+    .ctx-header {
+        background: #f8f9fa;
+        padding: 12px 16px;
+        border-bottom: 1px solid #e9ecef;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .ctx-title { font-weight: 700; color: #343a40; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; }
+
+    /* Tabs */
+    .ctx-tabs {
+        display: flex;
+        background: white;
+        border-bottom: 1px solid #e9ecef;
+    }
+    .ctx-tab {
+        flex: 1;
+        text-align: center;
+        padding: 10px 0;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #868e96;
+        cursor: pointer;
+        transition: all 0.2s;
+        border-bottom: 2px solid transparent;
+    }
+    .ctx-tab:hover { background: #f8f9fa; color: #495057; }
+    .ctx-tab.active { color: var(--primary-teal); border-bottom-color: var(--primary-teal); background: white; }
+
+    /* Content Area */
+    .ctx-content { padding: 16px; background: white; min-height: 200px; }
+    .ctx-pane { display: none; }
+    .ctx-pane.active { display: block; animation: paneFade 0.2s; }
+    @keyframes paneFade { from { opacity: 0; transform: translateX(5px); } to { opacity: 1; transform: translateX(0); } }
+
+    /* Grid Layout */
+    .action-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
     }
     
-    /* RESPONSIVE MOBILE - Odontograma más pequeño */
-    @media (max-width: 767.98px) {
-        .odontograma-container {
-            padding: 10px 5px;
-        }
-        
-        .tooth-container {
-            width: 32px; /* Reducido de 55px */
-            margin: 2px; /* Reducido de 4px */
-        }
-        
-        .tooth-number {
-            font-size: 8px !important; /* Números más pequeños */
-        }
-        
-        .card-body {
-            padding: 10px !important;
-        }
-        
-        /* Reducir gaps entre dientes */
-        .d-flex.gap-1 {
-            gap: 0.15rem !important;
-        }
-        
-        /* Ajustar padding de columnas */
-        .border-end {
-            padding-right: 0.5rem !important;
-        }
-        .border-start {
-            padding-left: 0.5rem !important;
-        }
-        
-        /* Sidebar panels en móvil */
-        .sidebar-content {
-            padding: 10px;
-        }
-        
-        .tool-btn {
-            padding: 6px 8px;
-            font-size: 0.85rem;
+    /* Action Buttons */
+    .action-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 12px;
+        border: 1px solid #e9ecef;
+        border-radius: 10px;
+        background: white;
+        cursor: pointer;
+        transition: all 0.2s;
+        height: 80px;
+    }
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        border-color: var(--primary-teal);
+    }
+    .action-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        color: white;
+    }
+    .action-label { font-size: 0.8rem; font-weight: 600; color: #495057; }
+
+    .action-btn.danger:hover { border-color: #ff6b6b; background: #fff5f5; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .odontograma-container { padding: 10px; margin: 10px; }
+        .tooth-container { width: 40px; margin: 2px; }
+        .ctx-menu { 
+            width: 100% !important; 
+            left: 0 !important; 
+            /* right: 0 !important; removed to avoid conflict */
+            bottom: 0; 
+            top: auto !important; 
+            border-radius: 20px 20px 0 0; 
+            position: fixed;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
         }
     }
 </style>
 
 <div class="container-fluid odontograma-container">
-    <div id="tooth-tooltip"></div>
-    <!-- BARRA SUPERIOR: Herramientas -->
-    <div class="toolbar-container">
-        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-            
-            <!-- Grupo Izquierdo: Herramientas de Pintura -->
-            <div class="d-flex flex-wrap align-items-center gap-1 gap-md-3">
-                
-                <!-- Básicos -->
-                <div class="tool-group">
-                    <span class="tool-group-label">Básicos</span>
-                    <button class="tool-btn active select-tool" data-state="CARIES" data-color="#ff4d4f" title="Caries">
-                        <span class="color-dot" style="background: #ff4d4f;"></span> Caries
-                    </button>
-                    <button class="tool-btn select-tool" data-state="OBTURADO" data-color="#1890ff" title="Obturado">
-                        <span class="color-dot" style="background: #1890ff;"></span> Obturado
-                    </button>
-                    <button class="tool-btn select-tool" data-state="CORONA" data-color="#fadb14" title="Corona">
-                        <span class="color-dot" style="background: #fadb14; border: 1px solid #d4b106;"></span> Corona
-                    </button>
-                    <button class="tool-btn select-tool" data-state="AUSENTE" data-color="#434343" title="Ausente">
-                        <span class="color-dot" style="background: #434343;"></span> Ausente
-                    </button>
-                    <button class="tool-btn select-tool" data-state="SANO" data-color="#ffffff" title="Borrar / Sano">
-                        <span class="color-dot" style="background: #ffffff; border: 1px solid #ccc;"></span> Borrar
-                    </button>
+    <!-- MENU CONTEXTUAL FLOTANTE (MEGA POPOVER) -->
+    <div id="ctx-menu" class="ctx-menu">
+        <!-- Header -->
+        <div class="ctx-header">
+            <div class="ctx-title">
+                <span class="fs-5">🦷</span> 
+                <div>
+                    Diente <span id="ctx-tooth-id">--</span>
+                    <div class="small fw-normal text-muted" id="ctx-face-info" style="font-size: 0.75rem;">Seleccionar acción</div>
                 </div>
+            </div>
+            <button class="btn-close" onclick="closeCtxMenu()"></button>
+        </div>
 
-                <div class="vr bg-secondary opacity-25 d-none d-md-block" style="height: 25px;"></div>
+        <!-- Tabs -->
+        <div class="ctx-tabs">
+            <div class="ctx-tab active" onclick="switchCtxTab('basics')">Básicos</div>
+            <div class="ctx-tab" onclick="switchCtxTab('treatments')">Tratamientos</div>
+            <div class="ctx-tab" onclick="switchCtxTab('additional')">Adicionales</div>
+        </div>
 
-                <!-- Tratamientos y Ortodoncia -->
-                <div class="tool-group">
-                    <span class="tool-group-label">Tratamientos</span>
-                    <button class="tool-btn select-tool" data-state="ENDODONCIA" data-color="#eb2f96" title="Endodoncia">
-                        <span class="color-dot" style="background: #eb2f96;"></span> Endo
-                    </button>
-                    <button class="tool-btn select-tool" data-state="SELLANTE" data-color="#52c41a" title="Sellante">
-                        <span class="color-dot" style="background: #52c41a;"></span> Sellante
-                    </button>
-                    <button class="tool-btn select-tool" data-state="IMPLANTE" data-color="#006d75" title="Implante">
-                        <span class="color-dot" style="background: #006d75;"></span> Implante
-                    </button>
-                    <button class="tool-btn select-tool" data-state="BRACKET" data-color="#722ed1" title="Bracket">
-                        <span class="color-dot" style="background: #722ed1;"></span> Bracket
-                    </button>
-                    <button class="tool-btn select-tool" data-state="RETENEDOR" data-color="#13c2c2" title="Retenedor">
-                        <span class="color-dot" style="background: #13c2c2;"></span> Retenedor
-                    </button>
-                     <button class="tool-btn select-tool" data-state="APARATO_REMOVIBLE" data-color="#2f54eb" title="Aparato Removible">
-                         <span class="color-dot" style="background: #2f54eb;"></span> Ap. Removible
-                    </button>
-                </div>
-
-                <div class="vr bg-secondary opacity-25 d-none d-md-block" style="height: 25px;"></div>
-
-                 <!-- Adicionales -->
-                 <div class="tool-group">
-                    <span class="tool-group-label">Adicionales</span>
-                    <button class="tool-btn select-tool" data-state="EXTRACCION_PROGRAMADA" data-color="#fa541c" title="Extracción Programada">
-                        <span class="color-dot" style="background: #fa541c;"></span> Ext. Prog.
-                    </button>
-                    <button class="tool-btn select-tool" data-state="FRACTURA" data-color="#cf1322" title="Fractura">
-                        <span class="color-dot" style="background: #cf1322;"></span> Fractura
-                    </button>
-                    <button class="tool-btn select-tool" data-state="PUENTE" data-color="#fa8c16" title="Puente">
-                        <span class="color-dot" style="background: #fa8c16;"></span> Puente
-                    </button>
-                    <button class="tool-btn select-tool" data-state="PROTESIS_PARCIAL" data-color="#8c8c8c" title="Prótesis Parcial">
-                        <span class="color-dot" style="background: #8c8c8c;"></span> P. Parcial
-                    </button>
-                    <button class="tool-btn select-tool" data-state="PROTESIS_TOTAL" data-color="#595959" title="Prótesis Total">
-                        <span class="color-dot" style="background: #595959;"></span> P. Total
-                    </button>
-                    <button class="tool-btn select-tool" data-state="EN_ERUPCION" data-color="#a0d911" title="En Erupción">
-                        <span class="color-dot" style="background: #a0d911;"></span> Erupción
-                    </button>
-                    <button class="tool-btn select-tool" data-state="DIENTE_RETENIDO" data-color="#d4380d" title="Diente Retenido">
-                        <span class="color-dot" style="background: #d4380d;"></span> Retenido
-                    </button>
+        <!-- Content -->
+        <div class="ctx-content">
+            <!-- TAB 1: BÁSICOS -->
+            <div id="pane-basics" class="ctx-pane active">
+                <div class="action-grid">
+                    <div class="action-btn" onclick="applyCtxState('CARIES', '#ff6b6b')">
+                        <div class="action-icon" style="background: #ff6b6b;">🦠</div>
+                        <span class="action-label">Caries</span>
+                    </div>
+                    <div class="action-btn" onclick="applyCtxState('OBTURADO', '#339af0')">
+                        <div class="action-icon" style="background: #339af0;">💧</div>
+                        <span class="action-label">Obturado</span>
+                    </div>
+                    <div class="action-btn" onclick="toggleStructural('CORONA')">
+                        <div class="action-icon" style="background: #fcc419;">👑</div>
+                        <span class="action-label">Corona</span>
+                    </div>
+                    <div class="action-btn danger" onclick="toggleStructural('AUSENTE')">
+                         <div class="action-icon" style="background: #fa5252;">❌</div>
+                        <span class="action-label">Ausente</span>
+                    </div>
+                    <div class="action-btn" style="grid-column: span 2;" onclick="applyCtxState('SANO', 'white')">
+                        <div class="action-icon" style="background: #e9ecef; color: #868e96;">🧹</div>
+                        <span class="action-label">Borrar / Sano</span>
+                    </div>
                 </div>
             </div>
 
-            <!-- Grupo Derecho: Acciones -->
-            <div class="d-flex gap-2 align-items-center">
-                <!-- Auto-Save Indicator -->
-                <span id="save-status" class="badge bg-light text-secondary border d-none d-md-inline-block">
-                    ☁️ Al día
-                </span>
+            <!-- TAB 2: TRATAMIENTOS -->
+            <div id="pane-treatments" class="ctx-pane">
+                 <div class="action-grid">
+                    <div class="action-btn" onclick="applyCtxState('ENDODONCIA', '#f06595')">
+                        <div class="action-icon" style="background: #f06595;">⚡</div>
+                        <span class="action-label">Endo</span>
+                    </div>
+                    <div class="action-btn" onclick="applyCtxState('SELLANTE', '#51cf66')">
+                        <div class="action-icon" style="background: #51cf66;">🛡️</div>
+                        <span class="action-label">Sellante</span>
+                    </div>
+                    <div class="action-btn" onclick="toggleStructural('IMPLANTE')">
+                        <div class="action-icon" style="background: #0f766e;">🔩</div>
+                        <span class="action-label">Implante</span>
+                    </div>
+                    <div class="action-btn" onclick="toggleStructural('BRACKET')">
+                        <div class="action-icon" style="background: #845ef7;">🦷</div>
+                        <span class="action-label">Bracket</span>
+                    </div>
+                    <div class="action-btn" onclick="toggleStructural('RETENEDOR')">
+                        <div class="action-icon" style="background: #22b8cf;">🔗</div>
+                        <span class="action-label">Retenedor</span>
+                    </div>
+                     <div class="action-btn" onclick="toggleStructural('AP_REMOVIBLE')">
+                        <div class="action-icon" style="background: #4c6ef5;">🧼</div>
+                        <span class="action-label">Ap. Removible</span>
+                    </div>
+                </div>
+            </div>
 
-                <button class="btn btn-outline-secondary btn-sm" id="btn-back" title="Volver al Paciente">
-                    ← Volver
-                </button>
-                <button class="btn btn-danger btn-sm" id="btn-pdf" title="Exportar PDF">
-                    📄 PDF
-                </button>
-                <button class="btn btn-success btn-sm fw-bold px-3" id="btn-save" title="Guardar Manualmente">
-                    💾 GUARDAR
-                </button>
+            <!-- TAB 3: ADICIONALES -->
+            <div id="pane-additional" class="ctx-pane">
+                <div class="action-grid">
+                     <div class="action-btn danger" onclick="applyCtxState('EXTRACCION_PROGRAMADA', '#ff922b')">
+                        <div class="action-icon" style="background: #ff922b;">⏳</div>
+                        <span class="action-label">Ext. Prog.</span>
+                    </div>
+                    <div class="action-btn danger" onclick="applyCtxState('FRACTURA', '#c92a2a')">
+                        <div class="action-icon" style="background: #c92a2a;">💔</div>
+                        <span class="action-label">Fractura</span>
+                    </div>
+                    <div class="action-btn" onclick="toggleStructural('PUENTE')">
+                        <div class="action-icon" style="background: #fd7e14;">🌉</div>
+                        <span class="action-label">Puente</span>
+                    </div>
+                    <div class="action-btn" onclick="toggleStructural('P_PARCIAL')">
+                         <div class="action-icon" style="background: #868e96;">🦷</div>
+                        <span class="action-label">P. Parcial</span>
+                    </div>
+                     <div class="action-btn" onclick="toggleStructural('P_TOTAL')">
+                         <div class="action-icon" style="background: #495057;">🦷</div>
+                        <span class="action-label">P. Total</span>
+                    </div>
+                     <div class="action-btn" onclick="toggleStructural('ERUPCION')">
+                         <div class="action-icon" style="background: #a9e34b;">🌱</div>
+                        <span class="action-label">Erupción</span>
+                    </div>
+                     <div class="action-btn danger" onclick="toggleStructural('RETENIDO')">
+                         <div class="action-icon" style="background: #862e9c;">⛔</div>
+                        <span class="action-label">Retenido</span>
+                    </div>
+                </div>
+                <!-- Manual Note Shortcut inside Additional too? Or just stick to Basics? -->
+                 <div class="mt-3 pt-3 border-top">
+                     <button class="btn btn-outline-secondary w-100 btn-sm" id="btn-add-note">
+                         <i class="fas fa-sticky-note me-2"></i> Agregar Nota Manual
+                     </button>
+                </div>
             </div>
         </div>
+    </div>
+    
+    <!-- HEADER NUEVO -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+         <div>
+             <h4 class="mb-0 fw-bold text-dark">Odontograma Digital</h4>
+             <p class="text-muted small mb-0">{{ paciente.nombre_completo }}</p>
+         </div>
+         <div class="d-flex gap-2">
+            <span id="save-status" class="badge bg-light text-secondary border px-3 py-2 d-flex align-items-center">
+                ☁️ Sync
+            </span>
+             <button class="btn btn-primary px-4 rounded-pill shadow-sm" id="btn-save">
+                 💾 Guardar
+             </button>
+             <a href="{% url 'pacientes:detalle' paciente.pk %}" class="btn btn-outline-secondary rounded-pill" id="btn-back">
+                 Salir
+             </a>
+         </div>
     </div>
 
     <!-- AREA PRINCIPAL -->
@@ -307,14 +315,19 @@
         
         <!-- COLUMNA CENTRAL: Visualización (Ampliada) -->
         <div class="col-lg-8">
-            <div class="sidebar-panel" id="capture-area">
+            <div class="sidebar-panel position-relative" id="capture-area">
                 <div class="sidebar-header d-flex justify-content-between align-items-center py-3">
-                    <span class="h4 mb-0 text-dark">🦷 Odontograma: <strong>{{ paciente.nombre_completo }}</strong></span>
+                    <span class="h4 mb-0 text-dark">
+                        🦷 Odontograma: 
+                        <a href="{% url 'pacientes:detalle' paciente.pk %}" class="text-decoration-none text-dark hover-primary">
+                            <strong>{{ paciente.nombre_completo }}</strong>
+                        </a>
+                    </span>
                     
                     <div class="btn-group btn-group-sm">
-                        <button class="btn btn-outline-primary active" id="view-adult">Adulto</button>
-                        <button class="btn btn-outline-primary" id="view-child">Niño</button>
-                        <button class="btn btn-outline-primary" id="view-mixed">Mixta</button>
+                        <button class="btn btn-outline-primary active" id="view-adult" onclick="toggleView('adult')">Adulto</button>
+                        <button class="btn btn-outline-primary" id="view-child" onclick="toggleView('child')">Niño</button>
+                        <button class="btn btn-outline-primary" id="view-mixed" onclick="toggleView('mixed')">Mixta</button>
                     </div>
                 </div>
                 
@@ -400,46 +413,40 @@
                     </div>
 
                 </div>
+
+                <!-- LEYENDA HORIZONTAL (Fuera del flujo absoluto para no tapar) -->
+                <div id="dynamic-legend-container" class="mt-3 p-3 bg-light rounded border border-light shadow-sm" style="display: none;">
+                    <h6 class="small fw-bold text-muted mb-2 border-bottom pb-1">
+                        <i class="fas fa-info-circle me-1"></i> Leyenda de Hallazgos
+                    </h6>
+                    <div id="dynamic-legend-content" class="d-flex flex-wrap gap-3 align-items-center"></div>
+                </div>
+
             </div>
         </div>
 
         <!-- COLUMNA DERECHA: Detalles e Historial -->
+        <!-- COLUMNA DERECHA: Plan de Tratamiento -->
         <div class="col-lg-4">
-             <div class="sidebar-panel" style="height: auto; position: sticky; top: 1rem; z-index: 99;">
-                <div class="sidebar-header">
-                    📋 Detalle e Historial
+             <div class="sidebar-panel">
+                <div class="sidebar-header d-flex justify-content-between align-items-center py-3 border-bottom">
+                    <h5 class="fw-bold mb-0 text-dark">📋 Hallazgos Clínicos</h5>
+                    <span class="badge bg-light text-secondary border" id="findings-count">0</span>
                 </div>
-                <div class="sidebar-content">
-                    <div class="alert alert-info py-2 small">
-                        ℹ️ <strong>Tip:</strong> Los cambios se guardan automáticamente.
-                    </div>
-                    
-                    <!-- Panel de Selección Actual -->
-                    <div id="selection-panel" class="d-none mb-4 p-3 bg-light rounded border">
-                        <h6 class="mb-2 border-bottom pb-2">Diente <span id="selected-tooth-id" class="fw-bold text-primary">--</span></h6>
-                        
-                        <div id="dynamic-comments-list" class="mb-2" style="max-height: 200px; overflow-y: auto;">
-                            <!-- Inputs generados dinámicamente -->
-                        </div>
-
-                        <div id="no-findings-msg" class="text-muted small text-center my-3 d-none">
-                            Selecciona una herramienta y marca una cara.
-                        </div>
-
-                        <!-- Botón manual ya no es estrictamente necesario pero se deja para forzar -->
-                        <!-- <button class="btn btn-sm btn-primary w-100" id="btn-update-comment">💾 Guardar Notas</button> -->
-                    </div>
-
-                    <!-- Lista de Hallazgos -->
-                    <h6 class="small fw-bold text-uppercase text-muted border-bottom pb-2">Hallazgos Registrados</h6>
-                    <div id="findings-list" style="max-height: 400px; overflow-y: auto;">
-                        <p class="text-muted text-center small mt-3">Sin hallazgos aún.</p>
+                
+                <div class="card-body p-0">
+                    <div id="findings-list" class="list-group list-group-flush" style="max-height: 60vh; overflow-y: auto;">
+                         <!-- Items Dinámicos -->
+                         <div class="text-center py-5 text-muted">
+                            <i class="fas fa-clipboard-list fa-3x mb-3 text-secondary opacity-25"></i>
+                            <p>No hay hallazgos registrados.</p>
+                         </div>
                     </div>
                 </div>
-                <!-- Observaciones Generales -->
-                <div class="p-3 border-top bg-white">
-                    <label for="general-notes" class="small fw-bold text-uppercase text-muted mb-2">Observaciones Generales</label>
-                    <textarea class="form-control form-control-sm" id="general-notes" rows="4" placeholder="Escribe aquí observaciones generales del paciente...">{{ odontograma.observaciones|default:'' }}</textarea>
+                
+                <div class="p-3 border-top bg-light">
+                     <label class="small fw-bold text-muted mb-1">Observaciones Generales:</label>
+                     <textarea id="general-notes" class="form-control" rows="3" placeholder="Escriba aquí observaciones generales del odontograma...">{{ observaciones }}</textarea>
                 </div>
             </div>
         </div>
@@ -457,16 +464,43 @@
                             <thead class="table-light sticky-top">
                                 <tr>
                                     <th style="width: 15%;">Fecha/Hora</th>
-                                    <th style="width: 15%;">Usuario</th>
+                                    <th style="width: 10%;">Diente</th>
+                                    <th style="width: 10%;">Lado</th>
                                     <th style="width: 20%;">Acción</th>
-                                    <th style="width: 50%;">Detalles</th>
+                                    <th style="width: 45%;">Detalles</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for log in logs %}
                                 <tr>
                                     <td class="text-muted small font-monospace">{{ log.timestamp|date:"d/m/Y H:i:s" }}</td>
-                                    <td class="small fw-bold">{{ log.usuario.username|default:"Sistema" }}</td>
+                                    
+                                    <!-- Diente -->
+                                    <td class="fw-bold text-center">
+                                        {% if log.detalles.diente %}
+                                            <span class="badge bg-secondary">{{ log.detalles.diente }}</span>
+                                        {% else %}
+                                            <span class="text-muted small">-</span>
+                                        {% endif %}
+                                    </td>
+
+                                    <!-- Lado/Cara -->
+                                    <td class="text-center small">
+                                        {% if log.detalles.cara %}
+                                            {% if log.detalles.cara == 'C' %}General
+                                            {% elif log.detalles.cara == 'M' %}Mesial
+                                            {% elif log.detalles.cara == 'D' %}Distal
+                                            {% elif log.detalles.cara == 'V' %}Vestibular
+                                            {% elif log.detalles.cara == 'L' %}Lingual
+                                            {% elif log.detalles.cara == 'P' %}Palatino
+                                            {% elif log.detalles.cara == 'O' %}Oclusal
+                                            {% elif log.detalles.cara == 'I' %}Incisal
+                                            {% else %}{{ log.detalles.cara }}{% endif %}
+                                        {% else %}
+                                            <span class="text-muted small">-</span>
+                                        {% endif %}
+                                    </td>
+
                                     <td>
                                         <span class="badge {% if 'AGREGAR' in log.accion %}bg-success{% elif 'ELIMINAR' in log.accion %}bg-danger{% elif 'MODIFICAR' in log.accion %}bg-warning text-dark{% else %}bg-secondary{% endif %} bg-opacity-75">
                                             {{ log.accion }}
@@ -475,7 +509,9 @@
                                     <td class="small text-secondary font-monospace">
                                         {% if log.detalles %}
                                             {% for k, v in log.detalles.items %}
-                                                <span class="d-inline-block me-2"><strong>{{ k|title }}:</strong> {{ v }}</span>
+                                                {% if k != 'diente' and k != 'cara' %}
+                                                    <span class="d-inline-block me-2"><strong>{{ k|title }}:</strong> {{ v }}</span>
+                                                {% endif %}
                                             {% endfor %}
                                         {% else %}
                                             <em class="text-muted">-</em>
@@ -484,7 +520,7 @@
                                 </tr>
                                 {% empty %}
                                 <tr>
-                                    <td colspan="4" class="text-center py-4 text-muted">
+                                    <td colspan="5" class="text-center py-4 text-muted">
                                         <i class="fas fa-history fa-2x mb-2 text-secondary opacity-25"></i><br>
                                         No hay registros de cambios recientes.
                                     </td>
@@ -500,326 +536,605 @@
 </div>
 
 <!-- Template SVG Diente -->
+<!-- Template SVG Diente Híbrido (Multicapa) -->
 <template id="tooth-template">
     <div class="tooth-container">
-        <svg viewBox="0 0 100 140" class="tooth-svg">
-            <polygon points="30,0 70,0 60,40 40,40" class="tooth-polygon" data-face="R" fill="#eee" />
-            <g transform="translate(0,40)">
-                <polygon points="0,0 100,0 80,20 20,20" class="tooth-polygon" data-face="V" />
-                <polygon points="100,0 100,100 80,80 80,20" class="tooth-polygon" data-face="D" />
-                <polygon points="100,100 0,100 20,80 80,80" class="tooth-polygon" data-face="L" />
-                <polygon points="0,100 0,0 20,20 20,80" class="tooth-polygon" data-face="M" />
-                <rect x="20" y="20" width="60" height="60" class="tooth-polygon" data-face="O" />
+        <svg viewBox="0 0 60 90" class="tooth-svg">
+            <defs>
+                <filter id="dropShadow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+                    <feOffset dx="1" dy="1" result="offsetblur"/>
+                    <feComponentTransfer>
+                        <feFuncA type="linear" slope="0.3"/>
+                    </feComponentTransfer>
+                    <feMerge> 
+                        <feMergeNode/>
+                        <feMergeNode in="SourceGraphic"/> 
+                    </feMerge>
+                </filter>
+            </defs>
+
+            <!-- Layer 0: Raíz (Dibujo) -->
+            <path d="M15,35 Q10,50 20,85 Q30,90 40,85 Q50,50 45,35 Z" class="tooth-base" />
+            
+            <!-- Layer 1: Corona (Cuadrada/Redonda) -->
+            <rect x="10" y="5" width="40" height="30" rx="4" class="tooth-base" />
+
+            <!-- Estructura: Implante (Oculto por defecto) -->
+            <path d="M28,45 L32,45 L32,80 L28,80 Z M25,50 L35,50 M25,55 L35,55 M25,60 L35,60 M25,65 L35,65" stroke="#555" stroke-width="2" class="implant-screw" />
+
+            <!-- Estructura: Corona Dorada (Oculta) -->
+            <rect x="8" y="3" width="44" height="34" rx="5" fill="none" stroke="#e67e22" stroke-width="2" class="crown-contour" />
+            
+            <!-- Layer 2: Caras Interactivas (Geometría Invisible -> Visible al pintar) -->
+            <g transform="translate(10,5)">
+                <!-- Oclusal (Centro) -->
+                <rect x="12" y="8" width="16" height="14" class="tooth-face" data-face="O" />
+                <!-- Vestibular (Arriba) -->
+                <path d="M0,0 L40,0 L28,8 L12,8 Z" class="tooth-face" data-face="V" />
+                <!-- Lingual (Abajo) -->
+                <path d="M40,30 L0,30 L12,22 L28,22 Z" class="tooth-face" data-face="L" />
+                <!-- Mesial (Izq) -->
+                <path d="M0,30 L0,0 L12,8 L12,22 Z" class="tooth-face" data-face="M" />
+                <!-- Distal (Der) -->
+                <path d="M40,0 L40,30 L28,22 L28,8 Z" class="tooth-face" data-face="D" />
             </g>
-            <!-- Badge Indicador de Comentario -->
-            <circle cx="85" cy="15" r="8" fill="#1890ff" stroke="white" stroke-width="1" class="comment-badge" style="display: none;" />
-            <text x="85" y="19" text-anchor="middle" fill="white" font-size="10" font-weight="bold" class="comment-badge" style="display: none;">i</text>
         </svg>
-        <div class="small fw-bold mt-1 text-muted tooth-number" style="font-size: 10px;"></div>
+        <div class="small fw-bold mt-1 text-secondary tooth-number" style="font-size: 11px;"></div>
     </div>
 </template>
 
 <script>
+    // --- GLOBAL STATE ---
+    window.hallazgosMap = {}; 
+    window.selectedToothId = null;
+    window.selectedFace = null;
+    window.faceNames = { 'V': 'Vestibular', 'L': 'Lingual', 'M': 'Mesial', 'D': 'Distal', 'O': 'Oclusal', 'R': 'Raíz' };
+    
     document.addEventListener('DOMContentLoaded', function() {
+        // --- CONSTANTS & DOM ELEMENTS ---
         const template = document.getElementById('tooth-template');
         const wrappers = document.querySelectorAll('.tooth-wrapper');
-        const tooltip = document.getElementById('tooth-tooltip');
-        const saveStatus = document.getElementById('save-status'); // Indicador de estado
-        
-        // Initial Tool
-        let currentTool = { state: 'CARIES', color: '#ff4d4f' };
-        let hallazgosMap = {}; 
-        let selectedToothId = null;
-        
-        // Mapa de nombres completos (Global Scope)
-        const faceNames = {
-            'V': 'Vestibular', 'L': 'Lingual', 'M': 'Mesial', 
-            'D': 'Distal', 'O': 'Oclusal', 'R': 'Raíz'
-        };
+        const ctxMenu = document.getElementById('ctx-menu');
+        const findingsList = document.getElementById('findings-list');
+        const findingsCount = document.getElementById('findings-count');
+        const saveStatus = document.getElementById('save-status');
 
-        // AUTO-SAVE DEBOUNCER
+        let currentTotal = 0;
         let saveTimeout;
-        const SAVE_DELAY = 1500; // 1.5 Segundos
+        const SAVE_DELAY = 1500;
 
-        function triggerAutoSave() {
-            // Actualizar UI a "Guardando..."
-            saveStatus.innerHTML = '⏳ Guardando...';
-            saveStatus.className = 'badge bg-warning text-dark border d-none d-md-inline-block';
-            
-            clearTimeout(saveTimeout);
-            saveTimeout = setTimeout(() => {
-                saveOdontogram().then(() => {
-                    // Update UI success
-                    saveStatus.innerHTML = '☁️ Guardado';
-                    saveStatus.className = 'badge bg-light text-success border d-none d-md-inline-block';
-                    
-                    // Opcional: Recargar logs si se desea ver el historial al instante (ajax)
-                    // Por ahora solo guardamos silenciosamente.
-                }).catch(err => {
-                    saveStatus.innerHTML = '❌ Error';
-                    saveStatus.className = 'badge bg-danger text-white border d-none d-md-inline-block';
-                    console.error("AutoSave Error:", err);
-                });
-            }, SAVE_DELAY);
-        }
-
+        
+        // --- INITIALIZATION ---
+        
         // 1. Initial Render (Clone SVG)
         wrappers.forEach(wrapper => {
             const toothId = wrapper.dataset.tooth;
             const clone = template.content.cloneNode(true);
             clone.querySelector('.tooth-number').textContent = toothId;
-            
             const container = clone.querySelector('.tooth-container');
             
-            // Interaction: Left Click
-            container.addEventListener('click', () => {
-                selectedToothId = toothId;
-                updateSelectionPanel();
+            // Event: Open Context Menu (Left Click) on Tooth Container
+            container.addEventListener('click', (e) => {
+                e.preventDefault();
+                openContextMenu(e, toothId);
             });
-
-            // Interaction: Context Menu (Right Click) -> Comment Focus
+            
+            // Event: Context Menu (Right Click)
             container.addEventListener('contextmenu', (e) => {
                 e.preventDefault();
-                selectedToothId = toothId;
-                updateSelectionPanel();
-                // Intentar enfocar el primer input si existe
-                const firstInput = document.querySelector('.comment-input');
-                if(firstInput) firstInput.focus();
+                openContextMenu(e, toothId);
             });
 
-            // Interaction: Tooltip Hover
-            container.addEventListener('mousemove', (e) => {
-                const keys = Object.keys(hallazgosMap).filter(k => k.startsWith(`${toothId}-`));
-                if (keys.length > 0) {
-                    let content = `<strong>Diente ${toothId}</strong><br>`;
-                    keys.forEach(k => {
-                        const h = hallazgosMap[k];
-                        content += `${h.state} (${k.split('-')[1]})`;
-                        if(h.comment) content += `<br><em>"${h.comment}"</em>`;
-                        content += `<br>`;
-                    });
-                    
-                    tooltip.innerHTML = content;
-                    tooltip.style.display = 'block';
-                    tooltip.style.left = (e.pageX + 10) + 'px';
-                    tooltip.style.top = (e.pageY + 10) + 'px';
-                }
-            });
-            container.addEventListener('mouseleave', () => {
-                tooltip.style.display = 'none';
-            });
+            // Tooltip Events (Attached to Wrapper for better capture)
+            wrapper.addEventListener('mouseover', (e) => showTooltip(e, toothId));
+            wrapper.addEventListener('mousemove', (e) => moveTooltip(e));
+            wrapper.addEventListener('mouseleave', () => hideTooltip());
 
-            const polygons = clone.querySelectorAll('.tooth-polygon');
-            polygons.forEach(poly => {
-                poly.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    selectedToothId = toothId;
-                    handleFaceClick(this, toothId); 
-                    updateSelectionPanel();
+            // Event: Face Specific Click
+            const faces = clone.querySelectorAll('.tooth-face');
+            faces.forEach(face => {
+                face.addEventListener('click', (e) => {
+                     e.stopPropagation(); 
+                     openContextMenu(e, toothId, face.dataset.face);
                 });
             });
+
             wrapper.appendChild(clone);
         });
 
-        // Cargar Datos Iniciales
-        const initialData = {{ hallazgos_json|safe }};
-        if (initialData) {
-            initialData.forEach(h => {
-                const key = `${h.diente_id}-${h.cara}`;
-                hallazgosMap[key] = { 
-                    state: h.estado, 
-                    comment: h.comentario || '',
-                    creado_en: h.creado_en || ''
-                };
-                paintFace(h.diente_id, h.cara, h.estado);
-            });
-            renderFindingsList();
-            updateIndicators();
-        }
-
-        // Tools Click
-        document.querySelectorAll('.select-tool').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.select-tool').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                currentTool = {
-                    state: this.dataset.state,
-                    color: this.dataset.color
-                };
-            });
-        });
-
-        // Views Switcher Logic
-        document.getElementById('view-adult').addEventListener('click', () => toggleView('adult'));
-        document.getElementById('view-child').addEventListener('click', () => toggleView('child'));
-        document.getElementById('view-mixed').addEventListener('click', () => toggleView('mixed'));
-
-        function toggleView(mode) {
-            const adult = document.getElementById('view-adult-container');
-            const child = document.getElementById('view-child-container');
-            
-            ['adult','child','mixed'].forEach(m => document.getElementById(`view-${m}`).classList.remove('active'));
-            document.getElementById(`view-${mode}`).classList.add('active');
-
-            if(mode==='adult') { adult.classList.remove('d-none'); child.classList.add('d-none'); }
-            if(mode==='child') { adult.classList.add('d-none'); child.classList.remove('d-none'); }
-            if(mode==='mixed') { adult.classList.remove('d-none'); child.classList.remove('d-none'); }
-        }
-
-        // Handle Face Click
-        function handleFaceClick(element, toothId) {
-            const face = element.dataset.face;
-            const key = `${toothId}-${face}`;
-            
-            if (currentTool.state === 'AUSENTE' || currentTool.state === 'EXTRACCION_PROGRAMADA') {
-                const allFaces = element.closest('.tooth-svg').querySelectorAll('.tooth-polygon');
-                allFaces.forEach(f => {
-                    const fKey = `${toothId}-${f.dataset.face}`;
-                    hallazgosMap[fKey] = { 
-                        state: currentTool.state, 
-                        comment: hallazgosMap[fKey]?.comment || '',
-                        creado_en: 'Ahora'
-                    };
-                    f.style.fill = currentTool.color;
-                });
-            } else if (currentTool.state === 'SANO') {
-                delete hallazgosMap[key];
-                element.style.fill = '#eee'; // Default para raiz
-                if (face !== 'R') element.style.fill = '#fff'; // Default corona
-            } else {
-                hallazgosMap[key] = { 
-                    state: currentTool.state, 
-                    comment: hallazgosMap[key]?.comment || '',
-                    creado_en: 'Ahora' // Marca temporal local
-                };
-                element.style.fill = currentTool.color;
-            }
-            renderFindingsList();
-            updateIndicators();
-            triggerAutoSave(); // TRIGGER AUTO-SAVE
-        }
-
-        // Helper Paint
-        function paintFace(toothId, face, state) {
-            const btn = document.querySelector(`.select-tool[data-state="${state}"]`);
-            const color = btn ? btn.dataset.color : 'black';
-            const toothEl = document.querySelector(`.tooth-wrapper[data-tooth="${toothId}"]`);
-            if (!toothEl) return;
-            const faceEl = toothEl.querySelector(`[data-face="${face}"]`);
-            if (faceEl) faceEl.style.fill = color;
-        }
-
-        // Panel Update (Show Comment Form)
-        function updateSelectionPanel() {
-            document.getElementById('selection-panel').classList.remove('d-none');
-            document.getElementById('selected-tooth-id').textContent = selectedToothId;
-            
-            const container = document.getElementById('dynamic-comments-list');
-            container.innerHTML = '';
-            
-            const noMsg = document.getElementById('no-findings-msg');
-            const keys = Object.keys(hallazgosMap).filter(k => k.startsWith(`${selectedToothId}-`));
-            
-            if (keys.length === 0) {
-                noMsg.classList.remove('d-none');
-                return;
-            }
-            noMsg.classList.add('d-none');
-
-            // Mapa Global usado: faceNames
-
-            // Generate Input for each finding
-            keys.forEach(key => {
-                const h = hallazgosMap[key];
-                if (!key.includes('-')) return;
-                
-                const faceKey = key.split('-')[1];
-                const faceName = faceNames[faceKey] || faceKey;
-                
-                const wrapper = document.createElement('div');
-                wrapper.className = 'mb-2 p-2 bg-white border rounded';
-                
-                wrapper.innerHTML = `
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="badge bg-secondary text-white small" style="font-size: 0.7rem;">${faceName}</span>
-                        <span class="small fw-bold text-dark">${h.state}</span>
-                    </div>
-                    <input type="text" class="form-control form-control-sm comment-input" 
-                           data-key="${key}" 
-                           value="${h.comment || ''}" 
-                           placeholder="Nota para ${faceKey}..."
-                    >
-                `;
-                container.appendChild(wrapper);
-            });
-
-            // Delegación de eventos para inputs dinámicos en el panel
-            const inputs = container.querySelectorAll('.comment-input');
-            inputs.forEach(input => {
-                input.addEventListener('input', function() {
-                    const k = this.dataset.key;
-                    if(hallazgosMap[k]) {
-                        hallazgosMap[k].comment = this.value;
-                        updateIndicators();
-                        triggerAutoSave(); // Trigger save on typing
-                    }
-                });
-            });
-        }
-        
-        // Listen Observaciones Generales
-        document.getElementById('general-notes').addEventListener('input', function() {
-            triggerAutoSave();
-        });
-
-
-        // Update Indicators (Blue Badge)
-        function updateIndicators() {
-             document.querySelectorAll('.tooth-wrapper').forEach(wrapper => {
-                const toothId = wrapper.dataset.tooth;
-                const badges = wrapper.querySelectorAll('.comment-badge');
-                // Check if any hallazgo for this tooth has comment
-                const hasComment = Object.entries(hallazgosMap).some(([k, v]) => k.startsWith(`${toothId}-`) && v.comment);
-                badges.forEach(b => b.style.display = hasComment ? 'block' : 'none');
-             });
-        }
-
-        // Render List (Reverse Order)
-        function renderFindingsList() {
-            const container = document.getElementById('findings-list');
-            container.innerHTML = '';
-            
-            const items = Object.entries(hallazgosMap);
-            if (items.length === 0) {
-                container.innerHTML = '<p class="text-muted text-center small mt-3">Sin hallazgos.</p>';
-                return;
+        // 2. Load Initial Data
+        // 2. Load Initial Data
+        try {
+            const initialData = {{ hallazgos_json|default:"[]"|safe }};
+            if (initialData && Array.isArray(initialData)) {
+                initialData.forEach(h => {
+                     const key = `${h.diente_id}-${h.cara}`;
+                     hallazgosMap[key] = { 
+                         state: h.estado, 
+                         comment: h.comentario || '',
+                         creado_en: h.creado_en || ''
+                     };
+                        
+                        // Visual Restore
+                        paintFace(h.diente_id, h.cara, getStateColor(h.estado));
+                        
+                        // Restore Structural (Expanded List)
+                        const structuralTypes = [
+                            'IMPLANTE', 'CORONA', 'AUSENTE', 'EXTRACCION_PROGRAMADA', 
+                            'PUENTE', 'BRACKET', 'RETENEDOR', 'AP_REMOVIBLE', 
+                            'P_PARCIAL', 'P_TOTAL', 'ERUPCION', 'RETENIDO', 'FRACTURA'
+                        ];
+                        
+                        // Check if it's a structural state OR applied to 'C' (Complete)
+                        if (structuralTypes.includes(h.estado) || h.cara === 'C') {
+                            toggleStructuralVisual(h.diente_id, h.estado, true);
+                        }
+                    });
+                    renderFindingsList();
+                }
+            } catch (e) {
+                console.error("Error loading JSON:", e);
             }
 
-            // Reverse for "Recent First" visual perception
-            items.reverse().forEach(([key, val]) => {
-                if (!key.includes('-')) return;
-                const [tooth, faceKey] = key.split('-');
-                const faceName = faceNames[faceKey] || faceKey;
+            // --- CORE FUNCTIONS ---
+    
+            // ... (openContextMenu, closeCtxMenu preserved) ...
+            window.switchCtxTab = function(tabName) {
+                // Update Tabs
+                document.querySelectorAll('.ctx-tab').forEach(t => t.classList.remove('active'));
+                const activeTab = Array.from(document.querySelectorAll('.ctx-tab')).find(t => t.innerText.toLowerCase().includes(tabName === 'basics' ? 'básicos' : (tabName === 'treatments' ? 'tratamientos' : 'estructural')));
+                if(activeTab) activeTab.classList.add('active'); // Fallback if onclick passes specific ID
+
+                // Update Panes
+                document.querySelectorAll('.ctx-pane').forEach(p => p.classList.remove('active'));
+                const pane = document.getElementById(`pane-${tabName}`);
+                if(pane) pane.classList.add('active');
+            }
+
+            window.openContextMenu = function(e, toothId, face=null) {
+                selectedToothId = toothId;
+                selectedFace = face;
+                document.getElementById('ctx-tooth-id').textContent = toothId;
                 
-                const div = document.createElement('div');
-                div.className = 'history-item';
-                
-                let html = `
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span><strong>#${tooth}</strong> (${faceName}) - ${val.state}</span>
-                        <small class="text-muted ms-2" style="font-size:0.7rem;">${val.creado_en || 'Reciente'}</small>
-                    </div>
-                `;
-                if (val.comment) {
-                    html += `<div class="text-muted small mt-1 bg-light p-1 rounded">📝 ${val.comment}</div>`;
+                const faceDisplay = document.getElementById('ctx-face-info');
+                if (face) {
+                     faceDisplay.textContent = `Cara: ${faceNames[face] || face}`;
+                     faceDisplay.className = 'small fw-bold text-primary';
+                } else {
+                     faceDisplay.textContent = 'Seleccionar acción para todo el diente o una cara Específica.';
+                     faceDisplay.className = 'small text-muted';
                 }
                 
-                div.innerHTML = html;
-                container.appendChild(div);
+                // Reset to Basics Tab
+                switchCtxTab('basics');
+                
+                // Positioning Logic (Smarter)
+                let x = e.pageX + 10;
+                let y = e.pageY + 10;
+                
+                // Prevent overflow right
+                if (x + 400 > window.innerWidth) {
+                    x = e.pageX - 400 - 10;
+                }
+                // Prevent overflow bottom
+                if (y + 350 > window.innerHeight) {
+                    y = e.pageY - 350 - 10;
+                }
+                
+                // Mobile override in CSS, but good to ensure
+                if (window.innerWidth <= 768) {
+                    ctxMenu.style.left = '0';
+                    ctxMenu.style.top = 'auto';
+                    ctxMenu.style.bottom = '0';
+                } else {
+                    ctxMenu.style.left = `${x}px`;
+                    ctxMenu.style.top = `${y}px`;
+                    ctxMenu.style.bottom = 'auto';
+                }
+
+                ctxMenu.style.display = 'block';
+            }
+
+            window.closeCtxMenu = function() {
+                ctxMenu.style.display = 'none';
+                selectedFace = null;
+            }
+    
+            document.addEventListener('click', (e) => {
+                if (!ctxMenu.contains(e.target) && !e.target.closest('.tooth-container')) {
+                    closeCtxMenu();
+                }
+            });
+    
+            // Apply State (From Menu)
+            window.applyCtxState = function(state, color) {
+                if (!selectedToothId) return;
+    
+                if (selectedFace) {
+                    const key = `${selectedToothId}-${selectedFace}`;
+                    hallazgosMap[key] = { state: state, comment: '' }; 
+                    paintFace(selectedToothId, selectedFace, color);
+                } else {
+                    if (state === 'SANO') {
+                        // Changed: Only clear structural/general layer, preserving faces
+                        clearStructural(selectedToothId);
+                    } else {
+                        alert('Por favor haz click en una cara del diente para indicar la ubicación exacta de la lesión.');
+                        return; 
+                    }
+                }
+                
+                if (state !== 'SANO') {
+                    renderFindingsList();
+                } else {
+                    // Update list after clear
+                    renderFindingsList();
+                }
+                triggerAutoSave();
+                closeCtxMenu();
+            }
+
+            // ... (toggleStructural...)
+
+            function clearStructural(toothId) {
+                const container = document.querySelector(`.tooth-wrapper[data-tooth="${toothId}"]`);
+                if(!container) return;
+                
+                // Clear Structural Visuals Only
+                container.querySelector('.implant-screw').style.display = 'none';
+                container.querySelector('.crown-contour').style.display = 'none';
+                container.querySelector('.tooth-container').style.opacity = '1';
+                container.querySelectorAll('.tooth-base').forEach(b => b.style.fill = ''); 
+
+                // Clear Only General Data ('C')
+                const key = `${toothId}-C`;
+                if(hallazgosMap[key]) delete hallazgosMap[key];
+            }
+
+            function resetTooth(toothId) {
+                const container = document.querySelector(`.tooth-wrapper[data-tooth="${toothId}"]`);
+                if(!container) return;
+                
+                // Clear Faces
+                container.querySelectorAll('.tooth-face').forEach(f => f.style.fill = 'transparent');
+                
+                // Clear Structural using helper
+                clearStructural(toothId);
+
+                // Clear Data (All)
+                Object.keys(hallazgosMap).forEach(k => {
+                    if (k.startsWith(toothId + '-')) delete hallazgosMap[k];
+                });
+            }
+    
+            window.toggleStructural = function(type) {
+                 if (!selectedToothId) return;
+                 
+                 toggleStructuralVisual(selectedToothId, type);
+                 
+                 const key = `${selectedToothId}-C`;
+                 // Toggle logic: if already exists and same type, remove? Or just overwrite?
+                 // For now overwrite.
+                 hallazgosMap[key] = { state: type, comment: '' }; 
+                 
+                 renderFindingsList();
+                 triggerAutoSave();
+                 closeCtxMenu();
+            }
+    
+            // ... (toggleStructuralVisual, paintFace, resetTooth, tooltip functions unchanged) ...
+
+            // IN RENDER LIST (Update Logic condition)
+            // ...
+                let commentHtml = '';
+                // Filter out empty or default strings just in case old data persists
+                if (val.comment && val.comment.trim() && val.comment !== 'Agregado desde Menú' && val.comment !== 'Estructural') {
+                     commentHtml = `<div class="mt-2 p-2 bg-white border rounded small text-muted">
+                                        <i class="fas fa-comment-alt text-warning me-1"></i> 
+                                        <span class="fst-italic">${val.comment}</span>
+                                    </div>`;
+                }
+            // ...
+    
+            function toggleStructuralVisual(toothId, type, forceShow=false) {
+                 const container = document.querySelector(`.tooth-wrapper[data-tooth="${toothId}"]`);
+                 if(!container) return;
+                 
+                 // 1. Handle SVG Overlays
+                 if (type === 'IMPLANTE') {
+                     const screw = container.querySelector('.implant-screw');
+                     screw.style.display = (forceShow || screw.style.display === 'none') ? 'block' : 'none';
+                 } 
+                 else if (type === 'CORONA') {
+                     const crown = container.querySelector('.crown-contour');
+                     crown.style.display = (forceShow || crown.style.display === 'none') ? 'block' : 'none';
+                 } 
+                 else if (type === 'AUSENTE') {
+                     container.querySelector('.tooth-container').style.opacity = '0.3';
+                 }
+                 else if (type === 'EXTRACCION_PROGRAMADA') {
+                      // Maybe opacity + color?
+                      container.querySelector('.tooth-container').style.opacity = '0.6';
+                      container.querySelectorAll('.tooth-base').forEach(b => b.style.fill = '#ff922b');
+                 }
+                 // 2. Handle Base Coloring (For new types without specific SVG)
+                 else {
+                     const color = getStateColor(type);
+                     if (color !== 'transparent') {
+                         container.querySelectorAll('.tooth-base').forEach(b => b.style.fill = color);
+                     }
+                 }
+            }
+
+        function paintFace(toothId, face, color) {
+            const container = document.querySelector(`.tooth-wrapper[data-tooth="${toothId}"]`);
+            if(!container) return;
+            const poly = container.querySelector(`.tooth-face[data-face="${face}"]`);
+            if(poly) poly.style.fill = color;
+        }
+        
+        function resetTooth(toothId) {
+            const container = document.querySelector(`.tooth-wrapper[data-tooth="${toothId}"]`);
+            if(!container) return;
+            
+            // Clear Faces
+            container.querySelectorAll('.tooth-face').forEach(f => f.style.fill = 'transparent');
+            
+            // Clear Structural
+            container.querySelector('.implant-screw').style.display = 'none';
+            container.querySelector('.crown-contour').style.display = 'none';
+            container.querySelector('.tooth-container').style.opacity = '1';
+            
+            // Clear Base Color (Important for Structural paints like Bridge/Extraction)
+            container.querySelectorAll('.tooth-base').forEach(b => b.style.fill = ''); 
+
+            // Clear Data
+            Object.keys(hallazgosMap).forEach(k => {
+                if (k.startsWith(toothId + '-')) delete hallazgosMap[k];
+            });
+        }   
+            
+
+        // --- DYNAMIC LEGEND ---
+        function updateDynamicLegend() {
+            const legendContainer = document.getElementById('dynamic-legend-container');
+            const legendContent = document.getElementById('dynamic-legend-content');
+            
+            if (!legendContainer || !legendContent) return;
+            
+            const activeStates = new Set();
+            Object.values(hallazgosMap).forEach(val => {
+                if (val.state) activeStates.add(val.state);
+            });
+            
+            if (activeStates.size === 0) {
+                legendContainer.style.display = 'none';
+                return;
+            }
+            
+            legendContainer.style.display = 'block';
+            legendContent.innerHTML = '';
+            
+            activeStates.forEach(state => {
+                const color = getStateColor(state);
+                const label = formatConcept(state);
+                
+                const item = document.createElement('div');
+                item.className = 'd-flex align-items-center';
+                item.innerHTML = `
+                    <span class="rounded-circle d-inline-block me-2 shadow-sm" style="width: 12px; height: 12px; background-color: ${color}; border: 1px solid rgba(0,0,0,0.1);"></span>
+                    <span class="text-dark opacity-75 fw-medium">${label}</span>
+                `;
+                legendContent.appendChild(item);
             });
         }
 
-        // Guardado Refactorizado
+        // --- RENDER LIST ---
+        function renderFindingsList() {
+            const list = document.getElementById('findings-list');
+            const countBadge = document.getElementById('findings-count');
+            
+            // Update Legend every time list changes
+            updateDynamicLegend();
+            
+            list.innerHTML = '';
+            const items = Object.entries(hallazgosMap);
+            countBadge.textContent = items.length;
+
+            if (items.length === 0) {
+                findingsList.innerHTML = `
+                    <div class="text-center py-5 text-muted">
+                        <i class="fas fa-clipboard-check fa-3x mb-3 text-success opacity-25"></i>
+                        <p>Paciente sin hallazgos registrados.</p>
+                    </div>`;
+                return;
+            }
+
+            // Reverse to show newest first
+            items.reverse().forEach(([key, val]) => {
+                const [tooth, face] = key.split('-');
+                const faceLabel = faceNames[face] || (face === 'C' ? 'Completo' : face);
+                
+                const item = document.createElement('div');
+                item.className = 'card mb-2 border-0 shadow-sm'; 
+                item.style.backgroundColor = '#f8f9fa';
+                item.id = `finding-item-${key}`;
+
+                const hasNote = val.comment && val.comment.trim() && val.comment !== 'Agregado desde Menú' && val.comment !== 'Estructural';
+                
+                // Content for Note Section (Display vs Edit)
+                let noteSection = '';
+                if (hasNote) {
+                    noteSection = `
+                        <div class="mt-2 p-2 bg-white border rounded small text-muted d-flex justify-content-between align-items-start note-display clickable-note" title="Clic para editar nota">
+                            <div class="w-100">
+                                <i class="fas fa-comment-alt text-warning me-1"></i> 
+                                <span class="fst-italic text-break note-text">${val.comment}</span>
+                            </div>
+                            <button class="btn btn-link p-0 ms-2 text-primary edit-note-btn">
+                                <i class="fas fa-pencil-alt"></i>
+                            </button>
+                        </div>`;
+                } else {
+                    noteSection = `
+                        <div class="mt-2 note-display">
+                            <button class="btn btn-sm btn-outline-secondary w-100 edit-note-btn dashed-border" style="border-style: dashed; font-size: 0.8rem;">
+                                <i class="fas fa-plus me-1"></i> Agregar Nota
+                            </button>
+                        </div>`;
+                }
+
+                // Hidden Edit Form
+                const editForm = `
+                    <div class="mt-2 note-edit" style="display: none;">
+                        <textarea class="form-control form-control-sm mb-2" rows="2" placeholder="Escribe una nota...">${hasNote ? val.comment : ''}</textarea>
+                        <div class="d-flex justify-content-end gap-2">
+                            <button class="btn btn-sm btn-light cancel-edit-btn border">Cancelar</button>
+                            <button class="btn btn-sm btn-primary save-edit-btn">Guardar</button>
+                        </div>
+                    </div>
+                `;
+
+                item.innerHTML = `
+                    <div class="card-body p-2">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1 text-dark fw-bold d-flex align-items-center">
+                                    <span class="badge bg-secondary me-2">${tooth}</span>
+                                    <span class="small text-uppercase text-muted" style="font-size: 0.75rem; letter-spacing: 0.5px;">${faceLabel}</span>
+                                </h6>
+                                <div class="mt-1">
+                                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 py-1 px-2">
+                                        ${formatConcept(val.state)}
+                                    </span>
+                                </div>
+                                ${noteSection}
+                                ${editForm}
+                            </div>
+                            <button class="btn btn-sm text-danger hover-bg-light rounded-circle p-1 ms-2 delete-btn" data-key="${key}" title="Eliminar" style="width: 28px; height: 28px;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                // LISTENERS
+                // 1. Delete
+                item.querySelector('.delete-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if(confirm('¿Eliminar este hallazgo?')) {
+                        delete hallazgosMap[key];
+                         // Visual Restore
+                        const [t, f] = key.split('-');
+                        if(f === 'C') {
+                             const container = document.querySelector(`.tooth-wrapper[data-tooth="${t}"]`);
+                             if(container) {
+                                 const toothContainer = container.querySelector('.tooth-container');
+                                 if(toothContainer) toothContainer.style.opacity = '1';
+                                 const screw = container.querySelector('.implant-screw');
+                                 if(screw) screw.style.display = 'none';
+                                 const crown = container.querySelector('.crown-contour');
+                                 if(crown) crown.style.display = 'none';
+                             }
+                        } else {
+                            paintFace(t, f, 'white'); 
+                        }
+                        renderFindingsList();
+                        triggerAutoSave();
+                    }
+                });
+
+                // 2. Edit Note
+                const btnEdit = item.querySelector('.edit-note-btn');
+                const btnCancel = item.querySelector('.cancel-edit-btn');
+                const btnSave = item.querySelector('.save-edit-btn');
+                const noteDisplay = item.querySelector('.note-display');
+                const noteEdit = item.querySelector('.note-edit');
+                const textarea = item.querySelector('textarea');
+
+                // Toggle Edit Mode Function
+                const toggleEdit = (e) => {
+                    e.stopPropagation();
+                    noteDisplay.style.display = 'none';
+                    noteEdit.style.display = 'block';
+                    textarea.focus();
+                };
+
+                btnEdit.addEventListener('click', toggleEdit);
+                
+                // Verify clickable note class exists before adding listener
+                const clickableNote = item.querySelector('.clickable-note');
+                if(clickableNote) {
+                    clickableNote.style.cursor = 'pointer';
+                    clickableNote.addEventListener('click', toggleEdit);
+                }
+
+                btnCancel.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    noteEdit.style.display = 'none';
+                    noteDisplay.style.display = 'flex'; // Restore
+                });
+
+                btnSave.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const newNote = textarea.value.trim();
+                    hallazgosMap[key].comment = newNote;
+                    renderFindingsList();
+                    triggerAutoSave();
+                });
+
+                findingsList.appendChild(item);
+            });
+        }
+
+        // --- RENDER LIST ---
+        // ... (renderFindingsList) ...
+
+        function getStateColor(state) {
+            const colors = {
+                'CARIES': '#ff6b6b', 
+                'OBTURADO': '#339af0', 
+                'SELLANTE': '#51cf66',
+                'ENDODONCIA': '#f06595', 
+                'EXTRACCION_PROGRAMADA': '#ff922b',
+                'FRACTURA': '#c92a2a',
+                'BRACKET': '#845ef7',
+                'RETENEDOR': '#22b8cf',
+                'AP_REMOVIBLE': '#4c6ef5',
+                'PUENTE': '#fd7e14',
+                'P_PARCIAL': '#868e96',
+                'P_TOTAL': '#495057',
+                'ERUPCION': '#a9e34b',
+                'RETENIDO': '#862e9c'
+            };
+            return colors[state] || 'transparent'; 
+        }
+
+
+        function formatConcept(text) {
+            if(!text) return '';
+            return text.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+        }
+
+        // --- PERSISTENCE ---
+        function triggerAutoSave() {
+             saveStatus.innerHTML = '⏳ Guardando...';
+             saveStatus.className = 'badge bg-warning text-dark border d-flex align-items-center';
+             clearTimeout(saveTimeout);
+             
+             saveTimeout = setTimeout(() => {
+                 saveOdontogram().then(() => {
+                     saveStatus.innerHTML = '☁️ Guardado';
+                     saveStatus.className = 'badge bg-light text-success border d-flex align-items-center';
+                 }).catch(err => {
+                     console.error(err);
+                     saveStatus.innerHTML = '❌ Error';
+                     saveStatus.className = 'badge bg-danger text-white border d-flex align-items-center';
+                 });
+             }, SAVE_DELAY);
+        }
+
         function saveOdontogram() {
             return new Promise((resolve, reject) => {
                 const payload = [];
@@ -829,7 +1144,6 @@
                         tooth: tooth, face: face, state: val.state, comment: val.comment
                     });
                 }
-                
                 const observaciones = document.getElementById('general-notes').value;
                 
                 fetch("{% url 'odontograma:guardar_odontograma' paciente.pk %}", {
@@ -845,98 +1159,172 @@
                 .catch(err => reject('Error de red: ' + err));
             });
         }
-
-        // Botón Guardar Manual (Mantenemos como "Forzar Guardado")
-        document.getElementById('btn-save').addEventListener('click', function() {
-            const btn = this;
-            btn.disabled = true;
-            btn.textContent = 'Guardando...';
-            
-            // Cancelar auto-save pendiente si lo hay
-            clearTimeout(saveTimeout);
-            
-            saveOdontogram()
-            .then(() => {
-                // Actualizar status indicador
-                saveStatus.innerHTML = '☁️ Guardado Manualmente';
-                saveStatus.className = 'badge bg-light text-success border d-none d-md-inline-block';
-                
-                btn.classList.remove('btn-success');
-                btn.classList.add('btn-outline-success');
-                btn.textContent = '✅ GUARDADO';
-                setTimeout(() => {
-                        btn.classList.add('btn-success');
-                        btn.classList.remove('btn-outline-success');
-                        btn.textContent = '💾 GUARDAR';
-                        btn.disabled = false;
-                }, 2000);
-            })
-            .catch(err => {
-                alert('Error al guardar: ' + err);
-                btn.disabled = false;
+        
+        // Listen Observaciones Generales
+        const generalNotes = document.getElementById('general-notes');
+        if (generalNotes) {
+            generalNotes.addEventListener('input', function() {
+                triggerAutoSave();
             });
+        }
+
+        // Context Menu Note Button (Updated Flow)
+        const btnAddNote = document.getElementById('btn-add-note');
+        if (btnAddNote) {
+            btnAddNote.addEventListener('click', () => {
+                if (!selectedToothId) return;
+                
+                const key = selectedFace ? `${selectedToothId}-${selectedFace}` : `${selectedToothId}-C`;
+                
+                // Ensure entry exists
+                if (!hallazgosMap[key]) {
+                     hallazgosMap[key] = { state: 'NOTA', comment: '', creado_en: 'Ahora' };
+                }
+                
+                renderFindingsList();
+                triggerAutoSave();
+                closeCtxMenu();
+
+                // Focus/Scroll to item and Trigger Edit
+                setTimeout(() => {
+                    const itemEl = document.getElementById(`finding-item-${key}`);
+                    if (itemEl) {
+                        itemEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        // Add highlight effect
+                        itemEl.style.transition = 'box-shadow 0.3s';
+                        itemEl.style.boxShadow = '0 0 0 4px rgba(255, 193, 7, 0.5)';
+                        setTimeout(() => itemEl.style.boxShadow = '', 1500);
+
+                        const editBtn = itemEl.querySelector('.edit-note-btn');
+                        if (editBtn) editBtn.click();
+                    }
+                }, 200);
+            });
+        }
+
+        // Manual Save
+        document.getElementById('btn-save').addEventListener('click', function() {
+            triggerAutoSave();
+        });
+        
+        // Back Button
+        document.getElementById('btn-back').addEventListener('click', function() {
+             window.location.href = "{% url 'pacientes:detalle' paciente.pk %}";
         });
 
-        // Botón Volver (Auto-save)
-        document.getElementById('btn-back').addEventListener('click', function() {
-            const btn = this;
-            btn.disabled = true;
-            btn.textContent = 'Guardando y saliendo...';
-            
-            clearTimeout(saveTimeout); // Asegurar guardar inmediato
-            
-            saveOdontogram()
-            .then(() => {
-                window.location.href = "{% url 'pacientes:detalle' paciente.pk %}";
-            })
-            .catch(err => {
-                if(confirm('Hubo un error al guardar automáticamente (' + err + '). ¿Deseas salir sin guardar?')) {
-                    window.location.href = "{% url 'pacientes:detalle' paciente.pk %}";
-                } else {
-                    btn.disabled = false;
-                    btn.textContent = '← Volver al Paciente';
+    });
+
+    // Global View Switcher
+    function toggleView(mode) {
+        console.log("Global switch to:", mode);
+        const adult = document.getElementById('view-adult-container');
+        const child = document.getElementById('view-child-container');
+        
+        if(!adult || !child) {
+            console.error("Containers not found!");
+            return;
+        }
+
+        ['adult','child','mixed'].forEach(m => {
+            const btn = document.getElementById(`view-${m}`);
+            if(btn) btn.classList.remove('active');
+        });
+        const activeBtn = document.getElementById(`view-${mode}`);
+        if(activeBtn) activeBtn.classList.add('active');
+
+        if(mode === 'adult') {
+            adult.classList.remove('d-none');
+            adult.style.display = 'block';
+            child.classList.add('d-none');
+            child.style.display = 'none';
+        }
+        else if(mode === 'child') {
+            adult.classList.add('d-none');
+            adult.style.display = 'none';
+            child.classList.remove('d-none');
+            child.style.display = 'block';
+        }
+        else if(mode === 'mixed') {
+            adult.classList.remove('d-none');
+            adult.style.display = 'block'; 
+            child.style.display = 'block';
+        }
+    }
+
+    // --- TOOLTIP LOGIC (Global & Robust) ---
+    const tooltip = document.createElement('div');
+    tooltip.id = 'odonto-tooltip-v2';
+    Object.assign(tooltip.style, {
+        position: 'fixed',
+        display: 'none',
+        backgroundColor: 'rgba(0, 0, 0, 0.9)',
+        color: '#fff',
+        padding: '8px 12px',
+        borderRadius: '6px',
+        fontSize: '12px',
+        zIndex: '2147483647',
+        pointerEvents: 'none',
+        boxShadow: '0 4px 10px rgba(0,0,0,0.5)',
+        whiteSpace: 'nowrap'
+    });
+    document.body.appendChild(tooltip);
+
+    document.addEventListener('mouseover', (e) => {
+        const wrapper = e.target.closest('.tooth-wrapper');
+        if (wrapper) {
+            updateTooltipContent(wrapper.dataset.tooth);
+            tooltip.style.display = 'block';
+            moveTooltip(e);
+        }
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (tooltip.style.display === 'block') moveTooltip(e);
+    });
+
+    document.addEventListener('mouseout', (e) => {
+        const wrapper = e.target.closest('.tooth-wrapper');
+        if (wrapper && !e.relatedTarget?.closest('.tooth-wrapper')) {
+            tooltip.style.display = 'none';
+        }
+    });
+
+    function updateTooltipContent(toothId) {
+        const findings = [];
+        if(typeof hallazgosMap !== 'undefined') {
+            Object.entries(hallazgosMap).forEach(([key, val]) => {
+                const [t, f] = key.split('-');
+                if (t === toothId) {
+                    const faceLabel = faceNames[f] || (f==='C'?'General':f);
+                    let content = `<div class="mb-1"><span class="text-white-50">${faceLabel}:</span> <b>${val.state}</b>`;
+                    
+                    // Show Note if exists and valid
+                    if (val.comment && val.comment.trim() && val.comment !== 'Agregado desde Menú' && val.comment !== 'Estructural') {
+                        content += `<br><span class="text-info small fst-italic" style="font-size: 0.85em;">"${val.comment}"</span>`;
+                    }
+                    
+                    content += `</div>`;
+                    findings.push(content);
                 }
             });
-        });
+        }
 
-        // PDF Export
-        document.getElementById('btn-pdf').addEventListener('click', function() {
-            const btn = this;
-            btn.disabled = true;
-            btn.textContent = 'Generando...';
-            const element = document.getElementById('capture-area');
-            
-            html2canvas(element, { scale: 2, backgroundColor: '#ffffff' }).then(canvas => {
-                const imgData = canvas.toDataURL('image/png');
-                fetch("{% url 'odontograma:exportar_pdf' paciente.pk %}", {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
-                    body: JSON.stringify({ image: imgData })
-                })
-                .then(response => {
-                    if (response.ok) return response.blob();
-                    throw new Error('Error generando PDF');
-                })
-                .then(blob => {
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = "Odontograma_{{ paciente.apellido }}.pdf";
-                    document.body.appendChild(a);
-                    a.click();
-                    a.remove();
-                    alert('PDF Generado Correctamente 📄');
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert('Error al generar PDF: ' + err.message);
-                })
-                .finally(() => {
-                    btn.disabled = false;
-                    btn.textContent = '📄 EXPORTAR PDF';
-                });
-            });
-        });
-    });
+        if (findings.length > 0) {
+            tooltip.innerHTML = `<div class="fw-bold border-bottom mb-1 pb-1">Diente ${toothId}</div>${findings.join('')}`;
+        } else {
+            tooltip.innerHTML = `<strong>Diente ${toothId}</strong><br><span class="text-white-50">Sin hallazgos</span>`;
+        }
+    }
+
+    function moveTooltip(e) {
+        let x = e.clientX + 15;
+        let y = e.clientY + 15;
+        
+        if (x + tooltip.offsetWidth > window.innerWidth) x = e.clientX - tooltip.offsetWidth - 10;
+        if (y + tooltip.offsetHeight > window.innerHeight) y = e.clientY - tooltip.offsetHeight - 10;
+        
+        tooltip.style.left = x + 'px';
+        tooltip.style.top = y + 'px';
+    }
 </script>
 {% endblock %}
