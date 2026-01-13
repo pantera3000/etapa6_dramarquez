@@ -21,8 +21,6 @@ def ver_odontograma(request, paciente_id):
     )
     
     # Cargar hallazgos existentes
-    # Incluimos creado_en para mostrar fecha en historial. Convertimos a str en JS o serializador custom si fuera necesario, 
-    # pero values() devuelve datetime. JSON serializará datetime si usamos un encoder, o lo pasamos a str.
     hallazgos_qs = odontograma.hallazgos.all()
     hallazgos = []
     for h in hallazgos_qs:
@@ -31,13 +29,17 @@ def ver_odontograma(request, paciente_id):
             'cara': h.cara,
             'estado': h.estado,
             'comentario': h.comentario,
-            'creado_en': timezone.localtime(h.creado_en).strftime("%d/%m/%Y %H:%M") # Serializamos manual con TZ local
+            'creado_en': timezone.localtime(h.creado_en).strftime("%d/%m/%Y %H:%M") 
         })
     
+    # Cargar Historial (Logs)
+    logs = odontograma.logs.all().order_by('-timestamp')
+
     return render(request, 'odontograma/odontograma.html', {
         'paciente': paciente,
         'odontograma': odontograma,
-        'hallazgos_json': json.dumps(hallazgos) # Para cargar estado inicial
+        'hallazgos_json': json.dumps(hallazgos), # Para cargar estado inicial
+        'logs': logs
     })
 
 @login_required
@@ -47,42 +49,123 @@ def guardar_odontograma(request, paciente_id):
         data = json.loads(request.body)
         paciente = get_object_or_404(Paciente, pk=paciente_id)
         
-        # Obtener el odontograma (debería venir el ID o usamos el del paciente)
-        # Por simplicidad, usamos el mismo método que en ver
         odontograma = Odontograma.objects.filter(paciente=paciente).last()
         if not odontograma:
              odontograma = Odontograma.objects.create(paciente=paciente, tipo='INICIAL')
 
-        # Borrar hallazgos anteriores? O actualizarlos?
-        # Estrategia simple: Borrar todo y recrear (para MVP es aceptable si no son miles)
-        # O mejor: update_or_create.
-        
-        # Vamos a borrar los hallazgos de este odontograma para reemplazarlos con el snapshot actual
-        # Esto permite borrar cosas (si el usuario pone "Sano" y enviamos nada).
-        # Pero el JS debe enviar EL ESTADO COMPLETO de la boca.
-        
-        # Guardar observaciones generales
-        odontograma.observaciones = data.get('observaciones', '')
-        odontograma.save()
+        # 1. Cargar Estado Anterior (Snapshot)
+        prev_findings = {}
+        for h in odontograma.hallazgos.all():
+            key = f"{h.diente_id}-{h.cara}"
+            prev_findings[key] = h
 
+        # 2. Procesar Nuevos Datos
         hallazgos_data = data.get('hallazgos', [])
+        new_findings_keys = set()
         
-        # Limpiamos previos (Drástico pero efectivo para sincronización total)
-        odontograma.hallazgos.all().delete()
+        user = request.user if request.user.is_authenticated else None
         
-        for h in hallazgos_data:
-            # h: {tooth: "18", face: "V", state: "CARIES", comment: "..."}
-            Hallazgo.objects.create(
+        # Import LogOdontograma inside function to ensure no circular import affecting other views, though models import usually fine at top
+        from .models import LogOdontograma
+
+        # Guardar observaciones generales si cambiaron
+        if odontograma.observaciones != data.get('observaciones', ''):
+             odontograma.observaciones = data.get('observaciones', '')
+             odontograma.save()
+             LogOdontograma.objects.create(
                 odontograma=odontograma,
-                diente_id=int(h['tooth']),
-                cara=h['face'],
-                estado=h['state'],
-                comentario=h.get('comment', '')
+                usuario=user,
+                accion='ACTUALIZACION_GENERAL',
+                detalles={'observaciones': 'Se actualizaron las observaciones generales.'}
             )
+
+        # 3. Comparar y Actualizar
+        for h_data in hallazgos_data:
+            tooth_id = int(h_data['tooth'])
+            face = h_data['face']
+            state = h_data['state']
+            comment = h_data.get('comment', '')
+            
+            key = f"{tooth_id}-{face}"
+            new_findings_keys.add(key)
+            
+            if key in prev_findings:
+                # Existe: Verificar cambios
+                prev = prev_findings[key]
+                changes = []
+                if prev.estado != state:
+                    changes.append(f"Estado: {prev.estado} -> {state}")
+                if prev.comentario != comment:
+                    # Mostrar contenido de la nota
+                    if comment:
+                        changes.append(f"Nota: '{comment}'")
+                    else:
+                        changes.append("Nota eliminada")
+                
+                if changes:
+                    # Actualizar objeto
+                    prev.estado = state
+                    prev.comentario = comment
+                    prev.save()
+                    
+                    # Log Modificación
+                    LogOdontograma.objects.create(
+                        odontograma=odontograma,
+                        usuario=user,
+                        accion='MODIFICAR_HALLAZGO',
+                        detalles={
+                            'diente': tooth_id,
+                            'cara': face,
+                            'cambios': ", ".join(changes)
+                        }
+                    )
+            else:
+                # Nuevo Hallazgo
+                Hallazgo.objects.create(
+                    odontograma=odontograma,
+                    diente_id=tooth_id,
+                    cara=face,
+                    estado=state,
+                    comentario=comment
+                )
+                
+                # Detalles para Log
+                detalles_log = {
+                    'diente': tooth_id,
+                    'cara': face,
+                    'estado': state
+                }
+                if comment:
+                    detalles_log['nota'] = comment
+
+                # Log Creación
+                LogOdontograma.objects.create(
+                    odontograma=odontograma,
+                    usuario=user,
+                    accion='AGREGAR_HALLAZGO',
+                    detalles=detalles_log
+                )
+
+        # 4. Detectar Eliminados (Estaban antes, no están ahora)
+        for key, prev in prev_findings.items():
+            if key not in new_findings_keys:
+                # Log Eliminación
+                LogOdontograma.objects.create(
+                    odontograma=odontograma,
+                    usuario=user,
+                    accion='ELIMINAR_HALLAZGO',
+                    detalles={
+                        'diente': prev.diente_id,
+                        'cara': prev.cara,
+                        'estado_previo': prev.estado
+                    }
+                )
+                prev.delete()
             
         return JsonResponse({'status': 'ok', 'message': 'Guardado correctamente'})
         
     except Exception as e:
+        import traceback
         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
 
 from django.http import HttpResponse

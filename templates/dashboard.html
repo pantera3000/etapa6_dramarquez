@@ -238,12 +238,28 @@
 
     /* --- Responsive Helpers --- */
     @media (max-width: 767.98px) {
-        .kpi-value { font-size: 1.75rem; }
-        .kpi-card { padding: 1.25rem; }
-        .app-icon-box { width: 48px; height: 48px; font-size: 1.5rem; }
-        .section-title { font-size: 0.9rem; margin-left: 0.5rem; }
+        /* Compact KPI Cards */
+        .kpi-card { padding: 0.75rem; }
+        .kpi-icon-wrapper { 
+            width: 32px; 
+            height: 32px; 
+            font-size: 1rem; 
+            margin-bottom: 0.5rem; 
+            border-radius: 8px;
+        }
+        .kpi-value { font-size: 1.35rem; margin-bottom: 0; }
+        .kpi-label { font-size: 0.7rem; line-height: 1.1; display: block;}
+        
+        /* Compact App Grid */
+        .app-icon-box { width: 42px; height: 42px; font-size: 1.25rem; border-radius: 12px; }
+        .app-label { font-size: 0.7rem; }
+        .action-grid { gap: 0.5rem; }
+        
+        /* General Compactness */
+        .section-title { font-size: 0.85rem; margin-left: 0.25rem; margin-bottom: 0.75rem; }
         .widget-container { padding: 1rem; }
-        .hero-heading { font-size: 1.5rem; }
+        .hero-heading { font-size: 1.25rem; }
+        .hero-section { padding: 1.5rem 1rem; }
     }
     
     /* Chart Container Size */
@@ -412,32 +428,29 @@
                 </div>
             </div>
 
-            <!-- Financial Chart / Debt Widget -->
+            <!-- Debt Widget (Swapped position) -->
             <div class="col-lg-7 col-xl-8">
-                {% if permiso_grafico %}
-                    <div class="widget-container mb-4">
-                         <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h6 class="fw-bold mb-0 text-dark">📊 Ingresos (Últimos 6 meses)</h6>
-                        </div>
-                        <div class="chart-wrapper">
-                             <canvas id="ingresosChart"></canvas>
-                        </div>
-                    </div>
-                {% endif %}
-                
                 {% if permiso_cobranza and tratamientos_deuda %}
-                    <div class="widget-container bg-danger bg-opacity-10 border-danger border-opacity-25">
+                    <div class="widget-container h-100" style="border-top: 4px solid #ef4444;">
                          <div class="d-flex justify-content-between align-items-center mb-3">
                             <h6 class="fw-bold mb-0 text-danger"><i class="bi bi-exclamation-octagon me-2"></i>Deudas Pendientes</h6>
-                             <a href="{% url 'tratamientos:lista' %}?estado_pago=pendiente" class="btn btn-sm btn-danger rounded-pill px-3">Gestionar</a>
+                             <a href="{% url 'tratamientos:lista' %}?estado_pago=pendiente" class="btn btn-sm btn-outline-danger rounded-pill px-3">Gestionar</a>
                         </div>
-                        <div class="row g-2">
-                             {% for t in tratamientos_deuda|slice:":3" %}
-                                <div class="col-md-4">
-                                    <div class="bg-white p-3 rounded-3 shadow-sm border border-danger border-opacity-10 h-100">
-                                        <div class="small text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">{{ t.paciente.nombre_completo|truncatechars:18 }}</div>
-                                        <div class="fw-bold text-danger fs-5 mt-1">S/ {{ t.saldo_pendiente|floatformat:0 }}</div>
-                                        <div class="small text-muted mt-1 text-truncate">{{ t.nombre }}</div>
+                        <div class="d-flex flex-column gap-2">
+                             {% for t in tratamientos_deuda|slice:":5" %}
+                                <div class="d-flex justify-content-between align-items-center p-3 rounded-3 border hover-bg-light transition-base">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="d-flex align-items-center justify-content-center bg-danger bg-opacity-10 text-danger rounded-circle" style="width: 40px; height: 40px;">
+                                            <i class="bi bi-cash"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-dark">{{ t.paciente.nombre_completo }}</div>
+                                            <div class="small text-muted">{{ t.nombre }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="fw-bold text-danger fs-6">S/ {{ t.saldo_pendiente|floatformat:2 }}</div>
+                                        <div class="small text-muted" style="font-size: 0.7rem;">Pendiente</div>
                                     </div>
                                 </div>
                              {% endfor %}
@@ -447,6 +460,22 @@
             </div>
             
         </div>
+
+        <!-- 5. Financial Chart (New Full Width Row) -->
+        {% if permiso_grafico %}
+        <div class="row mb-4">
+            <div class="col-12">
+                 <div class="widget-container">
+                     <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h6 class="fw-bold mb-0 text-dark">📊 Ingresos (Últimos 6 meses)</h6>
+                    </div>
+                    <div class="chart-wrapper">
+                         <canvas id="ingresosChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
 
