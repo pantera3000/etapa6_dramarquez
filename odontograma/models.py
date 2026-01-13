@@ -73,17 +73,32 @@ class Hallazgo(models.Model):
         pass
 
     def __str__(self):
-        return f"Diente {self.diente_id} [{self.get_cara_display()}]: {self.get_estado_display()}"
+        return f"{self.get_diente_id} - {self.get_estado_display()} ({self.cara})"
+
+
+class FotoDiente(models.Model):
+    """
+    Imágenes específicas asociadas a un diente en el odontograma.
+    """
+    odontograma = models.ForeignKey(Odontograma, on_delete=models.CASCADE, related_name='fotos_diente')
+    diente_id = models.CharField(max_length=10) # '18', '24', etc.
+    imagen = models.ImageField(upload_to='odontograma_fotos/%Y/%m/')
+    descripcion = models.CharField(max_length=255, blank=True)
+    fecha_subida = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Foto {self.diente_id} - {self.odontograma.paciente}"
+
 
 class LogOdontograma(models.Model):
     """
-    Historial de acciones sobre el odontograma.
+    Registro de auditoría de cambios en el odontograma.
     """
     odontograma = models.ForeignKey(Odontograma, on_delete=models.CASCADE, related_name='logs')
-    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
-    accion = models.CharField(max_length=255)
-    detalles = models.JSONField(default=dict, blank=True)
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
-    
+    accion = models.CharField(max_length=50) # 'AGREGAR_HALLAZGO', 'ELIMINAR_HALLAZGO', etc.
+    detalles = models.JSONField(default=dict, blank=True) # Snapshot de lo que cambió
+
     def __str__(self):
-        return f"{self.timestamp} - {self.accion}"
+        return f"{self.timestamp} - {self.usuario} - {self.accion}"

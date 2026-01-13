@@ -535,6 +535,76 @@
     </div>
 </div>
 
+<!-- MODAL GALERÍA DE FOTOS -->
+<div class="modal fade" id="galleryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-camera me-2"></i> Galería: Diente <span id="gallery-tooth-title" class="fw-bold"></span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-light">
+                <!-- Upload Area -->
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-body">
+                        <form id="upload-photo-form" class="d-flex gap-2 align-items-center">
+                            <input type="file" id="photo-input" class="form-control form-control-sm" accept="image/*" required>
+                            <input type="text" id="photo-desc" class="form-control form-control-sm" placeholder="Descripción (opcional)">
+                            <button type="submit" class="btn btn-sm btn-success text-nowrap">
+                                <i class="fas fa-upload me-1"></i> Subir
+                            </button>
+                        </form>
+                        <div id="upload-progress" class="progress mt-2" style="height: 3px; display: none;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" style="width: 100%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gallery Grid -->
+                <div id="gallery-grid" class="row g-3">
+                    <!-- Photos injected via JS -->
+                    <div class="col-12 text-center py-5 text-muted">
+                        <i class="fas fa-images fa-3x mb-3 opacity-25"></i>
+                        <p>Cargando fotos...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL HISTORIAL DIENTE -->
+<div class="modal fade" id="historyModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title">
+                    <i class="fas fa-history me-2"></i> Historial: Diente <span id="history-tooth-title" class="fw-bold"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                    <table class="table table-striped table-hover mb-0">
+                        <thead class="bg-light sticky-top">
+                            <tr>
+                                <th class="small py-2 ps-3">Fecha</th>
+                                <th class="small py-2">Lado</th>
+                                <th class="small py-2">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-table-body">
+                            <!-- Injected JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Template SVG Diente -->
 <!-- Template SVG Diente Híbrido (Multicapa) -->
 <template id="tooth-template">
@@ -590,6 +660,9 @@
     window.selectedToothId = null;
     window.selectedFace = null;
     window.faceNames = { 'V': 'Vestibular', 'L': 'Lingual', 'M': 'Mesial', 'D': 'Distal', 'O': 'Oclusal', 'R': 'Raíz' };
+    window.teethWithPhotos = []; // Init empty
+    window.teethWithHistory = []; // Init empty
+    window.odontogramaId = {{ odontograma.id }}; // Important for API calls
     
     document.addEventListener('DOMContentLoaded', function() {
         // --- CONSTANTS & DOM ELEMENTS ---
@@ -677,6 +750,19 @@
                 console.error("Error loading JSON:", e);
             }
 
+            // 3. Load Photos Indicator
+            try {
+                window.teethWithPhotos = {{ dientes_con_fotos_json|default:"[]"|safe }};
+                window.teethWithPhotos.forEach(tid => updatePhotoIndicator(tid));
+            } catch (e) { console.error("Error loading photos:", e); }
+
+            // 4. Load History Indicator
+            try {
+                window.teethWithHistory = {{ dientes_con_historial_json|default:"[]"|safe }};
+                // Optional: We can show indicator on load, or only rely on Context Menu
+                // window.teethWithHistory.forEach(tid => updateHistoryIndicator(tid)); 
+            } catch (e) { console.error("Error loading history:", e); }
+
             // --- CORE FUNCTIONS ---
     
             // ... (openContextMenu, closeCtxMenu preserved) ...
@@ -702,8 +788,50 @@
                      faceDisplay.textContent = `Cara: ${faceNames[face] || face}`;
                      faceDisplay.className = 'small fw-bold text-primary';
                 } else {
-                     faceDisplay.textContent = 'Seleccionar acción para todo el diente o una cara Específica.';
+                     faceDisplay.textContent = 'Seleccionar acción para todo el diente.';
                      faceDisplay.className = 'small text-muted';
+                }
+
+                // Add Gallery Button dynamically if not exists
+                // Add Gallery Button dynamically if not exists
+                const header = document.querySelector('#ctx-menu .ctx-header');
+                if (header && !document.getElementById('btn-gallery-ctx')) {
+                    // Gallery Button
+                    const btn = document.createElement('button');
+                    btn.id = 'btn-gallery-ctx';
+                    btn.className = 'btn btn-sm btn-white border ms-auto me-2 shadow-sm rounded-circle d-flex align-items-center justify-content-center';
+                    btn.style.width = '32px';
+                    btn.style.height = '32px';
+                    btn.style.fontSize = '1.2rem'; // Emoji size
+                    btn.style.lineHeight = '1';
+                    btn.innerHTML = '📷'; // EMOJI CAMERA
+                    btn.title = 'Ver/Subir Fotos';
+                    btn.onclick = (e) => {
+                       e.stopPropagation();
+                       openGallery(selectedToothId);
+                       closeCtxMenu();
+                    };
+                    
+                    // History Button
+                    const btnHistory = document.createElement('button');
+                    btnHistory.id = 'btn-history-ctx';
+                    btnHistory.className = 'btn btn-sm btn-white border ms-1 me-2 shadow-sm rounded-circle d-flex align-items-center justify-content-center';
+                    btnHistory.style.width = '32px';
+                    btnHistory.style.height = '32px';
+                    btnHistory.style.fontSize = '1.2rem'; // Emoji size
+                    btnHistory.style.lineHeight = '1';
+                    btnHistory.innerHTML = '🕒'; // EMOJI CLOCK
+                    btnHistory.title = 'Ver Historial del Diente';
+                    btnHistory.onclick = (e) => {
+                       e.stopPropagation();
+                       openHistory(selectedToothId);
+                       closeCtxMenu();
+                    };
+
+                    // Insert buttons
+                    const closeBtn = header.querySelector('.btn-close');
+                    header.insertBefore(btn, closeBtn);
+                    header.insertBefore(btnHistory, closeBtn);
                 }
                 
                 // Reset to Basics Tab
@@ -1325,6 +1453,193 @@
         
         tooltip.style.left = x + 'px';
         tooltip.style.top = y + 'px';
+    }
+
+    // --- GALLERY FUNCTIONS ---
+    window.openGallery = function(toothId) {
+        document.getElementById('gallery-tooth-title').textContent = toothId;
+        document.getElementById('photo-input').value = '';
+        document.getElementById('photo-desc').value = '';
+        document.getElementById('upload-progress').style.display = 'none';
+        
+        const modal = new bootstrap.Modal(document.getElementById('galleryModal'));
+        modal.show();
+        
+        fetchPhotos(toothId);
+        
+        // Handle Upload
+        const form = document.getElementById('upload-photo-form');
+        form.onsubmit = (e) => {
+            e.preventDefault();
+            uploadPhoto(toothId);
+        };
+    }
+
+    function fetchPhotos(toothId) {
+        const grid = document.getElementById('gallery-grid');
+        grid.innerHTML = '<div class="col-12 text-center py-5 text-muted"><div class="spinner-border text-primary" role="status"></div></div>';
+        
+        fetch(`/odontograma/api/${window.odontogramaId}/foto/ver/${toothId}/`)
+        .then(res => res.json())
+        .then(data => {
+            grid.innerHTML = '';
+            if (data.fotos.length === 0) {
+                    grid.innerHTML = `
+                    <div class="col-12 text-center py-5 text-muted">
+                        <i class="fas fa-camera fa-3x mb-3 opacity-25"></i>
+                        <p>No hay fotos para este diente.</p>
+                    </div>`;
+                    return;
+            }
+            
+            data.fotos.forEach(f => {
+                const col = document.createElement('div');
+                col.className = 'col-md-4 col-sm-6';
+                col.innerHTML = `
+                    <div class="card h-100 shadow-sm border-0 photo-card">
+                        <div class="position-relative">
+                            <img src="${f.url}" class="card-img-top" style="height: 150px; object-fit: cover; cursor: pointer;" onclick="window.open('${f.url}', '_blank')">
+                            <button class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 rounded-circle shadow-sm" style="width: 24px; height: 24px; padding: 0;" onclick="deletePhoto(${f.id}, '${toothId}')">&times;</button>
+                        </div>
+                        <div class="card-body p-2">
+                            <small class="text-muted d-block mb-1"><i class="far fa-clock me-1"></i> ${f.fecha}</small>
+                            <p class="card-text small text-dark">${f.descripcion || 'Sin descripción'}</p>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(col);
+            });
+        })
+        .catch(err => {
+            console.error(err);
+            grid.innerHTML = '<div class="col-12 text-danger text-center">Error cargando fotos</div>';
+        });
+    }
+
+    function uploadPhoto(toothId) {
+        const input = document.getElementById('photo-input');
+        const desc = document.getElementById('photo-desc');
+        const progressBar = document.querySelector('#upload-progress .progress-bar');
+        document.getElementById('upload-progress').style.display = 'flex';
+        
+        const formData = new FormData();
+        formData.append('diente_id', toothId);
+        formData.append('imagen', input.files[0]);
+        formData.append('descripcion', desc.value);
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}'); 
+        
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', `/odontograma/api/${window.odontogramaId}/foto/subir/`, true);
+        
+        xhr.upload.onprogress = (e) => {
+            if (e.lengthComputable) {
+                const percent = (e.loaded / e.total) * 100;
+                progressBar.style.width = percent + '%';
+            }
+        };
+        
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                input.value = '';
+                desc.value = '';
+                document.getElementById('upload-progress').style.display = 'none';
+                fetchPhotos(toothId);
+                updatePhotoIndicator(toothId); 
+            } else {
+                alert('Error al subir imagen');
+            }
+        };
+        
+        xhr.send(formData);
+    }
+
+    function deletePhoto(photoId, toothId) {
+        if(!confirm('¿Eliminar esta foto permanentemente?')) return;
+        
+        fetch(`/odontograma/api/foto/eliminar/${photoId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                fetchPhotos(toothId);
+            }
+        });
+    }
+    
+    function updatePhotoIndicator(toothId) {
+        const wrapper = document.querySelector(`.tooth-wrapper[data-tooth="${toothId}"]`);
+        if (!wrapper) return;
+        
+        // Ensure wrapper has relative positioning
+        if (getComputedStyle(wrapper).position === 'static') {
+            wrapper.style.position = 'relative'; 
+        }
+
+        if (wrapper.querySelector('.photo-indicator')) return;
+        
+        const icon = document.createElement('div');
+        icon.className = 'photo-indicator position-absolute translate-middle badge rounded-pill bg-light text-primary border border-primary shadow-sm';
+        icon.style.top = '0';
+        icon.style.right = '0'; // Changed to right
+        icon.style.marginTop = '-5px';
+        icon.style.marginRight = '-5px';
+        icon.innerHTML = '<i class="fas fa-camera"></i>';
+        icon.title = 'Tiene fotos adjuntas';
+        icon.style.zIndex = '100'; // Higher z-index
+        icon.style.cursor = 'pointer';
+        icon.style.fontSize = '0.7rem';
+        icon.style.padding = '0.25em 0.4em';
+        
+        icon.onclick = (e) => {
+            e.stopPropagation();
+            openGallery(toothId);
+        };
+        
+        wrapper.appendChild(icon);
+    }
+
+    // --- HISTORY FUNCTIONS ---
+    window.openHistory = function(toothId) {
+        document.getElementById('history-tooth-title').textContent = toothId;
+        const modal = new bootstrap.Modal(document.getElementById('historyModal'));
+        modal.show();
+        fetchHistory(toothId);
+    }
+
+    function fetchHistory(toothId) {
+        const tbody = document.getElementById('history-table-body');
+        tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4"><div class="spinner-border text-warning spinner-border-sm" role="status"></div> Cargando historial...</td></tr>';
+        
+        fetch(`/odontograma/api/${window.odontogramaId}/historial/ver/${toothId}/`)
+        .then(res => res.json())
+        .then(data => {
+            tbody.innerHTML = '';
+            if (data.historial.length === 0) {
+                 tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-muted"><i class="fas fa-info-circle me-1"></i> Sin cambios registrados para este diente.</td></tr>';
+                 return;
+            }
+            
+            data.historial.forEach(h => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="small ps-3">${h.fecha}</td>
+                    <td class="small">${h.lado}</td>
+                    <td class="small">
+                         <span class="fw-bold">${h.detalles}</span><br>
+                         <span class="text-muted" style="font-size: 0.75rem;">${h.accion}</span>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        })
+        .catch(err => {
+            console.error(err);
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center text-danger">Error cargando historial</td></tr>';
+        });
     }
 </script>
 {% endblock %}

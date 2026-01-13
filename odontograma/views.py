@@ -4,7 +4,8 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
-from .models import Odontograma, Hallazgo
+from django.views.decorators.http import require_POST
+from .models import Odontograma, Hallazgo, FotoDiente
 from pacientes.models import Paciente
 
 from django.utils import timezone
@@ -35,10 +36,29 @@ def ver_odontograma(request, paciente_id):
     # Cargar Historial (Logs)
     logs = odontograma.logs.all().order_by('-timestamp')
 
+    # Dientes con Fotos (para indicador visual)
+    dientes_con_fotos = list(
+        odontograma.fotos_diente.values_list('diente_id', flat=True).distinct()
+    )
+
+    # Dientes con Historial (para indicador visual)
+    # Extraemos IDs procesando los logs en memoria
+    logs_all = odontograma.logs.all() # Fetch all logs once
+    dientes_con_historial_set = set()
+    for log in logs_all:
+        # Check 'diente' in detalles dict
+        diente = log.detalles.get('diente') if isinstance(log.detalles, dict) else None
+        if diente:
+            dientes_con_historial_set.add(str(diente))
+    
+    dientes_con_historial = list(dientes_con_historial_set)
+
     return render(request, 'odontograma/odontograma.html', {
         'paciente': paciente,
         'odontograma': odontograma,
         'hallazgos_json': json.dumps(hallazgos), # Para cargar estado inicial
+        'dientes_con_fotos_json': json.dumps(dientes_con_fotos),
+        'dientes_con_historial_json': json.dumps(dientes_con_historial),
         'logs': logs
     })
 
@@ -336,3 +356,96 @@ def exportar_pdf(request, paciente_id):
     buffer.close()
     response.write(pdf)
     return response
+
+@login_required
+@require_POST
+def subir_foto_diente(request, odontograma_id):
+    odontograma = get_object_or_404(Odontograma, pk=odontograma_id)
+    if 'imagen' not in request.FILES or 'diente_id' not in request.POST:
+        return JsonResponse({'error': 'Faltan datos'}, status=400)
+    
+    foto = FotoDiente.objects.create(
+        odontograma=odontograma,
+        diente_id=request.POST['diente_id'],
+        imagen=request.FILES['imagen'],
+        descripcion=request.POST.get('descripcion', '')
+    )
+    
+    return JsonResponse({
+        'id': foto.id,
+        'url': foto.imagen.url,
+        'descripcion': foto.descripcion,
+        'fecha': foto.fecha_subida.strftime("%d/%m/%Y")
+    })
+
+@login_required
+def ver_fotos_diente(request, odontograma_id, diente_id):
+    odontograma = get_object_or_404(Odontograma, pk=odontograma_id)
+    fotos = odontograma.fotos_diente.filter(diente_id=diente_id).order_by('-fecha_subida')
+    
+    data = []
+    for f in fotos:
+        data.append({
+            'id': f.id,
+            'url': f.imagen.url,
+            'descripcion': f.descripcion,
+            'fecha': f.fecha_subida.strftime("%d/%m/%Y")
+        })
+    return JsonResponse({'fotos': data})
+
+@login_required
+def ver_historial_diente(request, odontograma_id, diente_id):
+    odontograma = get_object_or_404(Odontograma, pk=odontograma_id)
+    
+    # Intento 1: Query nativa JSON (Más eficiente)
+    logs = odontograma.logs.filter(detalles__diente=diente_id).order_by('-timestamp')
+    
+    # Intento 2: Filtrado Python (Fallback de seguridad si DB falla o devuelve vacío incorrectamente)
+    # Solo si el intento 1 falló o no trajo nada (y sospechamos que debería haber)
+    # Nota: Si realmente no hay historial, esto igual recorrerá todo, pero es necesario para garantizar robustez en SQLite.
+    if not logs.exists():
+        all_logs = odontograma.logs.all().order_by('-timestamp')
+        logs = []
+        target_id = str(diente_id)
+        for log in all_logs:
+            # Check seguro de diccionario
+            if isinstance(log.detalles, dict):
+                log_diente = log.detalles.get('diente')
+                if log_diente and str(log_diente) == target_id:
+                    logs.append(log)
+
+    data = []
+    for log in logs:
+        # Manejo robusto de campos JSON
+        detalles_txt = ""
+        lado = "General"
+        
+        # Intentar extraer info bonita si es dict
+        if isinstance(log.detalles, dict):
+            estado = log.detalles.get('estado', '')
+            nota = log.detalles.get('nota', '')
+            cara = log.detalles.get('cara', '')
+            
+            # Mapeo de caras
+            caras_map = {'V': 'Vestibular', 'L': 'Lingual', 'M': 'Mesial', 'D': 'Distal', 'O': 'Oclusal', 'C': 'Completo'}
+            lado = caras_map.get(cara, cara) or 'General'
+            
+            if estado: detalles_txt += f"Estado: {estado}. "
+            if nota: detalles_txt += f"Nota: {nota}."
+        else:
+            detalles_txt = str(log.detalles)
+        
+        data.append({
+            'fecha': timezone.localtime(log.timestamp).strftime("%d/%m/%Y %H:%M"),
+            'accion': log.accion.replace('_', ' ').title(),
+            'detalles': detalles_txt or 'Sin detalles',
+            'lado': lado
+        })
+    return JsonResponse({'historial': data})
+
+@login_required
+@require_POST
+def eliminar_foto_diente(request, foto_id):
+    foto = get_object_or_404(FotoDiente, pk=foto_id)
+    foto.delete()
+    return JsonResponse({'success': True})
