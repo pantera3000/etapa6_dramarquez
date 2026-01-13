@@ -15,4 +15,7 @@ urlpatterns = [
     
     # API Historial Diente
     path('api/<int:odontograma_id>/historial/ver/<str:diente_id>/', views.ver_historial_diente, name='ver_historial_diente'),
+    
+    # API Configuración
+    path('api/<int:odontograma_id>/config/tipo_denticion/', views.actualizar_tipo_denticion, name='actualizar_tipo_denticion'),
 ]

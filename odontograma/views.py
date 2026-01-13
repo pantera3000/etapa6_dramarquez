@@ -441,7 +441,26 @@ def ver_historial_diente(request, odontograma_id, diente_id):
             'detalles': detalles_txt or 'Sin detalles',
             'lado': lado
         })
+    
     return JsonResponse({'historial': data})
+
+@login_required
+@require_POST
+def actualizar_tipo_denticion(request, odontograma_id):
+    try:
+        data = json.loads(request.body)
+        odontograma = get_object_or_404(Odontograma, pk=odontograma_id)
+        
+        nuevo_tipo = data.get('tipo_denticion')
+        if nuevo_tipo in ['adult', 'child', 'mixed']:
+            odontograma.tipo_denticion = nuevo_tipo
+            odontograma.save()
+            return JsonResponse({'status': 'ok', 'tipo': nuevo_tipo})
+        else:
+            return JsonResponse({'status': 'error', 'message': 'Tipo inválido'}, status=400)
+            
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
 @login_required
 @require_POST

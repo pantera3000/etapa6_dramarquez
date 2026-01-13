@@ -1643,5 +1643,71 @@
             tbody.innerHTML = '<tr><td colspan="3" class="text-center text-danger">Error cargando historial</td></tr>';
         });
     }
+
+    // --- CSRF TOKEN HELPER ---
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // --- VIEW TOGGLE (ADULT/CHILD/MIXED) WITH PERSISTENCE ---
+    window.toggleView = function(tipo) {
+        // Hide all views
+        document.getElementById('view-adult-container').classList.add('d-none');
+        document.getElementById('view-child-container').classList.add('d-none');
+        
+        // Show selected view
+        if (tipo === 'adult') {
+            document.getElementById('view-adult-container').classList.remove('d-none');
+            document.getElementById('view-child-container').classList.add('d-none');
+        } else if (tipo === 'child') {
+            document.getElementById('view-adult-container').classList.add('d-none');
+            document.getElementById('view-child-container').classList.remove('d-none');
+        } else if (tipo === 'mixed') {
+            // Show both
+            document.getElementById('view-adult-container').classList.remove('d-none');
+            document.getElementById('view-child-container').classList.remove('d-none');
+        }
+        
+        // Update button states
+        document.getElementById('view-adult').classList.toggle('active', tipo === 'adult');
+        document.getElementById('view-child').classList.toggle('active', tipo === 'child');
+        document.getElementById('view-mixed').classList.toggle('active', tipo === 'mixed');
+        
+        // Save preference to backend
+        fetch(`/odontograma/api/${window.odontogramaId}/config/tipo_denticion/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ tipo_denticion: tipo })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status !== 'ok') {
+                console.error('Error guardando preferencia de vista:', data.message);
+            }
+        })
+        .catch(err => console.error('Error en AJAX:', err));
+    }
+    
+    // Initialize view on page load based on saved preference
+    document.addEventListener('DOMContentLoaded', function() {
+        const savedView = '{{ odontograma.tipo_denticion }}' || 'adult';
+        setTimeout(function() {
+            toggleView(savedView);
+        }, 100);
+    });
 </script>
 {% endblock %}

@@ -15,6 +15,11 @@ class Odontograma(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     ultima_actualizacion = models.DateTimeField(auto_now=True)
     tipo = models.CharField(max_length=20, choices=TIPO_CHOICES, default='INICIAL')
+    tipo_denticion = models.CharField(max_length=10, default='adult', choices=[
+        ('adult', 'Adulto'),
+        ('child', 'Niño'),
+        ('mixed', 'Mixta')
+    ])
     observaciones = models.TextField(blank=True, null=True)
 
     def __str__(self):
