@@ -257,8 +257,33 @@
                 .view-tabs { width: 100%; overflow-x: auto; }
                 .view-tab { white-space: nowrap; flex-shrink: 0; }
                 .action-cell { opacity: 1; }
-                .dashboard-toolbar { gap: 0.5rem; flex-direction: column; align-items: stretch; }
+                .dashboard-toolbar { 
+                    gap: 0.5rem; 
+                    flex-direction: column; 
+                    align-items: stretch; 
+                }
                 .search-wrapper { max-width: 100%; }
+                
+                /* Fix filter dropdowns on mobile */
+                #dropdownFilters {
+                    flex-wrap: wrap;
+                    width: 100%;
+                }
+                #dropdownFilters select {
+                    flex: 1 1 auto;
+                    min-width: 100px;
+                    max-width: none !important;
+                }
+                
+                /* Fix buttons layout on mobile */
+                .dashboard-toolbar > div:last-child {
+                    flex-direction: row !important;
+                    gap: 0.5rem;
+                }
+                .dashboard-toolbar button {
+                    flex: 1;
+                    justify-content: center;
+                }
             }
         </style>
 
