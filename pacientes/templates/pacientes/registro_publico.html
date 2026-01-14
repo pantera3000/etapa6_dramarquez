@@ -5,107 +5,244 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Paciente - Consultorio Dental</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
             min-height: 100vh;
             padding: 20px 0;
         }
+        
         .registro-card {
             background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            max-width: 800px;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            max-width: 900px;
             margin: 0 auto;
+            overflow: hidden;
         }
+        
+        /* Progress Bar */
+        .progress-container {
+            background: #f8fafc;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .progress-bar-custom {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0ea5e9 0%, #14b8a6 100%);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        .progress-text {
+            font-size: 0.875rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+        
+        /* Header */
         .registro-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0ea5e9 0%, #14b8a6 100%);
             color: white;
-            padding: 2rem;
-            border-radius: 15px 15px 0 0;
+            padding: 2.5rem 2rem;
             text-align: center;
         }
+        .registro-header h2 {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .logo-consultorio {
+            max-width: 100px;
+            max-height: 100px;
+            margin-bottom: 1rem;
+            border-radius: 12px;
+            background: white;
+            padding: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        /* Body */
         .registro-body {
-            padding: 2rem;
+            padding: 2.5rem;
         }
+        
+        /* Section Titles with Steps */
         .section-title {
-            background: #f8f9fa;
-            padding: 0.75rem 1rem;
-            border-left: 4px solid #667eea;
-            margin: 1.5rem 0 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 0;
+            margin: 2rem 0 1.5rem 0;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #0ea5e9 0%, #14b8a6 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+        .section-title-text {
             font-weight: 600;
-            color: #333;
+            color: #1e293b;
+            font-size: 1.1rem;
         }
-        .btn-submit {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            padding: 0.75rem 2rem;
-            font-weight: 600;
-            width: 100%;
-        }
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
+        
+        /* Form Controls */
         .form-label {
             font-weight: 600;
-            color: #333;
+            color: #334155;
             margin-bottom: 0.5rem;
+            font-size: 0.9rem;
         }
         .required-field::after {
             content: " *";
-            color: #dc3545;
+            color: #ef4444;
         }
-        .success-message {
-            background: #d4edda;
-            border: 1px solid #c3e6cb;
-            color: #155724;
-            padding: 1.5rem;
+        .form-control, .form-select {
+            border: 2px solid #e2e8f0;
             border-radius: 10px;
-            margin-bottom: 1.5rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+            outline: none;
+        }
+        textarea.form-control {
+            min-height: 100px;
+        }
+        
+        /* Info Boxes */
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid #0ea5e9;
+            padding: 1.25rem;
+            margin-bottom: 2rem;
+            border-radius: 10px;
+        }
+        .info-box strong {
+            color: #0369a1;
+        }
+        
+        /* Success Message */
+        .success-message {
+            background: #d1fae5;
+            border: 2px solid #6ee7b7;
+            color: #065f46;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
             text-align: center;
         }
         .success-message h4 {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
+            font-weight: 700;
         }
-        .info-box {
-            background: #e7f3ff;
-            border-left: 4px solid #0d6efd;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            border-radius: 5px;
-        }
-        .consent-box {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
-            padding: 1.5rem;
-            border-radius: 10px;
-            margin: 1.5rem 0;
-        }
+        
+        /* Tutor Section */
         #tutor-section {
             display: none;
-            background: #fff8e1;
-            padding: 1rem;
-            border-radius: 8px;
+            background: #fef3c7;
+            padding: 1.5rem;
+            border-radius: 12px;
             margin-top: 1rem;
+            border: 2px solid #fbbf24;
         }
-        .logo-consultorio {
-            max-width: 120px;
-            max-height: 120px;
+        #tutor-section .alert {
+            background: #fef3c7;
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+        
+        /* Consent Box */
+        .consent-box {
+            background: #fef9e7;
+            border: 2px solid #f59e0b;
+            padding: 1.75rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+        .consent-box h6 {
+            color: #92400e;
+            font-weight: 700;
             margin-bottom: 1rem;
-            border-radius: 10px;
-            background: white;
-            padding: 0.5rem;
         }
+        .consent-box ul {
+            color: #78350f;
+        }
+        .form-check-input:checked {
+            background-color: #0ea5e9;
+            border-color: #0ea5e9;
+        }
+        
+        /* Submit Button */
+        .btn-submit {
+            background: linear-gradient(135deg, #0ea5e9 0%, #14b8a6 100%);
+            border: none;
+            padding: 1rem 2rem;
+            font-weight: 600;
+            width: 100%;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            transition: all 0.3s ease;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(14, 165, 233, 0.3);
+        }
+        
+        /* DNI Feedback */
         #dni-feedback {
             font-size: 0.875rem;
-            margin-top: 0.25rem;
+            margin-top: 0.5rem;
+            font-weight: 500;
         }
         .dni-disponible {
-            color: #198754;
+            color: #059669;
         }
         .dni-ocupado {
-            color: #dc3545;
+            color: #dc2626;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .registro-body {
+                padding: 1.5rem;
+            }
+            .progress-container {
+                padding: 1rem 1.5rem;
+            }
+            .section-title {
+                gap: 0.75rem;
+            }
+            .step-number {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
@@ -122,6 +259,17 @@
                 {% endif %}
                 <p class="mb-0">Formulario de Registro de Paciente</p>
             </div>
+            
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-bar-custom">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <div class="progress-text text-center">
+                    <span id="progress-percentage">0%</span> completado
+                </div>
+            </div>
+            
             <div class="registro-body">
                 {% if messages %}
                     {% for message in messages %}
@@ -146,11 +294,14 @@
                         <p class="mb-0 mt-2">Por favor completa todos tus datos. Los campos marcados con <span class="text-danger">*</span> son obligatorios. Esta información nos ayudará a brindarte una mejor atención.</p>
                     </div>
 
-                    <form method="post" novalidate>
+                    <form method="post" novalidate id="registro-form">
                         {% csrf_token %}
                         
                         <!-- DATOS PERSONALES -->
-                        <div class="section-title">👤 Datos Personales</div>
+                        <div class="section-title">
+                            <div class="step-number">1</div>
+                            <div class="section-title-text">👤 Datos Personales</div>
+                        </div>
                         
                         <div class="mb-3">
                             <label for="{{ form.nombre_completo.id_for_label }}" class="form-label required-field">Nombre Completo del Paciente</label>
@@ -226,7 +377,10 @@
                         </div>
 
                         <!-- DATOS DE CONTACTO -->
-                        <div class="section-title">📞 Datos de Contacto</div>
+                        <div class="section-title">
+                            <div class="step-number">2</div>
+                            <div class="section-title-text">📞 Datos de Contacto</div>
+                        </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -262,7 +416,10 @@
                         </div>
 
                         <!-- INFORMACIÓN MÉDICA -->
-                        <div class="section-title">🏥 Información Médica</div>
+                        <div class="section-title">
+                            <div class="step-number">3</div>
+                            <div class="section-title-text">🏥 Información Médica</div>
+                        </div>
 
                         <div class="mb-3">
                             <label for="{{ form.grupo_sanguineo.id_for_label }}" class="form-label">Grupo Sanguíneo</label>
@@ -291,7 +448,10 @@
                         </div>
 
                         <!-- HISTORIAL DENTAL -->
-                        <div class="section-title">🦷 Historial Dental</div>
+                        <div class="section-title">
+                            <div class="step-number">4</div>
+                            <div class="section-title-text">🦷 Historial Dental</div>
+                        </div>
 
                         <div class="mb-3">
                             <label for="{{ form.tratamientos_previos.id_for_label }}" class="form-label">Tratamientos Dentales Previos</label>
@@ -438,6 +598,44 @@
                     }, 500);
                 });
             }
+        });
+        
+        // Progress Bar Calculation
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('registro-form');
+            if (!form) return;
+            
+            const progressFill = document.getElementById('progress-fill');
+            const progressPercentage = document.getElementById('progress-percentage');
+            
+            function updateProgress() {
+                const inputs = form.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]), select, textarea');
+                let filled = 0;
+                let total = 0;
+                
+                inputs.forEach(input => {
+                    // Skip tutor fields if section is hidden
+                    if (input.closest('#tutor-section') && document.getElementById('tutor-section').style.display === 'none') {
+                        return;
+                    }
+                    
+                    total++;
+                    if (input.value && input.value.trim() !== '') {
+                        filled++;
+                    }
+                });
+                
+                const percentage = total > 0 ? Math.round((filled / total) * 100) : 0;
+                progressFill.style.width = percentage + '%';
+                progressPercentage.textContent = percentage + '%';
+            }
+            
+            // Update on input change
+            form.addEventListener('input', updateProgress);
+            form.addEventListener('change', updateProgress);
+            
+            // Initial calculation
+            updateProgress();
         });
     </script>
 </body>

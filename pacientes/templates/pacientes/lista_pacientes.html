@@ -328,10 +328,15 @@
                         </form>
                     </div>
                     
-                    <!-- Botón Link Registro (Restaurado) -->
+                    <!-- Botones de Link Registro -->
                     <button class="btn btn-info btn-sm text-white fw-medium d-flex align-items-center gap-2 flex-shrink-0" onclick="enviarLinkWhatsApp()">
                         <i class="bi bi-whatsapp"></i>
                         <span class="d-none d-lg-inline">Enviar Link</span>
+                    </button>
+                    
+                    <button class="btn btn-secondary btn-sm fw-medium d-flex align-items-center gap-2 flex-shrink-0" onclick="copiarLinkRegistro()" title="Copiar enlace de registro">
+                        <i class="bi bi-clipboard"></i>
+                        <span class="d-none d-lg-inline">Copiar Link</span>
                     </button>
                 </div>
             </div>
@@ -545,6 +550,45 @@
         const mensaje = `Hola! 👋\n\nPor favor completa tus datos en este formulario de registro:\n\n${registroUrl}\n\nGracias!`;
         const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
         window.open(whatsappUrl, '_blank');
+    }
+
+    function copiarLinkRegistro() {
+        const registroUrl = window.location.origin + "{% url 'pacientes:registro_publico' %}";
+        
+        // Modern Clipboard API
+        navigator.clipboard.writeText(registroUrl).then(function() {
+            // Success feedback
+            const btn = event.target.closest('button');
+            const originalHTML = btn.innerHTML;
+            const originalClass = btn.className;
+            
+            // Change button to show success
+            btn.className = 'btn btn-success btn-sm fw-medium d-flex align-items-center gap-2 flex-shrink-0';
+            btn.innerHTML = '<i class="bi bi-check-circle"></i><span class="d-none d-lg-inline">¡Copiado!</span>';
+            
+            // Revert after 2 seconds
+            setTimeout(function() {
+                btn.className = originalClass;
+                btn.innerHTML = originalHTML;
+            }, 2000);
+        }).catch(function(err) {
+            // Fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = registroUrl;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                alert('Enlace copiado: ' + registroUrl);
+            } catch (err) {
+                alert('No se pudo copiar. URL: ' + registroUrl);
+            }
+            
+            document.body.removeChild(textArea);
+        });
     }
 </script>
 
