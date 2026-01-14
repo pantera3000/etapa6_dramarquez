@@ -111,7 +111,7 @@
             .table-container {
                 flex-grow: 1;
                 overflow: auto;
-                background-color: white;
+                background-color: var(--panel-bg);
                 position: relative;
             }
             
@@ -203,7 +203,7 @@
             /* Action Buttons (Hover Reveal) */
             .action-cell {
                 text-align: right;
-                opacity: 0.2;
+                opacity: 0.6;
                 transition: opacity 0.2s;
             }
             .data-grid tr:hover .action-cell {
@@ -243,6 +243,12 @@
             html[data-theme="dark"] .tag-blue { background: rgba(30, 64, 175, 0.2); color: #93c5fd; border-color: rgba(30, 64, 175, 0.3); }
             html[data-theme="dark"] .tag-green { background: rgba(22, 101, 52, 0.2); color: #86efac; border-color: rgba(22, 101, 52, 0.3); }
             html[data-theme="dark"] .tag-amber { background: rgba(146, 64, 14, 0.2); color: #fcd34d; border-color: rgba(146, 64, 14, 0.3); }
+            
+            /* Dark mode text overrides */
+            html[data-theme="dark"] .text-primary-emphasis { color: #93c5fd !important; }
+            html[data-theme="dark"] .patient-name { color: #e5e7eb !important; }
+            html[data-theme="dark"] .text-muted { color: #9ca3af !important; }
+            html[data-theme="dark"] .font-mono-num { color: #d1d5db !important; }
 
             /* Mobile Adaptation */
             @media (max-width: 768px) {

@@ -169,6 +169,118 @@
             z-index: 10000 !important;
         }
     }
+
+    /* ============================================ */
+    /* DARK MODE SUPPORT */
+    /* ============================================ */
+    html[data-theme="dark"] {
+        --soft-gray: #1f2937;
+        --border-color: #374151;
+    }
+    
+    html[data-theme="dark"] body {
+        background-color: #111827;
+    }
+    
+    html[data-theme="dark"] .odontograma-container {
+        background-color: #1f2937;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    
+    html[data-theme="dark"] .sidebar-panel {
+        background-color: #111827;
+        border-color: #374151;
+    }
+    
+    html[data-theme="dark"] .card-body {
+        background-color: #1f2937 !important;
+    }
+    
+    html[data-theme="dark"] .ctx-menu {
+        background: #1f2937 !important;
+        border-color: #374151;
+    }
+    
+    html[data-theme="dark"] .ctx-header {
+        background: #111827 !important;
+        border-color: #374151;
+        color: #f9fafb;
+    }
+    
+    html[data-theme="dark"] .ctx-tabs {
+        background: #111827;
+        border-color: #374151;
+    }
+    
+    html[data-theme="dark"] .ctx-tab {
+        color: #9ca3af;
+    }
+    
+    html[data-theme="dark"] .ctx-tab.active {
+        background: #374151;
+        color: #f9fafb;
+    }
+    
+    html[data-theme="dark"] .action-btn {
+        background: #374151;
+        border-color: #4b5563;
+        color: #e5e7eb;
+    }
+    
+    html[data-theme="dark"] .action-btn:hover {
+        background: #4b5563;
+    }
+    
+    html[data-theme="dark"] .text-dark,
+    html[data-theme="dark"] .text-muted {
+        color: #d1d5db !important;
+    }
+    
+    html[data-theme="dark"] .bg-light {
+        background-color: #111827 !important;
+    }
+    
+    html[data-theme="dark"] .border {
+        border-color: #374151 !important;
+    }
+    
+    html[data-theme="dark"] .table {
+        color: #e5e7eb;
+    }
+    
+    html[data-theme="dark"] .table th {
+        background-color: #111827 !important;
+        color: #d1d5db;
+        border-color: #374151;
+    }
+    
+    html[data-theme="dark"] .table td {
+        background-color: #1f2937;
+        border-color: #374151;
+    }
+    
+    html[data-theme="dark"] .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #1f2937;
+    }
+    
+    html[data-theme="dark"] .table-hover tbody tr:hover {
+        background-color: #374151;
+    }
+    
+    html[data-theme="dark"] textarea,
+    html[data-theme="dark"] .form-control {
+        background-color: #111827;
+        border-color: #374151;
+        color: #e5e7eb;
+    }
+    
+    /* Photo and History Indicators in Dark Mode */
+    html[data-theme="dark"] .photo-indicator,
+    html[data-theme="dark"] .history-indicator {
+        background-color: #3b82f6 !important;
+        color: #ffffff !important;
+        border-color: #60a5fa !important;
+    }
 </style>
 
 <div class="container-fluid odontograma-container">
